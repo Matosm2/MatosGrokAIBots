@@ -64,8 +64,10 @@ See [`../strategies/README-jewel-strength-hold-v1.md`](../strategies/README-jewe
 
 ## Related: research sketches (TV-free)
 
-Offline sketches under [`sketches/`](sketches/) — `daily-adx-trend-hold-v1`,
-`macd-hist-regime-v1`, `htf-ema-pullback-wide-v1`. Not paper/live.
+Offline sketches under [`sketches/`](sketches/) — including
+`close-above-ema20-hold-v1`, `donchian-20-10-spot-v1`, plus earlier ADX/MACD/HTF.
+**Dual sizing:** Mode A gate = 100% when-in (PASS/FAIL); Mode B ops = 2.5%.
+Not paper/live; does not change live/paper defaults.
 
 ```bash
 python -m backtest.sketches

@@ -159,3 +159,152 @@ def test_htf_pullback_stop_and_bias_gate():
 def test_ema200_present_for_daily_adx():
     closes = [float(100 + i) for i in range(220)]
     assert ema(closes, 200)[199] is not None
+
+
+# --- close-above-ema20-hold-v1 / donchian-20-10-spot-v1 ---
+
+from backtest.sketches.donchian_spot import (
+    DonchianParams,
+    _prior_highest_high,
+    _prior_lowest_low,
+    compute_raw as don_raw,
+    compute_signals as don_signals,
+)
+from backtest.sketches.ema20_hold import (
+    Ema20HoldParams,
+    compute_raw as ema20_raw,
+    compute_signals as ema20_signals,
+)
+from backtest.sketches.report import GATE_SIZE_PCT, OPS_SIZE_PCT, summarize_sketch
+
+
+def test_ema20_hold_entry_needs_close_above_rising_ema():
+    # Strong uptrend: close above EMA20 and EMA rising vs 5 bars ago
+    closes = [100.0 + i * 0.5 for i in range(80)]
+    bars = _bars_from_closes(closes)
+    buys, sells = ema20_signals(bars, Ema20HoldParams())
+    assert any(buys), "expected EMA20 hold entries in synthetic uptrend"
+    in_pos = False
+    for b, s in zip(buys, sells):
+        if b:
+            assert not in_pos
+            in_pos = True
+        if s:
+            assert in_pos
+            in_pos = False
+
+
+def test_ema20_hold_exit_when_close_below_ema():
+    # Rally then crash below EMA20
+    closes = [100.0 + i for i in range(60)] + [160.0 - i * 3 for i in range(1, 40)]
+    bars = _bars_from_closes(closes)
+    raw_long, raw_exit = ema20_raw(bars, Ema20HoldParams())
+    assert any(raw_long)
+    assert any(raw_exit)
+    buys, sells = ema20_signals(bars, Ema20HoldParams())
+    # If we entered, we should eventually exit on the crash
+    if any(buys):
+        assert any(sells) or buys.index(True) == len(buys) - 1
+
+
+def test_ema20_adx_filter_off_by_default():
+    params = Ema20HoldParams()
+    assert params.adx_min is None
+
+
+def test_ema20_no_ema50_ema200_requirement():
+    """Short series where EMA50/200 cannot arm — strategy still can enter."""
+    closes = [100.0 + i * 0.8 for i in range(40)]
+    bars = _bars_from_closes(closes)
+    buys, _ = ema20_signals(bars, Ema20HoldParams())
+    # With only 40 bars, EMA200 never ready; EMA20 can still fire
+    assert any(buys)
+
+
+def test_donchian_prior_high_excludes_current():
+    highs = [1.0, 2.0, 3.0, 10.0, 4.0]
+    # At i=4, prior 3 highs are 2,3,10 → 10 (current 4 excluded)
+    assert _prior_highest_high(highs, 4, 3) == 10.0
+    assert _prior_highest_high(highs, 2, 3) is None
+
+
+def test_donchian_prior_low_excludes_current():
+    lows = [5.0, 4.0, 1.0, 3.0, 2.0]
+    assert _prior_lowest_low(lows, 4, 3) == 1.0
+
+
+def test_donchian_breakout_and_exit_signals():
+    # Flat then breakout above prior high, then dump below prior low
+    closes: list[float] = [100.0] * 25
+    for i in range(15):
+        closes.append(100.0 + i * 2)  # breakout
+    for i in range(15):
+        closes.append(closes[-1] - 5)  # dump
+    bars = _bars_from_closes(closes)
+    # Make highs/lows track close with spread so Donchian uses high/low
+    for i, b in enumerate(bars):
+        bars[i] = Bar(
+            open_time_ms=b.open_time_ms,
+            open=b.open,
+            high=b.close * 1.001,
+            low=b.close * 0.999,
+            close=b.close,
+            volume=1.0,
+            close_time_ms=b.close_time_ms,
+        )
+    buys, sells = don_signals(bars, DonchianParams(entry_lookback=20, exit_lookback=10))
+    assert len(buys) == len(bars)
+    assert any(buys), "expected Donchian breakout entry"
+    # After dump, expect exit
+    first_buy = buys.index(True)
+    assert any(sells[first_buy:]), "expected Donchian exit after dump"
+    in_pos = False
+    for b, s in zip(buys, sells):
+        if b:
+            assert not in_pos
+            in_pos = True
+        if s:
+            assert in_pos
+            in_pos = False
+
+
+def test_donchian_raw_entry_is_close_gt_prior_high():
+    highs = [10.0] * 20 + [11.0, 12.0]
+    lows = [9.0] * 22
+    closes = [9.5] * 20 + [10.5, 9.0]  # bar20: 10.5 > prior max 10 → entry
+    bars = [
+        Bar(
+            open_time_ms=1_700_000_000_000 + i * 86_400_000,
+            open=c,
+            high=highs[i],
+            low=lows[i],
+            close=c,
+            volume=1.0,
+            close_time_ms=1_700_000_000_000 + i * 86_400_000 + 86_400_000 - 1,
+        )
+        for i, c in enumerate(closes)
+    ]
+    raw_long, raw_exit = don_raw(bars, DonchianParams(20, 10))
+    assert raw_long[20] is True
+    assert raw_long[19] is False  # not enough prior / close not above
+
+
+def test_dual_sizing_gate_uses_100_pct_not_ops():
+    closes = [100.0 + i * 0.2 for i in range(40)]
+    bars = _bars_from_closes(closes)
+    buys = [False] * 40
+    sells = [False] * 40
+    buys[5] = True
+    sells[20] = True
+    gate = run_long_only(
+        "TEST", "x", bars, buys, sells, buy_qty_pct=GATE_SIZE_PCT
+    )
+    ops = run_long_only(
+        "TEST", "x", bars, buys, sells, buy_qty_pct=OPS_SIZE_PCT
+    )
+    mg = summarize_sketch(gate)
+    mo = summarize_sketch(ops)
+    assert mg["trades"] == mo["trades"] == 1
+    assert mg["win_rate_pct"] == mo["win_rate_pct"]
+    # Absolute return magnitude larger at 100% size
+    assert abs(mg["return_pct"]) > abs(mo["return_pct"])
