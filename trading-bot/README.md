@@ -252,7 +252,10 @@ pytest -q
 
 ## Pine strategies
 
-See [`strategies/`](./strategies/) for TradingView Pine scripts (e.g. EMA RSI Trend v1.1) and alert webhook templates.
+See [`strategies/`](./strategies/) for TradingView Pine scripts:
+
+- [`ema-rsi-trend-v1.1`](./strategies/README-ema-rsi-trend-v1.md) — paper webhook-ready
+- [`jewel-strength-hold-v1`](./strategies/README-jewel-strength-hold-v1.md) — **RESEARCH only** (no paper/live webhooks); Jewel Slow+High via `input.source`
 
 ## Project layout
 
@@ -270,6 +273,7 @@ trading-bot/
     idempotency.py    # Duplicate alert store
     persistence.py    # JSON portfolio / idempotency persistence
   strategies/         # Optional Pine scripts (separate PRs)
+  backtest/           # Offline ema-rsi backtest + jewel_replay Path B
   tests/
   .env.example
   Dockerfile          # uvicorn + /livez HEALTHCHECK + /data volume
@@ -298,4 +302,20 @@ pytest tests/test_backtest_signals.py tests/test_backtest_indicators.py -q
 See [`backtest/README.md`](backtest/README.md). Results: [`backtest/results/ema-rsi-trend-v1.1.md`](backtest/results/ema-rsi-trend-v1.1.md).
 Defaults: fee 0.1%/side, slippage 5 bps, buy `qty_pct` 2.5, `cooldown_bars` 6.
 **Daily loss halt is not modeled offline.** Spot long-only — not futures v1.
+
+## Offline Path B replay (jewel-strength-hold-v1 RESEARCH)
+
+CSV replay of Jewel **Slow + High** only (no RSI/Stoch proxy; **not** webhook-wired).
+Requires columns `time,open,high,low,close,volume,Slow,jewel_high` (or `High` for Jewel High when disambiguated).
+
+```bash
+cd trading-bot
+source .venv/bin/activate
+python -m backtest.jewel_replay backtest/jewel_replay/fixtures/synthetic_jewel_btc_daily.csv
+pytest tests/test_jewel_replay.py -q
+```
+
+Gate before any paper consideration: **≥60% WR** and **beat buy & hold**. See
+[`strategies/README-jewel-strength-hold-v1.md`](strategies/README-jewel-strength-hold-v1.md)
+and [`backtest/jewel_replay/README.md`](backtest/jewel_replay/README.md).
 

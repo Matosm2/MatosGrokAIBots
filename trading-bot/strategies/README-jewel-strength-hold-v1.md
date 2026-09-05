@@ -61,11 +61,12 @@ Module: `trading-bot/backtest/jewel_replay/`
 Export or build a CSV with columns:
 
 ```text
-time,open,high,low,close,volume,Slow,High
+time,open,high,low,close,volume,Slow,jewel_high
 ```
 
 - `time`: ISO-8601 or epoch ms (UTC)
-- `Slow` / `High`: Jewel plot values aligned to each daily bar (no lookahead)
+- `Slow` / `jewel_high`: Jewel plot values aligned to each daily bar (no lookahead)
+- Prefer `jewel_high` (not `High`) so Jewel High does not collide with OHLC `high`
 
 ```bash
 cd trading-bot
