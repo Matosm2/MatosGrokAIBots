@@ -55,3 +55,10 @@ pytest -q
 ## Secrets
 
 Never commit `.env`, `.webhook_secret`, or API keys. Cache CSVs are local-only.
+
+## Related: jewel-strength-hold-v1 Path B
+
+Separate research harness under [`jewel_replay/`](jewel_replay/) — CSV Slow/High replay
+(V-zone + V-wide), synthetic fixture for CI. Not part of the ema-rsi Binance kline runner.
+See [`../strategies/README-jewel-strength-hold-v1.md`](../strategies/README-jewel-strength-hold-v1.md).
+

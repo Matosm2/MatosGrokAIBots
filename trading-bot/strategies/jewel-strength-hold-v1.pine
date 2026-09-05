@@ -1,0 +1,102 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © Matosm2 — jewel-strength-hold-v1 (PAPER-RESEARCH ONLY)
+//
+// strategy_id: jewel-strength-hold-v1
+// Status: RESEARCH harness — do NOT wire paper/live webhooks for this strategy.
+//
+// Context
+// -------
+// Momentum reading of The Jewel (invite-only). Prior Fast×Slow OS/OB crossover
+// harnesses failed; this script does NOT reuse that logic and does NOT proxy
+// Jewel with RSI/Stochastic. Claude / Nuno attach Jewel Slow + High plots via
+// input.source() on the chart (BTC Daily primary; ETH Daily OOS unchanged).
+//
+// Rules (spot long-only, bar close, pyramiding 0)
+// -----------------------------------------------
+// Entry A: crossover(Slow, 70)
+// Entry B: crossover(High, 80) AND Slow >= 70
+// Exit:    Slow < 70 AND High <= 80
+// Variants:
+//   V-zone — zone exit only (no hard stop)
+//   V-wide — zone exit OR close < entry - 3 * ATR(14)  [ATR frozen at entry]
+//
+// Costs (Strategy Tester): 0.10%/side commission; size 2.5% equity.
+// Slippage: set ≥5 bps in TradingView strategy properties (ticks depend on symbol).
+// Gate before any paper consideration: ≥60% WR AND beat buy&hold (see README).
+
+//@version=5
+strategy(
+     title              = "Jewel Strength Hold v1 [RESEARCH]",
+     shorttitle         = "jewel-hold-v1",
+     overlay            = true,
+     initial_capital    = 10000,
+     default_qty_type   = strategy.percent_of_equity,
+     default_qty_value  = 2.5,
+     commission_type    = strategy.commission.percent,
+     commission_value   = 0.1,
+     pyramiding         = 0,
+     process_orders_on_close = true,
+     calc_on_order_fills = false,
+     calc_on_every_tick  = false
+ )
+
+// ——— Inputs ———
+// Wire these to The Jewel's published plots (Slow / High) on the chart.
+jewelSlow = input.source(close, "Jewel Slow (external plot)",
+     tooltip="Attach The Jewel plot named Slow. Default close is a placeholder — must be rewired.")
+jewelHigh = input.source(close, "Jewel High (external plot)",
+     tooltip="Attach The Jewel plot named High. Default close is a placeholder — must be rewired.")
+
+slowEnterLevel = input.float(70.0, "Slow enter level", minval=0, maxval=100, step=0.5)
+highEnterLevel = input.float(80.0, "High enter level", minval=0, maxval=100, step=0.5)
+slowExitLevel  = input.float(70.0, "Slow exit below", minval=0, maxval=100, step=0.5)
+highExitLevel  = input.float(80.0, "High exit at/below", minval=0, maxval=100, step=0.5)
+
+variant = input.string("V-zone", "Exit variant", options=["V-zone", "V-wide"],
+     tooltip="V-zone: zone exit only. V-wide: zone exit OR close < entry − 3×ATR(14).")
+atrLen     = input.int(14, "ATR length (V-wide)", minval=1)
+atrMult    = input.float(3.0, "ATR stop multiple (V-wide)", minval=0.1, step=0.1)
+
+// Research framing — label only; no webhook / alert wiring in this script.
+_strategyId = input.string("jewel-strength-hold-v1", "strategy_id (research label only)",
+     tooltip="Paper-research label only. Do not enable bot webhooks for this script.")
+
+// ——— Signals (Jewel Slow / High only — no RSI/Stoch proxy) ———
+entryA = ta.crossover(jewelSlow, slowEnterLevel)
+entryB = ta.crossover(jewelHigh, highEnterLevel) and jewelSlow >= slowEnterLevel
+longCondition = (entryA or entryB) and strategy.position_size == 0
+
+zoneExit = jewelSlow < slowExitLevel and jewelHigh <= highExitLevel
+
+atr14 = ta.atr(atrLen)
+
+// Freeze ATR + entry close when a new long opens (for V-wide)
+var float entryAtr = na
+var float entryPx  = na
+
+if longCondition
+    strategy.entry("Long", strategy.long)
+
+// After fill on this bar (process_orders_on_close), capture entry refs
+justOpened = strategy.position_size > 0 and strategy.position_size[1] == 0
+if justOpened
+    entryAtr := atr14
+    entryPx  := close
+
+if strategy.position_size == 0 and not justOpened
+    entryAtr := na
+    entryPx  := na
+
+wideStopHit = variant == "V-wide" and strategy.position_size > 0 and not na(entryAtr) and not na(entryPx) and close < entryPx - atrMult * entryAtr
+exitCondition = strategy.position_size > 0 and (zoneExit or wideStopHit)
+
+if exitCondition
+    strategy.close("Long")
+
+// Visuals (research)
+plotshape(longCondition, title="Entry", style=shape.triangleup, location=location.belowbar, size=size.tiny, color=color.lime)
+plotshape(exitCondition, title="Exit", style=shape.triangledown, location=location.abovebar, size=size.tiny, color=color.red)
+plot(variant == "V-wide" and strategy.position_size > 0 and not na(entryPx) and not na(entryAtr) ? entryPx - atrMult * entryAtr : na, "V-wide stop", color=color.new(color.maroon, 0), style=plot.style_linebr)
+
+// Explicit non-wiring: no alert(), no alertcondition — RESEARCH ONLY.
+// strategy_id input above is research labeling only (_strategyId).
