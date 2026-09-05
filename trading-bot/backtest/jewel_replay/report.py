@@ -110,6 +110,16 @@ def write_replay_markdown(
     lines.append(
         "- Synthetic or exported Jewel columns required; CI uses fixture only."
     )
+    lines.append(
+        "- **Repaint / non-realtime risk:** Path B assumes bar-close Slow/High "
+        "values as exported. If Jewel plots repaint intrabar or on historical "
+        "recalc, offline WR/return can look better than live bar-close fills."
+    )
+    lines.append(
+        "- **Invite-only Jewel:** Slow/High come from an invite-only indicator. "
+        "Replay fidelity depends on the same plots Nuno exports from his chart; "
+        "this harness cannot reconstruct Jewel without those series."
+    )
     lines.append("")
 
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
