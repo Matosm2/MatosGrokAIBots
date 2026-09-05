@@ -7,6 +7,7 @@ Dual sizing: Mode A (100% equity) for gate vs buy&hold; Mode B (2.5%) ops column
 """
 
 from backtest.jewel_replay.engine import ReplayResult, Trade, run_replay
+from backtest.jewel_replay.prepare import prepare_closed_sample
 from backtest.jewel_replay.report import MODE_A_PCT, MODE_B_PCT, DualModeRow
 from backtest.jewel_replay.signals import JewelParams, Variant, compute_signals
 from backtest.jewel_replay.window import WindowMode, apply_window, filter_bars_last_months
@@ -23,5 +24,6 @@ __all__ = [
     "apply_window",
     "compute_signals",
     "filter_bars_last_months",
+    "prepare_closed_sample",
     "run_replay",
 ]

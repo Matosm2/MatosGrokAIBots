@@ -16,8 +16,8 @@ class JewelBar:
     low: float
     close: float
     volume: float
-    slow: float
-    jewel_high: float
+    slow: float | None
+    jewel_high: float | None
 
 
 _TIME_KEYS = ("time", "open_time", "open_time_ms", "timestamp", "datetime", "date")
@@ -35,6 +35,27 @@ def _pick(row: dict[str, str], keys: tuple[str, ...], *, required: str) -> str:
         if k.lower() in lower and lower[k.lower()] not in (None, ""):
             return lower[k.lower()]
     raise KeyError(f"CSV missing required column for {required}; tried {keys}")
+
+
+def _pick_optional(row: dict[str, str], keys: tuple[str, ...]) -> str | None:
+    """Return cell text or None when blank / missing (warm-up rows)."""
+    for k in keys:
+        if k in row and row[k] not in (None, ""):
+            return row[k]
+    lower = {k.lower(): v for k, v in row.items()}
+    for k in keys:
+        if k.lower() in lower and lower[k.lower()] not in (None, ""):
+            return lower[k.lower()]
+    return None
+
+
+def _parse_optional_float(raw: str | None) -> float | None:
+    if raw is None:
+        return None
+    s = raw.strip()
+    if not s:
+        return None
+    return float(s)
 
 
 def _parse_time_ms(raw: str) -> int:
@@ -62,6 +83,8 @@ def load_jewel_csv(path: Path | str) -> list[JewelBar]:
       open,high,low,close,volume,Slow,jewel_high
     or export Jewel High as `Slow`/`High` with OHLC as open/high/low/close — then
     Jewel High must be named `jewel_high` / `JewelHigh` to avoid clobbering OHLC high.
+
+    Empty Slow / jewel_high cells are allowed as None (indicator warm-up).
     """
     path = Path(path)
     bars: list[JewelBar] = []
@@ -88,10 +111,20 @@ def load_jewel_csv(path: Path | str) -> list[JewelBar]:
                     f"(got columns {fields})"
                 )
 
+        # Ensure Slow column exists (may be blank on early rows).
+        slow_col_present = any(
+            k in fields or k.lower() in {f.lower() for f in fields} for k in _SLOW_KEYS
+        )
+        if not slow_col_present:
+            raise KeyError(
+                f"CSV missing required column for Slow; tried {_SLOW_KEYS} "
+                f"(got columns {fields})"
+            )
+
         for row in reader:
             t_raw = _pick(row, _TIME_KEYS, required="time")
-            slow_raw = _pick(row, _SLOW_KEYS, required="Slow")
-            jh_raw = row[jewel_high_col]
+            slow_raw = _pick_optional(row, _SLOW_KEYS)
+            jh_raw = row.get(jewel_high_col)
             bars.append(
                 JewelBar(
                     open_time_ms=_parse_time_ms(t_raw),
@@ -100,8 +133,10 @@ def load_jewel_csv(path: Path | str) -> list[JewelBar]:
                     low=float(row["low"]),
                     close=float(row["close"]),
                     volume=float(row.get("volume") or 0.0),
-                    slow=float(slow_raw),
-                    jewel_high=float(jh_raw),
+                    slow=_parse_optional_float(slow_raw),
+                    jewel_high=_parse_optional_float(
+                        jh_raw if jh_raw not in (None, "") else None
+                    ),
                 )
             )
     if not bars:

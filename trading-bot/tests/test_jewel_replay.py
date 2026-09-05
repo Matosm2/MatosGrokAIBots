@@ -268,3 +268,78 @@ def test_window_filter_on_fixture_shortens_or_keeps():
     # Fixture spans ~40 days — entire series fits inside last 6m of its own end
     assert len(six) == len(bars)
     assert six[0].open_time_ms == bars[0].open_time_ms
+
+
+def test_prepare_closed_sample_drops_last_and_cuts_warmup():
+    from backtest.jewel_replay.prepare import (
+        DEFAULT_SAMPLE_START_MS,
+        prepare_closed_sample,
+    )
+
+    bars = [
+        _bar(_ms(2017, 10, 24)),
+        _bar(_ms(2017, 12, 30)),
+        _bar(_ms(2017, 12, 31)),
+        _bar(_ms(2018, 1, 1)),
+        _bar(_ms(2026, 9, 5)),  # open/partial — dropped
+    ]
+    out, notes = prepare_closed_sample(bars)
+    assert out[0].open_time_ms == _ms(2017, 12, 31)
+    assert out[-1].open_time_ms == _ms(2018, 1, 1)
+    assert len(out) == 2
+    assert any("Dropped last open" in n for n in notes)
+    assert any("2017-12-31" in n for n in notes)
+    assert DEFAULT_SAMPLE_START_MS == _ms(2017, 12, 31)
+
+
+def test_win_rate_display_na_when_no_closed_trades():
+    """ETH last-6m style: n=0 → WR n/a (not 0%), gate FAIL."""
+    flat = [
+        JewelBar(
+            open_time_ms=_ms(2025, 9, 1) + i * 86_400_000,
+            open=100.0,
+            high=101.0,
+            low=99.0,
+            close=100.0,
+            volume=1.0,
+            slow=50.0,
+            jewel_high=40.0,
+        )
+        for i in range(10)
+    ]
+    a = run_replay("ETHUSDT", flat, buy_qty_pct=MODE_A_PCT)
+    b = run_replay("ETHUSDT", flat, buy_qty_pct=MODE_B_PCT)
+    assert len(a.trades) == 0
+    row = DualModeRow(
+        symbol="ETHUSDT",
+        variant="V-zone",
+        window_label="last_6m",
+        mode_a=a,
+        mode_b=b,
+    )
+    sm = row.summarize()
+    assert sm["trades"] == 0
+    assert sm["win_rate_display"] == "n/a"
+    assert sm["gate_pass"] is False
+    assert sm["gate_label"] == "FAIL"
+
+
+def test_load_real_csv_allows_empty_slow_high_warmup():
+    data = (
+        Path(__file__).resolve().parent.parent
+        / "backtest"
+        / "jewel_replay"
+        / "data"
+        / "jewel-btc-daily.csv"
+    )
+    if not data.is_file():
+        pytest.skip("real jewel-btc-daily.csv not on disk")
+    bars = load_jewel_csv(data)
+    assert len(bars) > 3000
+    assert bars[0].slow is None or bars[0].jewel_high is None
+    from backtest.jewel_replay.prepare import prepare_closed_sample
+
+    prepared, _ = prepare_closed_sample(bars)
+    assert prepared[0].slow is not None and prepared[0].jewel_high is not None
+    # Last open bar dropped: prepared end < raw end
+    assert prepared[-1].open_time_ms < bars[-1].open_time_ms

@@ -15,6 +15,20 @@ MODE_B_PCT = 2.5
 GATE_WR_MIN = 60.0
 
 
+def _open_long_from_trades(result: ReplayResult) -> bool:
+    """Detect open long: more entries than exits in chronological process order."""
+    # Trades list only contains closed trades. Infer open if equity path suggests
+    # inventory: compare final MTM to cash-only after last exit using last close.
+    # Practical approach: scan whether last signal left a position — engine does not
+    # expose qty. Use: if any trade entry_bar > all exit_bars... trades are closed
+    # only, so check whether final_equity implies leftover coins:
+    # After all closed trades, cash = initial + sum(pnl). If final_equity != that
+    # cash (within float eps), open MTM leg remains.
+    closed_pnl = sum(t.pnl for t in result.trades)
+    cash_if_flat = result.initial_equity + closed_pnl
+    return abs(result.final_equity - cash_if_flat) > 1e-6
+
+
 @dataclass
 class DualModeRow:
     """One symbol/variant/window with Mode A (gate) + Mode B (ops)."""
@@ -25,28 +39,36 @@ class DualModeRow:
     mode_a: ReplayResult
     mode_b: ReplayResult
     source_csv: str = ""
+    prep_notes: list[str] | None = None
 
     def summarize(self) -> dict[str, float | int | str | bool]:
         a = summarize(self.mode_a)
         b = summarize(self.mode_b)
         n = int(a["trades"])
         wr = float(a["win_rate_pct"])
-        ret_a = float(a["return_pct"])
+        ret_a = float(a["return_pct"])  # MTM / equity curve return
         bh = float(a["buy_hold_return_pct"])
         gate_pass = n > 0 and wr >= GATE_WR_MIN and ret_a > bh
+        wr_display = "n/a" if n == 0 else f"{wr:.1f}%"
         return {
             "symbol": self.symbol,
             "variant": self.variant,
             "window": self.window_label,
             "trades": n,
             "win_rate_pct": wr,
+            "win_rate_display": wr_display,
             "mode_a_return_pct": ret_a,
+            "mode_a_closed_return_pct": float(a["closed_return_pct"]),
             "mode_b_return_pct": float(b["return_pct"]),
+            "mode_b_closed_return_pct": float(b["closed_return_pct"]),
             "buy_hold_return_pct": bh,
             "mode_a_max_dd_pct": float(a["max_drawdown_pct"]),
             "mode_b_max_dd_pct": float(b["max_drawdown_pct"]),
+            "mode_a_open_long": bool(a["ends_open_long"]),
+            "mode_b_open_long": bool(b["ends_open_long"]),
             "gate_pass": gate_pass,
             "gate_label": "PASS" if gate_pass else "FAIL",
+            "return_basis": "MTM/equity (includes unrealised if open long)",
         }
 
 
@@ -56,14 +78,20 @@ def summarize(result: ReplayResult) -> dict[str, float | int | str | bool]:
     wins = [t for t in trades if t.pnl > 0]
     losses = [t for t in trades if t.pnl <= 0]
     total_pnl = sum(t.pnl for t in trades)
+    # MTM / equity-curve return (gate metric) — includes unrealised open leg
     ret = (
         (result.final_equity / result.initial_equity - 1.0) * 100.0
         if result.initial_equity
         else 0.0
     )
+    # Closed-trade PnL return vs initial (not compounded path; excludes unrealised)
+    closed_ret = (
+        (total_pnl / result.initial_equity) * 100.0 if result.initial_equity else 0.0
+    )
     wr = (len(wins) / n * 100.0) if n else 0.0
+    ends_open = _open_long_from_trades(result)
     gate_wr_ok = n > 0 and wr >= GATE_WR_MIN
-    # Legacy single-run gate (Mode A intended): WR + beat B&H
+    # Legacy single-run gate (Mode A intended): WR + beat B&H on MTM return
     gate_bh_ok = ret > result.buy_hold_return_pct
     return {
         "variant": result.variant,
@@ -71,12 +99,15 @@ def summarize(result: ReplayResult) -> dict[str, float | int | str | bool]:
         "wins": len(wins),
         "losses": len(losses),
         "win_rate_pct": wr,
+        "win_rate_display": "n/a" if n == 0 else f"{wr:.2f}%",
         "return_pct": ret,
+        "closed_return_pct": closed_ret,
         "buy_hold_return_pct": result.buy_hold_return_pct,
         "vs_buy_hold_pp": ret - result.buy_hold_return_pct,
         "max_drawdown_pct": max_drawdown_pct(result.equity_curve),
         "total_pnl": total_pnl,
         "buy_qty_pct": result.buy_qty_pct,
+        "ends_open_long": ends_open,
         "gate_wr_ok": gate_wr_ok,
         "gate_bh_ok": gate_bh_ok,
         "gate_pass": gate_wr_ok and gate_bh_ok,
@@ -85,17 +116,19 @@ def summarize(result: ReplayResult) -> dict[str, float | int | str | bool]:
 
 def _fmt_block(m: dict[str, float | int | str | bool]) -> list[str]:
     return [
-        f"| Trades | {m['trades']} |",
+        f"| Trades (closed) | {m['trades']} |",
         f"| Wins / Losses | {m['wins']} / {m['losses']} |",
-        f"| Win rate | {float(m['win_rate_pct']):.2f}% |",
-        f"| Strategy return | {float(m['return_pct']):.2f}% |",
+        f"| Win rate (closed) | {m['win_rate_display']} |",
+        f"| Strategy return (MTM/equity) | {float(m['return_pct']):.2f}% |",
+        f"| Closed-trade PnL / initial | {float(m['closed_return_pct']):.2f}% |",
+        f"| Ends open long | {'yes' if m['ends_open_long'] else 'no'} |",
         f"| Buy & hold return | {float(m['buy_hold_return_pct']):.2f}% |",
-        f"| vs buy & hold (pp) | {float(m['vs_buy_hold_pp']):+.2f} |",
+        f"| vs buy & hold (pp, MTM) | {float(m['vs_buy_hold_pp']):+.2f} |",
         f"| Max drawdown | {float(m['max_drawdown_pct']):.2f}% |",
-        f"| Total PnL (USDT) | {float(m['total_pnl']):.2f} |",
+        f"| Total closed PnL (USDT) | {float(m['total_pnl']):.2f} |",
         f"| Size (buy_qty_pct) | {float(m['buy_qty_pct']):g}% |",
         f"| Gate WR ≥{GATE_WR_MIN:g}% | {'PASS' if m['gate_wr_ok'] else 'FAIL'} |",
-        f"| Gate beat B&H | {'PASS' if m['gate_bh_ok'] else 'FAIL'} |",
+        f"| Gate beat B&H (MTM) | {'PASS' if m['gate_bh_ok'] else 'FAIL'} |",
     ]
 
 
@@ -121,6 +154,8 @@ def write_replay_markdown(
         "- Costs: 0.10%/side + ≥5 bps slip",
         f"- Gate before paper: **≥{GATE_WR_MIN:g}% WR** and **Mode-A return > buy&hold** "
         f"(Mode A = {MODE_A_PCT:g}% equity; Mode B = {MODE_B_PCT:g}% ops)",
+        "- **Return basis for gate:** MTM/equity curve (includes unrealised if open long). "
+        "Closed-trade PnL/initial reported separately.",
         "",
         "## Data",
         "",
@@ -181,12 +216,14 @@ def write_dual_gate_markdown(
     path: Path,
     sources: list[str],
     waiting_for_real_csvs: bool = False,
+    prep_notes: list[str] | None = None,
 ) -> Path:
     """
     Dual-sizing gate report: full and/or 6m tables.
 
     Columns: WR | Mode-A return | Mode-B (ops) return | B&H | PASS/FAIL
-    PASS only if n>0 AND WR≥60% AND Mode-A return > B&H.
+    PASS only if n>0 AND WR≥60% AND Mode-A MTM return > B&H.
+    WR shown as n/a when n==0 (not 0%).
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -204,13 +241,22 @@ def write_dual_gate_markdown(
         f"- **Mode B (ops):** `buy_qty_pct={MODE_B_PCT:g}` — ops column only",
         "- Costs: 0.10%/side + 5 bps slip; V-zone and V-wide",
         f"- **PASS** iff `n>0` AND `WR ≥ {GATE_WR_MIN:g}%` AND "
-        "`Mode-A return > B&H` (same window)",
+        "`Mode-A MTM/equity return > B&H` (same window)",
+        "- **Return basis:** Mode-A/B columns are **MTM/equity** (include unrealised "
+        "open long). Closed-trade PnL/initial is in Detail. WR is closed-trades only; "
+        "**n/a** when n=0 (not 0%).",
         "",
         "## Data",
         "",
     ]
     for s in sources:
         lines.append(f"- `{s}`")
+    if prep_notes:
+        lines.append("")
+        lines.append("### Sample prep (Claude caveats)")
+        lines.append("")
+        for note in prep_notes:
+            lines.append(f"- {note}")
     if waiting_for_real_csvs:
         lines.append("")
         lines.append(
@@ -231,19 +277,24 @@ def write_dual_gate_markdown(
         lines.append(f"## Gate table — {title} (`{wlabel}`)")
         lines.append("")
         lines.append(
-            "| Symbol | Variant | n | WR | Mode-A return | Mode-B (ops) | B&H | PASS/FAIL |"
+            "| Symbol | Variant | n | WR | Mode-A MTM | Mode-B (ops) MTM | B&H | "
+            "Closed-A / init | Open long | PASS/FAIL |"
         )
         lines.append(
-            "|--------|---------|---|----|---------------|--------------|-----|-----------|"
+            "|--------|---------|---|----|------------|------------------|-----|"
+            "----------------|-----------|-----------|"
         )
         for row in wrows:
             m = row.summarize()
+            open_flag = "yes" if m["mode_a_open_long"] else "no"
             lines.append(
                 f"| {m['symbol']} | {m['variant']} | {m['trades']} | "
-                f"{float(m['win_rate_pct']):.1f}% | "
+                f"{m['win_rate_display']} | "
                 f"{float(m['mode_a_return_pct']):+.2f}% | "
                 f"{float(m['mode_b_return_pct']):+.2f}% | "
                 f"{float(m['buy_hold_return_pct']):+.2f}% | "
+                f"{float(m['mode_a_closed_return_pct']):+.2f}% | "
+                f"{open_flag} | "
                 f"**{m['gate_label']}** |"
             )
         lines.append("")
@@ -251,6 +302,7 @@ def write_dual_gate_markdown(
     # Detail blocks
     lines.append("## Detail")
     lines.append("")
+
     for row in rows:
         m = row.summarize()
         a = summarize(row.mode_a)
@@ -273,21 +325,27 @@ def write_dual_gate_markdown(
             lines.append(f"- Source: `{row.source_csv}`")
         lines.append(
             f"- Gate: **{m['gate_label']}** "
-            f"(n={m['trades']}, WR={float(m['win_rate_pct']):.2f}%, "
-            f"Mode-A {float(m['mode_a_return_pct']):+.2f}% vs "
-            f"B&H {float(m['buy_hold_return_pct']):+.2f}%)"
+            f"(n={m['trades']}, WR={m['win_rate_display']}, "
+            f"Mode-A MTM {float(m['mode_a_return_pct']):+.2f}% vs "
+            f"B&H {float(m['buy_hold_return_pct']):+.2f}%; "
+            f"closed-A/init {float(m['mode_a_closed_return_pct']):+.2f}%)"
+        )
+        lines.append(
+            f"- Open long at window end (Mode A): "
+            f"{'yes — MTM includes unrealised' if m['mode_a_open_long'] else 'no'}"
         )
         lines.append(
             f"- Mode-A max DD {float(m['mode_a_max_dd_pct']):.2f}%; "
             f"Mode-B max DD {float(m['mode_b_max_dd_pct']):.2f}%"
         )
         lines.append(
-            f"- Wins/Losses (Mode A): {a['wins']} / {a['losses']}"
+            f"- Wins/Losses (closed, Mode A): {a['wins']} / {a['losses']}"
         )
         lines.append("")
 
     lines.append("## Caveats")
     lines.append("")
+
     lines.append(
         "- strategy_id jewel-strength-hold-v1 — RESEARCH Path B replay."
     )
@@ -295,8 +353,15 @@ def write_dual_gate_markdown(
         "- Bar-close fills; Jewel Slow/High from CSV (no RSI/Stoch proxy)."
     )
     lines.append(
-        f"- Mode A = {MODE_A_PCT:g}% equity (gate vs B&H); "
+        f"- Mode A = {MODE_A_PCT:g}% equity (gate vs B&H on **MTM/equity**); "
         f"Mode B = {MODE_B_PCT:g}% equity (ops)."
+    )
+    lines.append(
+        "- Closed-trade WR uses completed exits only; WR=n/a when n=0."
+    )
+    lines.append(
+        "- Dropped last open/partial daily bar; full sample starts 2017-12-31 "
+        "(jewel_high warm-up)."
     )
     lines.append(
         "- V-wide ATR stop uses ATR frozen at entry; threshold vs entry bar close."

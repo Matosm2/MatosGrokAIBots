@@ -9,6 +9,7 @@ from pathlib import Path
 
 from backtest.jewel_replay.csv_loader import load_jewel_csv
 from backtest.jewel_replay.engine import run_replay
+from backtest.jewel_replay.prepare import prepare_closed_sample
 from backtest.jewel_replay.report import (
     MODE_A_PCT,
     MODE_B_PCT,
@@ -114,6 +115,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Annotate report that real BTC/ETH Jewel CSVs are still pending",
     )
+    p.add_argument(
+        "--no-prep",
+        action="store_true",
+        help="Skip closed-bar prep (drop open last + 2017-12-31 sample start)",
+    )
     args = p.parse_args(argv)
 
     missing = [c for c in args.csv if not c.is_file()]
@@ -125,9 +131,20 @@ def main(argv: list[str] | None = None) -> int:
     windows = resolve_windows(args.window)
     dual_rows: list[DualModeRow] = []
     legacy_results = []
+    all_prep_notes: list[str] = []
 
     for csv_path in args.csv:
-        bars_full = load_jewel_csv(csv_path)
+        bars_raw = load_jewel_csv(csv_path)
+        if args.no_prep:
+            bars_full = bars_raw
+            prep_notes: list[str] = ["Prep skipped (--no-prep)."]
+        else:
+            bars_full, prep_notes = prepare_closed_sample(bars_raw)
+        for note in prep_notes:
+            tagged = f"{csv_path.name}: {note}"
+            if tagged not in all_prep_notes:
+                all_prep_notes.append(tagged)
+            print(f"PREP {tagged}", flush=True)
         symbol = infer_symbol(csv_path, args.symbol)
         for wlabel, wkind in windows:
             bars = apply_window(bars_full, wkind)
@@ -153,8 +170,9 @@ def main(argv: list[str] | None = None) -> int:
                     legacy_results.append(r)
                     print(
                         f"{symbol} {variant.value} [{wlabel}] size={args.buy_qty_pct:g}%: "
-                        f"trades={m['trades']} wr={float(m['win_rate_pct']):.1f}% "
-                        f"ret={float(m['return_pct']):+.2f}% "
+                        f"trades={m['trades']} wr={m['win_rate_display']} "
+                        f"ret_mtm={float(m['return_pct']):+.2f}% "
+                        f"closed={float(m['closed_return_pct']):+.2f}% "
                         f"bh={float(m['buy_hold_return_pct']):+.2f}% "
                         f"gate={'PASS' if m['gate_pass'] else 'FAIL'}",
                         flush=True,
@@ -175,15 +193,18 @@ def main(argv: list[str] | None = None) -> int:
                         mode_a=mode_a,
                         mode_b=mode_b,
                         source_csv=str(csv_path),
+                        prep_notes=prep_notes,
                     )
                     dual_rows.append(row)
                     sm = row.summarize()
                     print(
                         f"{symbol} {variant.value} [{wlabel}]: "
-                        f"n={sm['trades']} wr={float(sm['win_rate_pct']):.1f}% "
-                        f"A={float(sm['mode_a_return_pct']):+.2f}% "
+                        f"n={sm['trades']} wr={sm['win_rate_display']} "
+                        f"A_mtm={float(sm['mode_a_return_pct']):+.2f}% "
+                        f"A_closed={float(sm['mode_a_closed_return_pct']):+.2f}% "
                         f"B(ops)={float(sm['mode_b_return_pct']):+.2f}% "
                         f"bh={float(sm['buy_hold_return_pct']):+.2f}% "
+                        f"open={'Y' if sm['mode_a_open_long'] else 'N'} "
                         f"gate={sm['gate_label']}",
                         flush=True,
                     )
@@ -200,6 +221,7 @@ def main(argv: list[str] | None = None) -> int:
             path=out,
             sources=[str(c) for c in args.csv],
             waiting_for_real_csvs=args.waiting_real_csvs,
+            prep_notes=all_prep_notes,
         )
     print(f"Wrote {out}", flush=True)
     return 0
