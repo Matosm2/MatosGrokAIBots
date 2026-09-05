@@ -13,3 +13,4 @@ build/
 htmlcov/
 data/
 .webhook_secret
+backtest/cache/

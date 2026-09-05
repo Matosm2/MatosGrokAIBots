@@ -275,3 +275,19 @@ trading-bot/
 ## Disclaimer
 
 This software is for educational/automation purposes. Trading crypto is risky. You are responsible for compliance with local law (including MiCA in the EU), exchange ToS, and securing your secrets. Defaults favour paper trading for a reason.
+
+## Offline backtest (ema-rsi-trend-v1.1)
+
+Pure-Python bar-close backtest of the Pine strategy (no TradingView). Fetches public Binance Spot 1h klines, caches under `backtest/cache/`, writes markdown results.
+
+```bash
+cd trading-bot
+source .venv/bin/activate
+python -m backtest --years 2
+pytest tests/test_backtest_signals.py tests/test_backtest_indicators.py -q
+```
+
+See [`backtest/README.md`](backtest/README.md). Results: [`backtest/results/ema-rsi-trend-v1.1.md`](backtest/results/ema-rsi-trend-v1.1.md).
+Defaults: fee 0.1%/side, slippage 5 bps, buy `qty_pct` 2.5, `cooldown_bars` 6.
+**Daily loss halt is not modeled offline.** Spot long-only — not futures v1.
+
