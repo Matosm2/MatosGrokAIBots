@@ -62,3 +62,15 @@ Separate research harness under [`jewel_replay/`](jewel_replay/) — CSV Slow/Hi
 (V-zone + V-wide), synthetic fixture for CI. Not part of the ema-rsi Binance kline runner.
 See [`../strategies/README-jewel-strength-hold-v1.md`](../strategies/README-jewel-strength-hold-v1.md).
 
+## Related: Path B research batch
+
+Offline dual-sizing research under [`path_b/`](path_b/) —
+`bb-squeeze-breakout-v1`, `kama-er-trend-v1`, `dual-mom-btc-eth-v1`,
+`sma200-trend-v1`, `supertrend-atr-v1`. Binance OHLCV via ccxt (vision fallback).
+Gate: 6m Mode-A ≥ 1.2× B&H. Not paper/live.
+
+```bash
+python -m backtest.path_b
+pytest tests/test_path_b_signals.py -q
+```
+
