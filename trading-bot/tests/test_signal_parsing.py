@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.models import Side, TradingViewAlert
+from app.models import Side, TradingViewAlert, normalize_symbol
 
 
 def test_parse_minimal_buy():
@@ -48,6 +48,17 @@ def test_normalize_hyphen_symbol():
     assert alert.symbol == "BNBUSDT"
 
 
+def test_strip_binance_prefix():
+    assert normalize_symbol("BINANCE:BTCUSDT") == "BTCUSDT"
+    alert = TradingViewAlert(symbol="BINANCE:ETHUSDT", side="buy")
+    assert alert.symbol == "ETHUSDT"
+
+
 def test_alert_id_preserved():
     alert = TradingViewAlert(symbol="BTCUSDT", side="buy", alert_id="tv-fixed-123")
     assert alert.alert_id == "tv-fixed-123"
+
+
+def test_close_all_sell_only():
+    with pytest.raises(ValidationError):
+        TradingViewAlert(symbol="BTCUSDT", side="buy", close_all=True)

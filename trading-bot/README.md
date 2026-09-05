@@ -2,18 +2,19 @@
 
 FastAPI service that receives **TradingView alert webhooks**, validates signals, applies **balanced risk rules**, and places **Binance Spot** orders.
 
-**Default mode is `paper` (dry-run):** intended orders are logged and tracked in memory — nothing is sent to Binance until you explicitly set `TRADING_MODE=live`.
+**Default mode is `paper` (dry-run):** intended orders are logged and tracked (optionally persisted under `DATA_DIR`) — nothing is sent to Binance until you explicitly set `TRADING_MODE=live`.
 
 > **EU / Belgium (MiCA):** Binance signup, deposits, or certain products may be restricted for residents in the EEA (including Belgium) under MiCA and local rules. Verify your eligibility and use a compliant venue if Binance is unavailable. This bot does not bypass geo or regulatory restrictions.
 
 ## Features
 
 - TradingView JSON webhook endpoint with shared-secret auth
-- Signal validation: symbol, side (`buy`/`sell`), optional `qty` or `qty_pct`, `strategy_id`
-- Risk gates: per-trade %, max position %, max open positions, daily loss circuit breaker, allow-list
-- Paper executor (default) and live Binance Spot MARKET orders via REST (`httpx`)
-- Idempotent handling of duplicate `alert_id`s
-- `/health` and `/trades` endpoints, structured JSON-ish logs
+- Signal validation: symbol (strips `BINANCE:` etc.), side (`buy`/`sell`), optional `qty` / `qty_pct` / `close_all`, `strategy_id`
+- Risk gates: per-trade % (buys only), max position %, max open positions, daily loss circuit breaker (buys halted; sells still allowed), allow-list
+- Paper executor (default) with meaningful cash/equity/realized PnL; live Spot MARKET orders via REST (`httpx`) with LOT_SIZE / minNotional rounding and live balance sync
+- Idempotent `alert_id` handling with claim/commit/abort (failed live orders are **not** marked duplicate)
+- Authenticated `/health` and `/trades` (same webhook secret header)
+- Fail-closed startup if `WEBHOOK_SECRET` is default/insecure when `TRADING_MODE=live`
 
 ## Quick start (local)
 
@@ -26,10 +27,10 @@ cp .env.example .env        # edit WEBHOOK_SECRET; leave TRADING_MODE=paper
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Health check:
+Health check (requires secret header):
 
 ```bash
-curl http://127.0.0.1:8000/health
+curl -H 'X-Webhook-Secret: change-me-to-a-long-random-string' http://127.0.0.1:8000/health
 ```
 
 ### Docker
@@ -54,20 +55,21 @@ docker compose up --build
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `symbol` | yes | Pair, e.g. `BTCUSDT` (also accepts `BTC/USDT`) |
+| `symbol` | yes | Pair, e.g. `BTCUSDT` (also `BTC/USDT`, `BINANCE:BTCUSDT`) |
 | `side` | yes | `buy` or `sell` |
-| `qty` | no* | Absolute base-asset quantity |
-| `qty_pct` | no* | % of equity to allocate (capped by risk rules) |
+| `qty` | no* | Absolute base-asset quantity (buys trimmed to `RISK_PER_TRADE_PCT`) |
+| `qty_pct` | no* | % of equity to allocate. **Sells are not capped by `RISK_PER_TRADE_PCT`** (e.g. `12` to exit a max-sized long) |
+| `close_all` | no | `true` on sell → close entire open long |
 | `strategy_id` | no | Label for the strategy |
 | `price` | recommended | Reference price (paper uses seeded mids if omitted) |
-| `alert_id` | recommended | Idempotency key; auto-generated if missing |
+| `alert_id` | recommended | Idempotency key; use `{{time}}` (not `{{timenow}}`); auto-generated if missing |
 | `secret` | if no header | Must match `WEBHOOK_SECRET` |
 
 \*If both `qty` and `qty_pct` are omitted, size defaults to `RISK_PER_TRADE_PCT` of equity. Do not send both.
 
 ### Sample Pine alert message template
 
-Paste into the TradingView alert **Message** box (adjust placeholders):
+Paste into the TradingView alert **Message** box (adjust placeholders). Use **`{{time}}`**, not `{{timenow}}`:
 
 ```json
 {
@@ -81,7 +83,21 @@ Paste into the TradingView alert **Message** box (adjust placeholders):
 }
 ```
 
-For sells, set `"side": "sell"`. Prefer a stable unique `alert_id` so retries are idempotent.
+Sell example (partial/full exit — **not** truncated to 2.5% risk):
+
+```json
+{
+  "symbol": "{{ticker}}",
+  "side": "sell",
+  "qty_pct": 12,
+  "strategy_id": "my-pine-strategy",
+  "price": {{close}},
+  "alert_id": "{{ticker}}-{{time}}-sell",
+  "secret": "YOUR_WEBHOOK_SECRET"
+}
+```
+
+Prefer a stable unique `alert_id` so retries are idempotent.
 
 ### Manual test (paper)
 
@@ -101,7 +117,7 @@ curl -s -X POST http://127.0.0.1:8000/webhook/tradingview \
 List recent trades:
 
 ```bash
-curl http://127.0.0.1:8000/trades
+curl -H 'X-Webhook-Secret: change-me-to-a-long-random-string' http://127.0.0.1:8000/trades
 ```
 
 ## Binance API keys
@@ -110,7 +126,7 @@ curl http://127.0.0.1:8000/trades
 2. **Disable withdrawals** (and prefer IP allow-listing).
 3. Put key/secret in `.env` as `BINANCE_API_KEY` / `BINANCE_API_SECRET`.
 4. Keep `TRADING_MODE=paper` until you have verified sizing and risk behaviour.
-5. To go live: set `TRADING_MODE=live` (and ensure keys are present). **Live trading can lose money.**
+5. To go live: set a **strong** `WEBHOOK_SECRET`, then `TRADING_MODE=live`. Live refuses default secrets. **Live trading can lose money.**
 
 Never commit real keys. Do not invent placeholder live keys in git.
 
@@ -118,22 +134,23 @@ Never commit real keys. Do not invent placeholder live keys in git.
 
 | Variable | Default | Meaning |
 |----------|---------|---------|
-| `RISK_PER_TRADE_PCT` | `2.5` | Default notional % of equity per trade |
+| `RISK_PER_TRADE_PCT` | `2.5` | Cap / default notional % of equity **per buy** (sells exempt) |
 | `MAX_POSITION_PCT` | `12` | Cap per-symbol notional as % of equity |
 | `MAX_OPEN_POSITIONS` | `4` | Max concurrent long symbols |
-| `MAX_DAILY_LOSS_PCT` | `5` | Halt new buys after daily realized loss |
+| `MAX_DAILY_LOSS_PCT` | `5` | Halt **new buys** after daily realized loss; sells/closes still allowed |
 | `ALLOWED_SYMBOLS` | `BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT` | Allow-list |
 | `TRADING_MODE` | `paper` | `paper` or `live` |
 | `DEFAULT_QUOTE` | `USDT` | Quote asset |
+| `DATA_DIR` | `data` | Portfolio + idempotency persistence (empty = memory only) |
 
-Spot sells are only allowed against an open long (no naked shorts).
+Spot sells are only allowed against an open long (no naked shorts). Sell size is `min(requested, open_qty)` and is **never** reduced by `RISK_PER_TRADE_PCT`.
 
 ## Paper vs live
 
 | Mode | Behaviour |
 |------|-----------|
-| `paper` (default) | Validates + risk-checks; logs order; updates in-memory portfolio; **no Binance call** |
-| `live` | Same checks, then Spot MARKET order via signed REST |
+| `paper` (default) | Validates + risk-checks; logs order; updates cash/equity/realized PnL; **no Binance call** |
+| `live` | Syncs free balances from Binance for sizing; LOT_SIZE/minNotional; Spot MARKET order; failed orders not idempotent |
 
 ## Tests
 
@@ -153,8 +170,10 @@ trading-bot/
     models.py         # Pydantic schemas
     risk.py           # Risk engine + portfolio state
     executor.py       # Paper / live execution
-    binance_client.py # Binance Spot REST
+    binance_client.py # Binance Spot REST + filters
     idempotency.py    # Duplicate alert store
+    persistence.py    # JSON portfolio / idempotency persistence
+  strategies/         # Optional Pine scripts (separate PRs)
   tests/
   .env.example
   Dockerfile
