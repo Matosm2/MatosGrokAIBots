@@ -51,6 +51,18 @@ class PortfolioState:
             return 0.0
         return (self.daily_realized_pnl_usdt / base) * 100.0
 
+    def reset_paper(self, equity_usdt: float) -> None:
+        """Flat paper book at the given equity (cash only; clear positions/PnL)."""
+        eq = float(equity_usdt)
+        self.equity_usdt = eq
+        self.cash_usdt = eq
+        self.open_positions.clear()
+        self.avg_entry.clear()
+        self.daily_realized_pnl_usdt = 0.0
+        self.day = datetime.now(timezone.utc).date()
+        self.day_start_equity_usdt = eq
+        # Keep seeded price hints if present; harmless for paper.
+
     def mark_equity(self) -> float:
         """Recompute equity = cash + mark-to-market of open positions."""
         cash = self.cash_usdt if self.cash_usdt is not None else 0.0

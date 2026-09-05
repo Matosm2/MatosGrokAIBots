@@ -160,6 +160,39 @@ async def tradingview_webhook(
     return await executor.handle_alert(alert)
 
 
+
+
+@app.post("/paper/reset")
+async def paper_reset(
+    settings: Settings = Depends(get_settings),
+    state: PortfolioState = Depends(get_portfolio),
+    executor: TradeExecutor = Depends(get_executor),
+    _: None = Depends(require_webhook_auth),
+) -> dict[str, object]:
+    """Paper-only: wipe open positions/PnL and set equity to PAPER_EQUITY_USDT, persist."""
+    if not settings.is_paper:
+        raise HTTPException(status_code=403, detail="paper reset only allowed when TRADING_MODE=paper")
+    equity = float(settings.paper_equity_usdt)
+    state.reset_paper(equity)
+    # Keep demo mids so price-less smoke alerts still work
+    state.prices.setdefault("BTCUSDT", 60_000.0)
+    state.prices.setdefault("ETHUSDT", 3_000.0)
+    state.prices.setdefault("SOLUSDT", 150.0)
+    state.prices.setdefault("BNBUSDT", 500.0)
+    state.mark_equity()
+    executor.recent.clear()
+    if executor.store is not None and executor.store.enabled:
+        executor.store.save("portfolio.json", state.to_dict())
+    log_event(logger, "paper_reset", equity=state.equity_usdt)
+    return {
+        "status": "ok",
+        "trading_mode": settings.trading_mode,
+        "equity_usdt": round(state.equity_usdt, 4),
+        "open_positions": state.open_count,
+        "message": "Paper portfolio reset to PAPER_EQUITY_USDT",
+    }
+
+
 @app.exception_handler(Exception)
 async def unhandled(request: Request, exc: Exception) -> JSONResponse:
     log_event(logger, "unhandled_error", error=str(exc), path=str(request.url.path))

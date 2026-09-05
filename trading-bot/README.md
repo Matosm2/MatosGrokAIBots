@@ -140,6 +140,14 @@ Open `http://127.0.0.1:8000/dashboard` (or your deployed HTTPS host).
 
 Log out via the button (clears the cookie). Keep `TRADING_MODE=paper` unless you intentionally go live.
 
+
+### Paper portfolio reset
+
+If `DATA_DIR` has an old `portfolio.json` (e.g. ~10k equity) after changing `PAPER_EQUITY_USDT`, either:
+
+1. **Preferred:** `POST /paper/reset` with header `X-Webhook-Secret` (paper mode only) — sets equity/cash to `PAPER_EQUITY_USDT`, clears positions and in-memory trade log, rewrites `portfolio.json`.
+2. **Ops:** delete `/data/portfolio.json` on the volume and restart (idempotency file can stay).
+
 ## Durable deploy (Railway preferred)
 
 Do **not** keep relying on an ephemeral Cloudflare tunnel for production paper alerts. Deploy once, get a stable HTTPS URL, then point TradingView at it.
