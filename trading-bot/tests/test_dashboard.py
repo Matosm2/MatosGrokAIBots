@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.config import Settings, get_settings
-from app.dashboard import COOKIE_NAME, session_token
+from app.dashboard import COOKIE_NAME, get_login_rate_limiter, session_token
 from app.main import app
 
 
@@ -24,9 +24,11 @@ def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
         data_dir="",
     )
     app.dependency_overrides[get_settings] = lambda: settings
+    get_login_rate_limiter().reset()
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
+    get_login_rate_limiter().reset()
 
 
 def test_dashboard_shows_login_without_cookie(client: TestClient):
@@ -80,3 +82,37 @@ def test_dashboard_rejects_forged_cookie(client: TestClient):
     r = client.get("/dashboard")
     assert r.status_code == 200
     assert "Sign in" in r.text
+
+
+def test_dashboard_login_sets_secure_cookie_with_forwarded_proto(client: TestClient):
+    r = client.post(
+        "/dashboard/login",
+        data={"secret": "unit-test-secret-not-default"},
+        headers={"X-Forwarded-Proto": "https"},
+        follow_redirects=False,
+    )
+    assert r.status_code == 303
+    set_cookie = r.headers.get("set-cookie", "")
+    assert COOKIE_NAME in set_cookie
+    assert "secure" in set_cookie.lower()
+
+
+def test_dashboard_login_rate_limited(client: TestClient):
+    limiter = get_login_rate_limiter()
+    # Exhaust the window with wrong secrets
+    for _ in range(limiter.max_attempts):
+        r = client.post(
+            "/dashboard/login",
+            data={"secret": "wrong"},
+            follow_redirects=False,
+        )
+        assert r.status_code == 401
+
+    blocked = client.post(
+        "/dashboard/login",
+        data={"secret": "unit-test-secret-not-default"},
+        follow_redirects=False,
+    )
+    assert blocked.status_code == 429
+    assert "Too many login attempts" in blocked.text
+    assert COOKIE_NAME not in blocked.cookies

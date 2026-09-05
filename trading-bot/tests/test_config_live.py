@@ -1,4 +1,4 @@
-"""Fail-closed live config + LOT_SIZE helpers."""
+"""Fail-closed live/deploy config + LOT_SIZE helpers."""
 
 import pytest
 from pydantic import ValidationError
@@ -27,10 +27,45 @@ def test_live_rejects_missing_keys():
         )
 
 
-def test_paper_allows_default_secret():
+def test_paper_allows_default_secret_local():
     s = Settings(trading_mode="paper", webhook_secret="change-me", data_dir="")
     assert s.is_paper
     assert s.insecure_webhook_secret
+
+
+def test_paper_allows_default_secret_with_relative_data_dir():
+    s = Settings(trading_mode="paper", webhook_secret="change-me", data_dir="data")
+    assert s.is_paper
+    assert s.insecure_webhook_secret
+
+
+def test_paper_rejects_default_secret_with_absolute_data_dir():
+    with pytest.raises(ValidationError):
+        Settings(
+            trading_mode="paper",
+            webhook_secret="change-me",
+            data_dir="/data",
+        )
+
+
+def test_paper_rejects_default_secret_when_require_strong():
+    with pytest.raises(ValidationError):
+        Settings(
+            trading_mode="paper",
+            webhook_secret="change-me",
+            data_dir="",
+            paper_require_strong_secret=True,
+        )
+
+
+def test_paper_allows_strong_secret_with_absolute_data_dir():
+    s = Settings(
+        trading_mode="paper",
+        webhook_secret="strong-deploy-secret-xyz",
+        data_dir="/data",
+    )
+    assert s.is_paper
+    assert not s.insecure_webhook_secret
 
 
 def test_round_step():

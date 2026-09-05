@@ -8,6 +8,7 @@ from typing import AsyncIterator, Optional
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from app.binance_client import BinanceClient
 from app.config import Settings, get_settings
@@ -83,7 +84,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     if settings.insecure_webhook_secret and settings.is_paper:
         logger.warning(
             "WEBHOOK_SECRET is a default/insecure value — fine for local paper; "
-            "live mode will refuse to start until you set a strong secret."
+            "live mode and durable deploy (absolute DATA_DIR or "
+            "PAPER_REQUIRE_STRONG_SECRET) refuse to start until you set a strong secret."
         )
     try:
         yield
@@ -99,6 +101,9 @@ app = FastAPI(
     description="Webhook bridge from TradingView alerts to Binance Spot (paper by default).",
     lifespan=lifespan,
 )
+# Trust X-Forwarded-Proto / X-Forwarded-For from Railway (and similar) TLS terminators
+# so dashboard session cookies get Secure= correctly when the app sees http upstream.
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 app.include_router(dashboard_router)
 
 

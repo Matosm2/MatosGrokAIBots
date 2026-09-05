@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
+import time
+from collections import defaultdict
 from html import escape
+from threading import Lock
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Form, Request, Response
@@ -15,8 +19,64 @@ from app.deps import get_executor, get_portfolio, secrets_equal
 from app.executor import TradeExecutor
 from app.risk import PortfolioState
 
+logger = logging.getLogger(__name__)
+
 COOKIE_NAME = "dashboard_session"
 COOKIE_MAX_AGE = 60 * 60 * 24 * 7  # 7 days
+
+# Simple in-memory login rate limit (per-process; resets on restart — fine for paper).
+LOGIN_RATE_LIMIT_MAX = 10
+LOGIN_RATE_LIMIT_WINDOW_SECONDS = 60
+
+
+class LoginRateLimiter:
+    """Sliding-window counter keyed by client IP (not shared across workers)."""
+
+    def __init__(
+        self,
+        max_attempts: int = LOGIN_RATE_LIMIT_MAX,
+        window_seconds: int = LOGIN_RATE_LIMIT_WINDOW_SECONDS,
+    ) -> None:
+        self.max_attempts = max_attempts
+        self.window_seconds = window_seconds
+        self._attempts: dict[str, list[float]] = defaultdict(list)
+        self._lock = Lock()
+
+    def reset(self) -> None:
+        with self._lock:
+            self._attempts.clear()
+
+    def allow(self, key: str) -> bool:
+        """Record an attempt; return False if the key is over the limit."""
+        now = time.monotonic()
+        cutoff = now - self.window_seconds
+        with self._lock:
+            recent = [t for t in self._attempts[key] if t > cutoff]
+            if len(recent) >= self.max_attempts:
+                self._attempts[key] = recent
+                return False
+            recent.append(now)
+            self._attempts[key] = recent
+            return True
+
+
+_login_rate_limiter = LoginRateLimiter()
+
+
+def get_login_rate_limiter() -> LoginRateLimiter:
+    return _login_rate_limiter
+
+
+def _client_key(request: Request) -> str:
+    if request.client and request.client.host:
+        return request.client.host
+    return "unknown"
+
+
+def _cookie_secure(request: Request) -> bool:
+    """True when the request is HTTPS (after ProxyHeadersMiddleware / X-Forwarded-Proto)."""
+    return request.url.scheme == "https"
+
 
 router = APIRouter(tags=["dashboard"])
 
@@ -133,7 +193,7 @@ def _layout(title: str, body: str, authed: bool = False) -> str:
 </html>"""
 
 
-def _login_page(error: Optional[str] = None) -> HTMLResponse:
+def _login_page(error: Optional[str] = None, status_code: Optional[int] = None) -> HTMLResponse:
     err = f'<p class="error">{escape(error)}</p>' if error else ""
     body = f"""
     <div class="login-box">
@@ -146,7 +206,9 @@ def _login_page(error: Optional[str] = None) -> HTMLResponse:
       {err}
     </div>
     """
-    return HTMLResponse(_layout("Dashboard login", body), status_code=401 if error else 200)
+    if status_code is None:
+        status_code = 401 if error else 200
+    return HTMLResponse(_layout("Dashboard login", body), status_code=status_code)
 
 
 def _fmt_pct(v: float) -> str:
@@ -280,12 +342,22 @@ async def dashboard(
     return _dashboard_page(settings, state, executor)
 
 
+
 @router.post("/dashboard/login")
 async def dashboard_login(
     request: Request,
     secret: str = Form(...),
     settings: Settings = Depends(get_settings),
+    limiter: LoginRateLimiter = Depends(get_login_rate_limiter),
 ) -> Response:
+    key = _client_key(request)
+    if not limiter.allow(key):
+        logger.warning("dashboard login rate-limited key=%s", key)
+        return _login_page(
+            error="Too many login attempts. Try again in a minute.",
+            status_code=429,
+        )
+
     if not secrets_equal(secret, settings.webhook_secret):
         return _login_page(error="Invalid webhook secret")
     resp = RedirectResponse(url="/dashboard", status_code=303)
@@ -295,7 +367,7 @@ async def dashboard_login(
         httponly=True,
         samesite="lax",
         max_age=COOKIE_MAX_AGE,
-        secure=request.url.scheme == "https",
+        secure=_cookie_secure(request),
         path="/",
     )
     return resp

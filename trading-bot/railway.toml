@@ -1,6 +1,8 @@
 # Railway deploy config for trading-bot (paper by default).
 # Set root directory to `trading-bot` if the repo is the monorepo parent.
 # Docs: https://docs.railway.com/reference/config-as-code
+# NOTE: This file does NOT create a volume. Attach a persistent volume
+# mounted at /data in the Railway UI and set DATA_DIR=/data.
 
 [build]
 builder = "DOCKERFILE"

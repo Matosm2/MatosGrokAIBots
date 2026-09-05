@@ -15,7 +15,7 @@ FastAPI service that receives **TradingView alert webhooks**, validates signals,
 - Idempotent `alert_id` handling with claim/commit/abort (failed live orders are **not** marked duplicate)
 - Public `/livez` for Docker/K8s liveness; authenticated `/health` and `/trades` (webhook secret header)
 - Paper **dashboard** at `/dashboard` (login form → HttpOnly session cookie; secret never in the URL)
-- Fail-closed startup if `WEBHOOK_SECRET` is default/insecure when `TRADING_MODE=live`
+- Fail-closed startup if `WEBHOOK_SECRET` is default/insecure when `TRADING_MODE=live`, absolute `DATA_DIR` (e.g. `/data`), or `PAPER_REQUIRE_STRONG_SECRET=1`
 
 ## Quick start (local)
 
@@ -133,8 +133,10 @@ curl -H 'X-Webhook-Secret: change-me-to-a-long-random-string' http://127.0.0.1:8
 Open `http://127.0.0.1:8000/dashboard` (or your deployed HTTPS host).
 
 1. Enter the same `WEBHOOK_SECRET` used for TradingView alerts.
-2. The secret is POSTed once; the server sets an **HttpOnly** `dashboard_session` cookie (HMAC of the secret — the raw secret is not kept in the cookie or query string).
+2. The secret is POSTed once; the server sets an **HttpOnly** `dashboard_session` cookie (HMAC of the secret — the raw secret is not kept in the cookie or query string). On HTTPS (including behind Railway via `X-Forwarded-Proto`), the cookie also gets the **Secure** flag (`ProxyHeadersMiddleware`).
 3. The page shows **mode**, **equity**, **cash**, **open positions**, **daily PnL**, **last alert**, and a **trade log**.
+
+`POST /dashboard/login` has a simple **in-memory rate limit** (10 attempts / 60s per client IP). It is per-process and resets on restart — adequate for paper; not a substitute for edge WAF on a high-traffic host.
 
 Log out via the button (clears the cookie). Keep `TRADING_MODE=paper` unless you intentionally go live.
 
@@ -150,6 +152,7 @@ Do **not** keep relying on an ephemeral Cloudflare tunnel for production paper a
 | `TRADING_MODE` | yes | Keep **`paper`** (default). Never set `live` until keys + risk review |
 | `PAPER_EQUITY_USDT` | recommended | Starting paper equity (default `10000`) |
 | `DATA_DIR` | recommended | Persist portfolio/idempotency — use `/data` with a volume |
+| `PAPER_REQUIRE_STRONG_SECRET` | optional | `1`/`true` → refuse default `WEBHOOK_SECRET` even in paper (also auto when `DATA_DIR` is absolute, e.g. `/data`) |
 | `ALLOWED_SYMBOLS` | optional | Default BTC/ETH/SOL/BNB USDT |
 | `RISK_PER_TRADE_PCT` / `MAX_POSITION_PCT` / `MAX_OPEN_POSITIONS` / `MAX_DAILY_LOSS_PCT` | optional | See risk table below |
 | `BINANCE_API_KEY` / `BINANCE_API_SECRET` | live only | Leave empty in paper |
@@ -161,8 +164,8 @@ Do **not** keep relying on an ephemeral Cloudflare tunnel for production paper a
 1. Create a Railway project and connect this GitHub repo.
 2. Set the service **root directory** to `trading-bot` (monorepo) **or** deploy from a repo that contains the Dockerfile at the root.
 3. `railway.toml` uses the Dockerfile builder and healthchecks `/livez`.
-4. Add a **persistent volume** mounted at `/data`, and set `DATA_DIR=/data`.
-5. Set env vars from the table above (`TRADING_MODE=paper`, strong `WEBHOOK_SECRET`, etc.).
+4. **Volume (manual):** `railway.toml` does **not** create a volume. In the Railway UI, attach a **persistent volume** mounted at `/data`, then set `DATA_DIR=/data`. Without this, portfolio/idempotency state is ephemeral across restarts.
+5. Set env vars from the table above (`TRADING_MODE=paper`, **strong** `WEBHOOK_SECRET`, etc.). With `DATA_DIR=/data`, a default/weak secret fails closed at startup.
 6. Deploy. Note the public HTTPS URL, e.g. `https://YOUR_SERVICE.up.railway.app`.
 7. Verify:
    - `curl https://YOUR_HOST/livez` → `{"status":"ok"}`
