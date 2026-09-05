@@ -23,6 +23,31 @@ class OrderStatus(str, Enum):
     DUPLICATE = "duplicate"
 
 
+# Common TradingView / exchange ticker prefixes to strip → BTCUSDT-style
+_EXCHANGE_PREFIXES = (
+    "BINANCE:",
+    "BINANCE.US:",
+    "BYBIT:",
+    "COINBASE:",
+    "KRAKEN:",
+    "OKX:",
+    "KUCOIN:",
+)
+
+
+def normalize_symbol(raw: str) -> str:
+    """Normalize ticker: strip exchange prefix, slashes/hyphens → BTCUSDT."""
+    v = raw.strip().upper()
+    for prefix in _EXCHANGE_PREFIXES:
+        if v.startswith(prefix):
+            v = v[len(prefix) :]
+            break
+    # Also strip generic EXCHANGE: if still present
+    if ":" in v:
+        v = v.split(":", 1)[-1]
+    return v.replace("/", "").replace("-", "").replace(" ", "")
+
+
 class TradingViewAlert(BaseModel):
     """Incoming TradingView webhook JSON schema."""
 
@@ -31,6 +56,10 @@ class TradingViewAlert(BaseModel):
     qty: Optional[float] = Field(default=None, gt=0, description="Absolute quantity")
     qty_pct: Optional[float] = Field(
         default=None, gt=0, le=100, description="% of equity to risk/allocate"
+    )
+    close_all: bool = Field(
+        default=False,
+        description="SELL only: close entire open long (ignores qty/qty_pct sizing)",
     )
     strategy_id: Optional[str] = Field(default=None, max_length=128)
     price: Optional[float] = Field(default=None, gt=0)
@@ -44,8 +73,8 @@ class TradingViewAlert(BaseModel):
 
     @field_validator("symbol")
     @classmethod
-    def normalize_symbol(cls, v: str) -> str:
-        return v.strip().upper().replace("/", "").replace("-", "")
+    def normalize_symbol_field(cls, v: str) -> str:
+        return normalize_symbol(v)
 
     @field_validator("side", mode="before")
     @classmethod
@@ -56,11 +85,10 @@ class TradingViewAlert(BaseModel):
 
     @model_validator(mode="after")
     def require_qty_or_pct(self) -> TradingViewAlert:
-        if self.qty is None and self.qty_pct is None:
-            # Default: use risk_per_trade_pct from settings at execution time
-            pass
         if self.qty is not None and self.qty_pct is not None:
             raise ValueError("Provide either qty or qty_pct, not both")
+        if self.close_all and self.side != Side.SELL:
+            raise ValueError("close_all is only valid on sell")
         if self.alert_id is None:
             object.__setattr__(
                 self,
@@ -75,6 +103,7 @@ class RiskDecision(BaseModel):
     reason: str = ""
     sized_qty: Optional[float] = None
     notional_usdt: Optional[float] = None
+    trimmed: Optional[str] = None  # e.g. trimmed_to_risk_per_trade
 
 
 class TradeRecord(BaseModel):
@@ -99,6 +128,7 @@ class HealthResponse(BaseModel):
     allowed_symbols: list[str]
     open_positions: int
     daily_pnl_pct: float
+    equity_usdt: Optional[float] = None
 
 
 class WebhookResponse(BaseModel):

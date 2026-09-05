@@ -5,8 +5,19 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Secrets that must never be used in live mode
+_INSECURE_WEBHOOK_DEFAULTS = frozenset(
+    {
+        "",
+        "change-me",
+        "change-me-to-a-long-random-string",
+        "YOUR_WEBHOOK_SECRET",
+        "test-secret",
+    }
+)
 
 
 class Settings(BaseSettings):
@@ -42,6 +53,9 @@ class Settings(BaseSettings):
     # Idempotency TTL (seconds)
     idempotency_ttl_seconds: int = 86_400
 
+    # Persist portfolio + idempotency under this directory (empty = memory only)
+    data_dir: str = "data"
+
     # App
     log_level: str = "INFO"
     host: str = "0.0.0.0"
@@ -54,6 +68,22 @@ class Settings(BaseSettings):
             return v.strip().lower()
         return v  # type: ignore[return-value]
 
+    @model_validator(mode="after")
+    def fail_closed_live_default_secret(self) -> Settings:
+        """Refuse live trading with a default / insecure webhook secret."""
+        if self.trading_mode == "live":
+            secret = (self.webhook_secret or "").strip()
+            if secret.lower() in {s.lower() for s in _INSECURE_WEBHOOK_DEFAULTS}:
+                raise ValueError(
+                    "WEBHOOK_SECRET is insecure/default; refuse live trading "
+                    "(fail-closed). Set a long random secret before TRADING_MODE=live."
+                )
+            if not self.binance_api_key or not self.binance_api_secret:
+                raise ValueError(
+                    "BINANCE_API_KEY/SECRET required when TRADING_MODE=live"
+                )
+        return self
+
     @property
     def allowed_symbol_set(self) -> set[str]:
         return {s.strip().upper() for s in self.allowed_symbols.split(",") if s.strip()}
@@ -61,6 +91,11 @@ class Settings(BaseSettings):
     @property
     def is_paper(self) -> bool:
         return self.trading_mode != "live"
+
+    @property
+    def insecure_webhook_secret(self) -> bool:
+        secret = (self.webhook_secret or "").strip()
+        return secret.lower() in {s.lower() for s in _INSECURE_WEBHOOK_DEFAULTS}
 
 
 @lru_cache
