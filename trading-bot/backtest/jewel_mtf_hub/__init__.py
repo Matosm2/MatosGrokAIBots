@@ -1,12 +1,10 @@
-"""Multi-TF OHLCV join utilities for research_id jewel-mtf-hub-regime-v1.
+"""jewel-mtf-hub-regime-v1 — open-proxy edition.
 
-Scaffold only: map higher-timeframe (HTF) series onto lower-timeframe (LTF) bars
-with **no lookahead** (HTF values available only after HTF bar close).
-
-Signal scoring (M1–M4 / Hub / Jewel Slow×70) is **parked** — awaiting an open
-proxy map. This package does not invent Jewel/Hub values or thresholds.
+Multi-TF OHLCV join (no lookahead) + M1–M4 matrix using public indicators
+(ADX/DI regime, RSI strength, EMA ribbon). Not Jewel. Not Hub.
 """
 
+from backtest.jewel_mtf_hub.aggregate import aggregate_1d_to_2d
 from backtest.jewel_mtf_hub.join import (
     TF_MS,
     assert_no_lookahead_sample,
@@ -20,6 +18,7 @@ from backtest.jewel_mtf_hub.ohlcv import JoinedBar, join_htf_ohlcv_onto_ltf
 __all__ = [
     "TF_MS",
     "JoinedBar",
+    "aggregate_1d_to_2d",
     "assert_no_lookahead_sample",
     "bar_close_ms",
     "join_htf_ohlcv_onto_ltf",
@@ -29,3 +28,4 @@ __all__ = [
 ]
 
 RESEARCH_ID = "jewel-mtf-hub-regime-v1"
+EDITION = "open-proxy"
