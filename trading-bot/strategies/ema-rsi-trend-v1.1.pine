@@ -49,7 +49,7 @@ cooldownBars  = input.int(6, "Cooldown bars after exit", minval=0,
 buyQtyPct     = input.float(2.5, "Buy qty_pct (webhook)", minval=0.1, maxval=100, step=0.1)
 sellQtyPct    = input.float(12.0, "Sell qty_pct (webhook)", minval=0.1, maxval=100, step=0.1,
      tooltip="Full exit within Balanced max-pos framing (12%). Do NOT omit qty — bot would only sell RISK_PER_TRADE_PCT. Used in alert() JSON.")
-strategyId    = input.string("ema-rsi-trend-v1", "strategy_id for webhook")
+strategyId    = input.string("ema-rsi-trend-v1.1", "strategy_id for webhook")
 
 // ——— Normalize ticker: strip exchange prefix → BTCUSDT-style ———
 normalizeSymbol() =>
@@ -117,19 +117,19 @@ if exitCondition
 //   "symbol": "{{ticker}}",
 //   "side": "buy",
 //   "qty_pct": 2.5,
-//   "strategy_id": "ema-rsi-trend-v1",
+//   "strategy_id": "ema-rsi-trend-v1.1",
 //   "price": {{close}},
 //   "alert_id": "{{ticker}}-{{time}}-ema-rsi-v1-buy",
 //   "secret": "YOUR_WEBHOOK_SECRET"
 // }
 alertcondition(longCondition, title="EMA-RSI v1.1 Buy",
-     message='{"symbol":"{{ticker}}","side":"buy","qty_pct":2.5,"strategy_id":"ema-rsi-trend-v1","price":{{close}},"alert_id":"{{ticker}}-{{time}}-ema-rsi-v1-buy","secret":"YOUR_WEBHOOK_SECRET"}')
+     message='{"symbol":"{{ticker}}","side":"buy","qty_pct":2.5,"strategy_id":"ema-rsi-trend-v1.1","price":{{close}},"alert_id":"{{ticker}}-{{time}}-ema-rsi-v1-buy","secret":"YOUR_WEBHOOK_SECRET"}')
 
 // Sell: only when strategy is long (avoid flat reject noise). qty_pct 12 = full exit
 // within Balanced max-pos (NOT omit qty → bot would only sell RISK_PER_TRADE_PCT).
 // Literal qty_pct must match sellQtyPct input default (alertcondition cannot interpolate).
 alertcondition(exitCondition and strategy.position_size > 0, title="EMA-RSI v1.1 Sell",
-     message='{"symbol":"{{ticker}}","side":"sell","qty_pct":12,"strategy_id":"ema-rsi-trend-v1","price":{{close}},"alert_id":"{{ticker}}-{{time}}-ema-rsi-v1-sell","secret":"YOUR_WEBHOOK_SECRET"}')
+     message='{"symbol":"{{ticker}}","side":"sell","qty_pct":12,"strategy_id":"ema-rsi-trend-v1.1","price":{{close}},"alert_id":"{{ticker}}-{{time}}-ema-rsi-v1-sell","secret":"YOUR_WEBHOOK_SECRET"}')
 
 // Visual markers
 plotshape(longCondition, title="Buy", style=shape.triangleup, location=location.belowbar, size=size.tiny, color=color.lime)
