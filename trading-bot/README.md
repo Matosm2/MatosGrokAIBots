@@ -151,7 +151,7 @@ Do **not** keep relying on an ephemeral Cloudflare tunnel for production paper a
 | `WEBHOOK_SECRET` | **yes** | Long random string; used by TV webhook + dashboard login |
 | `TRADING_MODE` | yes | Keep **`paper`** (default). Never set `live` until keys + risk review |
 | `PAPER_EQUITY_USDT` | recommended | Starting paper equity (default `10000`) |
-| `DATA_DIR` | recommended | Persist portfolio/idempotency — use `/data` with a volume |
+| `DATA_DIR` | recommended | Persist portfolio/idempotency — use `/data` with a volume (**attach in Railway UI**; `railway.toml` does not create it) |
 | `PAPER_REQUIRE_STRONG_SECRET` | optional | `1`/`true` → refuse default `WEBHOOK_SECRET` even in paper (also auto when `DATA_DIR` is absolute, e.g. `/data`) |
 | `ALLOWED_SYMBOLS` | optional | Default BTC/ETH/SOL/BNB USDT |
 | `RISK_PER_TRADE_PCT` / `MAX_POSITION_PCT` / `MAX_OPEN_POSITIONS` / `MAX_DAILY_LOSS_PCT` | optional | See risk table below |

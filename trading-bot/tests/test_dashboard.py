@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.config import Settings, get_settings
-from app.dashboard import COOKIE_NAME, get_login_rate_limiter, session_token
+from app.dashboard import COOKIE_NAME, LOGIN_RATE_LIMIT_MAX, get_login_rate_limiter, session_token
 from app.main import app
 
 
@@ -84,35 +84,43 @@ def test_dashboard_rejects_forged_cookie(client: TestClient):
     assert "Sign in" in r.text
 
 
-def test_dashboard_login_sets_secure_cookie_with_forwarded_proto(client: TestClient):
+def _set_cookie_header(response) -> str | None:
+    """Return Set-Cookie header value for dashboard_session if present."""
+    # httpx/starlette may expose multiple set-cookie headers
+    for key, value in response.headers.multi_items():
+        if key.lower() == "set-cookie" and value.startswith(f"{COOKIE_NAME}="):
+            return value
+    raw = response.headers.get("set-cookie")
+    if raw and raw.startswith(f"{COOKIE_NAME}="):
+        return raw
+    return None
+
+
+def test_dashboard_login_secure_cookie_with_forwarded_proto(client: TestClient):
+    """ProxyHeadersMiddleware + X-Forwarded-Proto=https => Secure cookie (Railway)."""
     r = client.post(
         "/dashboard/login",
         data={"secret": "unit-test-secret-not-default"},
-        headers={"X-Forwarded-Proto": "https"},
+        headers={"X-Forwarded-Proto": "https", "X-Forwarded-For": "203.0.113.10"},
         follow_redirects=False,
     )
     assert r.status_code == 303
-    set_cookie = r.headers.get("set-cookie", "")
-    assert COOKIE_NAME in set_cookie
+    set_cookie = _set_cookie_header(r)
+    assert set_cookie is not None
     assert "secure" in set_cookie.lower()
 
 
 def test_dashboard_login_rate_limited(client: TestClient):
-    limiter = get_login_rate_limiter()
-    # Exhaust the window with wrong secrets
-    for _ in range(limiter.max_attempts):
-        r = client.post(
-            "/dashboard/login",
-            data={"secret": "wrong"},
-            follow_redirects=False,
-        )
+    for _ in range(LOGIN_RATE_LIMIT_MAX):
+        r = client.post("/dashboard/login", data={"secret": "wrong"}, follow_redirects=False)
         assert r.status_code == 401
-
-    blocked = client.post(
+    blocked = client.post("/dashboard/login", data={"secret": "wrong"}, follow_redirects=False)
+    assert blocked.status_code == 429
+    assert "Too many login attempts" in blocked.text
+    # Even a correct secret is blocked while limited
+    still = client.post(
         "/dashboard/login",
         data={"secret": "unit-test-secret-not-default"},
         follow_redirects=False,
     )
-    assert blocked.status_code == 429
-    assert "Too many login attempts" in blocked.text
-    assert COOKIE_NAME not in blocked.cookies
+    assert still.status_code == 429

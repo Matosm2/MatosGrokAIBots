@@ -342,7 +342,6 @@ async def dashboard(
     return _dashboard_page(settings, state, executor)
 
 
-
 @router.post("/dashboard/login")
 async def dashboard_login(
     request: Request,

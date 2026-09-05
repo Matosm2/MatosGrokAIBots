@@ -27,7 +27,7 @@ def test_live_rejects_missing_keys():
         )
 
 
-def test_paper_allows_default_secret_local():
+def test_paper_allows_default_secret():
     s = Settings(trading_mode="paper", webhook_secret="change-me", data_dir="")
     assert s.is_paper
     assert s.insecure_webhook_secret
@@ -48,20 +48,20 @@ def test_paper_rejects_default_secret_with_absolute_data_dir():
         )
 
 
-def test_paper_rejects_default_secret_when_require_strong():
+def test_paper_rejects_default_secret_when_flag_set():
     with pytest.raises(ValidationError):
         Settings(
             trading_mode="paper",
-            webhook_secret="change-me",
+            webhook_secret="change-me-to-a-long-random-string",
             data_dir="",
             paper_require_strong_secret=True,
         )
 
 
-def test_paper_allows_strong_secret_with_absolute_data_dir():
+def test_paper_accepts_strong_secret_with_absolute_data_dir():
     s = Settings(
         trading_mode="paper",
-        webhook_secret="strong-deploy-secret-xyz",
+        webhook_secret="unit-test-secret-not-default",
         data_dir="/data",
     )
     assert s.is_paper
