@@ -17,3 +17,5 @@ data/
 # OHLCV caches from offline backtests (keep .gitkeep)
 backtest/cache/*.csv
 backtest/cache/*.meta.json
+# Jewel Path B generated reports (keep fixtures + .gitkeep)
+backtest/jewel_replay/results/*.md
