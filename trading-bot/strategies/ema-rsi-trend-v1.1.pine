@@ -1,0 +1,132 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © Matosm2 — ema-rsi-trend-v1.1 (paper-first)
+//
+// Strategy overview
+// -----------------
+// Trend-follow entries on EMA20/EMA50 with RSI14 confirmation; exits on EMA
+// crossunder or RSI crossunder 40. Bar close only. Signal/price / strategy()
+// position only — does NOT read bot open-state or exchange positions.
+//
+// cooldown_bars
+// -------------
+// Number of bars AFTER an exit (SELL) before a new BUY / re-entry is allowed.
+// Default = 6. Set to 0 to disable. This is NOT a cooldown after entries.
+//
+// Stops
+// -----
+// No hard stop in v1.1 — exits are signal-only (EMA crossunder / RSI
+// crossunder 40). A hard stop is required in a later brief before real live.
+//
+// Paper universe for this bot: BTCUSDT + ETHUSDT only (see strategy README).
+// Webhook alert_id must use {{time}} (not {{timenow}}).
+// Symbol in webhook JSON is normalized (BINANCE: stripped → BTCUSDT-style).
+
+//@version=5
+strategy(
+     title              = "EMA RSI Trend v1.1",
+     shorttitle         = "ema-rsi-v1.1",
+     overlay            = true,
+     initial_capital    = 10000,
+     default_qty_type   = strategy.percent_of_equity,
+     default_qty_value  = 2.5,
+     commission_type    = strategy.commission.percent,
+     commission_value   = 0.1,
+     pyramiding         = 0,
+     process_orders_on_close = true
+ )
+
+// ——— Inputs ———
+fastLen       = input.int(20, "Fast EMA", minval=1)
+slowLen       = input.int(50, "Slow EMA", minval=1)
+rsiLen        = input.int(14, "RSI Length", minval=1)
+rsiBuyMin     = input.int(50, "RSI buy minimum", minval=1, maxval=100)
+rsiSellLevel  = input.int(40, "RSI sell crossunder level", minval=1, maxval=100)
+// Bars after exit (SELL) before new BUY/re-entry; 0 disables. NOT after entries.
+cooldownBars  = input.int(6, "Cooldown bars after exit", minval=0,
+     tooltip="Bars after an exit (SELL) before a new BUY is allowed. 0 = disabled. Does not apply after entries.")
+buyQtyPct     = input.float(2.5, "Buy qty_pct (webhook)", minval=0.1, maxval=100, step=0.1)
+sellQtyPct    = input.float(12.0, "Sell qty_pct (webhook)", minval=0.1, maxval=100, step=0.1,
+     tooltip="Full exit within Balanced max-pos framing (12%). Do NOT omit qty — bot would only sell RISK_PER_TRADE_PCT.")
+strategyId    = input.string("ema-rsi-trend-v1", "strategy_id for webhook")
+
+// ——— Normalize ticker: strip exchange prefix → BTCUSDT-style ———
+normalizeSymbol() =>
+    id = syminfo.tickerid
+    s = str.replace_all(id, "BINANCE:", "")
+    s := str.replace_all(s, "BINANCE.US:", "")
+    s := str.replace_all(s, "BYBIT:", "")
+    s := str.replace_all(s, "COINBASE:", "")
+    s := str.replace_all(s, "KRAKEN:", "")
+    s := str.replace_all(s, "OKX:", "")
+    // Drop any remaining EXCHANGE: prefix
+    parts = str.split(s, ":")
+    s := array.size(parts) > 1 ? array.get(parts, array.size(parts) - 1) : s
+    s := str.replace_all(s, "/", "")
+    s := str.replace_all(s, "-", "")
+    s
+
+normSym = normalizeSymbol()
+
+// ——— Indicators ———
+emaFast = ta.ema(close, fastLen)
+emaSlow = ta.ema(close, slowLen)
+rsi     = ta.rsi(close, rsiLen)
+
+plot(emaFast, "EMA Fast", color=color.new(color.teal, 0))
+plot(emaSlow, "EMA Slow", color=color.new(color.orange, 0))
+
+// ——— Cooldown: bars since last exit (SELL) ———
+var int lastExitBar = na
+if strategy.position_size[1] > 0 and strategy.position_size <= 0
+    lastExitBar := bar_index
+
+cooldownOk = cooldownBars == 0 or na(lastExitBar) or (bar_index - lastExitBar) >= cooldownBars
+
+// ——— Signals (price / strategy state only — no bot open-state) ———
+emaCrossUp   = ta.crossover(emaFast, emaSlow)
+emaCrossDown = ta.crossunder(emaFast, emaSlow)
+rsiCrossDown = ta.crossunder(rsi, rsiSellLevel)
+
+longCondition = emaCrossUp and rsi >= rsiBuyMin and close >= emaSlow and cooldownOk
+// RSI fade / EMA crossunder exits use strategy.position_size — not bot open-state
+exitCondition = (emaCrossDown or rsiCrossDown) and strategy.position_size > 0
+
+if longCondition
+    strategy.entry("Long", strategy.long)
+
+if exitCondition
+    strategy.close("Long")
+
+// Dynamic webhook JSON (normalized symbol). Used by alert() once per bar close.
+buyJson = '{"symbol":"' + normSym + '","side":"buy","qty_pct":' + str.tostring(buyQtyPct) + ',"strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + normSym + '-{{time}}-ema-rsi-v1-buy","secret":"YOUR_WEBHOOK_SECRET"}'
+sellJson = '{"symbol":"' + normSym + '","side":"sell","qty_pct":' + str.tostring(sellQtyPct) + ',"strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + normSym + '-{{time}}-ema-rsi-v1-sell","secret":"YOUR_WEBHOOK_SECRET"}'
+
+if longCondition
+    alert(buyJson, alert.freq_once_per_bar_close)
+
+if exitCondition
+    alert(sellJson, alert.freq_once_per_bar_close)
+
+// ——— alertconditions (create TWO TradingView alerts on these) ———
+// Note: alertcondition messages use TV placeholders; bot also strips BINANCE:.
+// Prefer strategy alert() JSON above when attaching “Any alert() function call”.
+// Buy webhook JSON template:
+// {
+//   "symbol": "{{ticker}}",
+//   "side": "buy",
+//   "qty_pct": 2.5,
+//   "strategy_id": "ema-rsi-trend-v1",
+//   "price": {{close}},
+//   "alert_id": "{{ticker}}-{{time}}-ema-rsi-v1-buy",
+//   "secret": "YOUR_WEBHOOK_SECRET"
+// }
+alertcondition(longCondition, title="EMA-RSI v1.1 Buy",
+     message='{"symbol":"{{ticker}}","side":"buy","qty_pct":2.5,"strategy_id":"ema-rsi-trend-v1","price":{{close}},"alert_id":"{{ticker}}-{{time}}-ema-rsi-v1-buy","secret":"YOUR_WEBHOOK_SECRET"}')
+
+// Sell: qty_pct 12 for full exit within Balanced max-pos (NOT omit qty → would be 2.5%)
+alertcondition(exitCondition, title="EMA-RSI v1.1 Sell",
+     message='{"symbol":"{{ticker}}","side":"sell","qty_pct":12,"strategy_id":"ema-rsi-trend-v1","price":{{close}},"alert_id":"{{ticker}}-{{time}}-ema-rsi-v1-sell","secret":"YOUR_WEBHOOK_SECRET"}')
+
+// Visual markers
+plotshape(longCondition, title="Buy", style=shape.triangleup, location=location.belowbar, size=size.tiny, color=color.lime)
+plotshape(exitCondition, title="Sell", style=shape.triangledown, location=location.abovebar, size=size.tiny, color=color.red)
