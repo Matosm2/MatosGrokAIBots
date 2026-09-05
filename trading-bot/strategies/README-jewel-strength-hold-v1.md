@@ -37,7 +37,7 @@ Spot **long-only**, `process_orders_on_close=true`, pyramiding **0**.
 
 - Commission: **0.10% per side**
 - Slippage: **≥ 5 bps** adverse vs close
-- Size: **2.5%** of equity per entry; full close on exit
+- Size: **Mode A 100%** (gate vs B&H) / **Mode B 2.5%** (ops); full close on exit
 
 ## Wire Jewel Slow / High on the chart
 
@@ -71,22 +71,24 @@ time,open,high,low,close,volume,Slow,jewel_high
 ```bash
 cd trading-bot
 source .venv/bin/activate
-python -m backtest.jewel_replay path/to/export.csv --symbol BTCUSDT
-python -m backtest.jewel_replay backtest/jewel_replay/fixtures/synthetic_jewel_btc_daily.csv
+# Dual sizing (Mode A 100% gate / Mode B 2.5% ops) + full + last-6m tables
+python -m backtest.jewel_replay path/to/jewel-btc-daily.csv path/to/jewel-eth-daily.csv --window both
+python -m backtest.jewel_replay backtest/jewel_replay/fixtures/synthetic_jewel_btc_daily.csv --window both
 ```
 
-Reports WR, return, buy&hold, max DD for **both** V-zone and V-wide (same style as
-`backtest/results/` ema-rsi reports). Synthetic fixture keeps CI free of real Jewel data.
+Reports per symbol/variant/window: **WR | Mode-A return | Mode-B (ops) | B&H | PASS/FAIL**
+for **both** V-zone and V-wide. Synthetic fixture keeps CI free of real Jewel data.
 
 ## Gate before any paper consideration
 
-Promote toward paper **only if**, on the agreed window:
+Promote toward paper **only if**, on the agreed window (Mode A = 100% equity):
 
-1. Win rate **≥ 60%**, and
-2. Strategy return **beats buy & hold** on the same sample,
+1. At least one closed trade (`n>0`),
+2. Win rate **≥ 60%**, and
+3. **Mode-A** strategy return **beats buy & hold** on the same sample,
 
 for the primary (BTC Daily) run — then re-check ETH Daily OOS with **unchanged**
-thresholds. Until then: research only.
+thresholds. Mode B (2.5%) is the ops sizing column only. Until then: research only.
 
 ## What this is not
 
