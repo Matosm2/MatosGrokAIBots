@@ -10,9 +10,11 @@ import pytest
 from backtest.jewel_replay.csv_loader import JewelBar, load_jewel_csv
 from backtest.jewel_replay.engine import run_replay
 from backtest.jewel_replay.report import (
+    GATE_BH_MULTIPLIER,
     MODE_A_PCT,
     MODE_B_PCT,
     DualModeRow,
+    evaluate_gate,
     summarize,
 )
 from backtest.jewel_replay.signals import (
@@ -231,17 +233,16 @@ def test_dual_sizing_mode_a_vs_mode_b_on_fixture():
     )
     sm = row.summarize()
     assert sm["trades"] == len(a.trades)
-    # Gate requires n>0, WR>=60, Mode-A > B&H — fixture typically FAILs WR
+    # Gate is Mode-A ≥ 1.2× B&H (WR informational) — fixture typically FAILs
     assert sm["gate_label"] in ("PASS", "FAIL")
-    if sm["trades"] > 0 and float(sm["win_rate_pct"]) >= 60.0 and float(
-        sm["mode_a_return_pct"]
-    ) > float(sm["buy_hold_return_pct"]):
-        assert sm["gate_pass"] is True
-    else:
-        assert sm["gate_pass"] is False
+    expected, _ = evaluate_gate(
+        float(sm["mode_a_return_pct"]), float(sm["buy_hold_return_pct"])
+    )
+    assert bool(sm["gate_pass"]) is expected
+    assert "mode_a_bh_ratio" in sm
 
 
-def test_gate_pass_requires_n_and_wr_and_mode_a_vs_bh():
+def test_gate_pass_mode_a_ge_1_2x_bh():
     bars = load_jewel_csv(FIXTURE)
     a = run_replay("SYNTH", bars, buy_qty_pct=MODE_A_PCT)
     b = run_replay("SYNTH", bars, buy_qty_pct=MODE_B_PCT)
@@ -253,13 +254,30 @@ def test_gate_pass_requires_n_and_wr_and_mode_a_vs_bh():
         mode_b=b,
     )
     sm = row.summarize()
-    n = int(sm["trades"])
-    expected = (
-        n > 0
-        and float(sm["win_rate_pct"]) >= 60.0
-        and float(sm["mode_a_return_pct"]) > float(sm["buy_hold_return_pct"])
+    expected, ratio = evaluate_gate(
+        float(sm["mode_a_return_pct"]), float(sm["buy_hold_return_pct"])
     )
     assert bool(sm["gate_pass"]) is expected
+    assert sm["mode_a_bh_ratio"] == ratio
+    assert GATE_BH_MULTIPLIER == 1.2
+
+
+def test_evaluate_gate_bh_positive_and_nonpositive():
+    # B&H > 0: need Mode-A ≥ 1.2× B&H
+    ok, ratio = evaluate_gate(120.0, 100.0)
+    assert ok is True and ratio == "1.200"
+    fail, ratio2 = evaluate_gate(119.9, 100.0)
+    assert fail is False and ratio2 == "1.199"
+    # Exact boundary
+    ok_eq, _ = evaluate_gate(240.0, 200.0)
+    assert ok_eq is True
+    # B&H ≤ 0: PASS only if Mode-A > 0; ratio n/a
+    assert evaluate_gate(1.0, 0.0) == (True, "n/a")
+    assert evaluate_gate(0.0, 0.0) == (False, "n/a")
+    assert evaluate_gate(-1.0, 0.0) == (False, "n/a")
+    assert evaluate_gate(5.0, -10.0) == (True, "n/a")
+    assert evaluate_gate(0.0, -10.0) == (False, "n/a")
+    assert evaluate_gate(-1.0, -10.0) == (False, "n/a")
 
 
 def test_window_filter_on_fixture_shortens_or_keeps():
@@ -293,7 +311,7 @@ def test_prepare_closed_sample_drops_last_and_cuts_warmup():
 
 
 def test_win_rate_display_na_when_no_closed_trades():
-    """ETH last-6m style: n=0 → WR n/a (not 0%), gate FAIL."""
+    """ETH last-6m style: n=0 → WR n/a (not 0%); gate from Mode-A vs B&H only."""
     flat = [
         JewelBar(
             open_time_ms=_ms(2025, 9, 1) + i * 86_400_000,

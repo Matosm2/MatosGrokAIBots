@@ -12,9 +12,13 @@ See [`../../strategies/README-jewel-strength-hold-v1.md`](../../strategies/READM
 | **A (gate)** | 100 | Full equity when in — **MTM/equity** return compared to buy & hold |
 | **B (ops)** | 2.5 | Ops sizing column only |
 
-**PASS** iff `n>0` AND `WR ≥ 60%` AND `Mode-A MTM return > B&H` on the same window.
-WR is closed-trades only; **n/a** when `n=0` (not 0%). Closed-trade PnL/initial is
-reported separately from MTM (open longs include unrealised).
+**PASS** iff `Mode-A MTM return ≥ 1.2 × B&H` on the same window.
+**WR is informational only** (not a pass/fail leg). WR is closed-trades only; **n/a**
+when `n=0` (not 0%). Closed-trade PnL/initial is reported separately from MTM
+(open longs include unrealised).
+
+**B&H ≤ 0:** PASS only if Mode-A > 0; Mode-A/B&H ratio shown as **n/a** (the 1.2×
+multiple is undefined for non-positive B&H).
 
 Windows: `--window all|6m|both` (default `both` → full + last 6 calendar months
 from the last **closed** bar after prep).

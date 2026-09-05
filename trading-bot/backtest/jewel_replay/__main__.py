@@ -204,6 +204,7 @@ def main(argv: list[str] | None = None) -> int:
                         f"A_closed={float(sm['mode_a_closed_return_pct']):+.2f}% "
                         f"B(ops)={float(sm['mode_b_return_pct']):+.2f}% "
                         f"bh={float(sm['buy_hold_return_pct']):+.2f}% "
+                        f"A/BH={sm['mode_a_bh_ratio']} "
                         f"open={'Y' if sm['mode_a_open_long'] else 'N'} "
                         f"gate={sm['gate_label']}",
                         flush=True,

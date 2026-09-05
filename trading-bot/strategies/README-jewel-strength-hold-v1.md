@@ -76,19 +76,22 @@ python -m backtest.jewel_replay path/to/jewel-btc-daily.csv path/to/jewel-eth-da
 python -m backtest.jewel_replay backtest/jewel_replay/fixtures/synthetic_jewel_btc_daily.csv --window both
 ```
 
-Reports per symbol/variant/window: **WR | Mode-A return | Mode-B (ops) | B&H | PASS/FAIL**
+Reports per symbol/variant/window:
+**n | WR | Mode-A | Mode-B (ops) | B&H | Mode-A/B&H | PASS/FAIL**
 for **both** V-zone and V-wide. Synthetic fixture keeps CI free of real Jewel data.
 
 ## Gate before any paper consideration
 
 Promote toward paper **only if**, on the agreed window (Mode A = 100% equity):
 
-1. At least one closed trade (`n>0`),
-2. Win rate **≥ 60%**, and
-3. **Mode-A** strategy return **beats buy & hold** on the same sample,
+1. **Mode-A** MTM/equity return **≥ 1.2 × buy & hold** on the same sample,
 
 for the primary (BTC Daily) run — then re-check ETH Daily OOS with **unchanged**
-thresholds. Mode B (2.5%) is the ops sizing column only. Until then: research only.
+thresholds. **Win rate is informational only** (not a pass/fail leg).
+
+**B&H ≤ 0:** PASS only if Mode-A > 0; Mode-A/B&H ratio = n/a.
+
+Mode B (2.5%) is the ops sizing column only. Until then: research only.
 
 ## What this is not
 
