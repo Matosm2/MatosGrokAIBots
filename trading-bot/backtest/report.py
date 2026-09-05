@@ -100,7 +100,7 @@ def write_results_markdown(
     lines.append("")
     lines.append("## Data")
     lines.append("")
-    lines.append("- Source: Binance Spot public `/api/v3/klines` (1h)")
+    lines.append("- Source: Binance Spot public klines via `data-api.binance.vision` (1h; no API key)")
     lines.append(f"- Requested lookback: ~{years} years")
     lines.append(f"- Symbols: {', '.join(r.symbol for r in results)}")
     for r in results:

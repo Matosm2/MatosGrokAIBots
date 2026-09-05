@@ -14,7 +14,7 @@ _Generated: 2026-09-05 01:26 UTC_
 
 ## Data
 
-- Source: Binance Spot public `/api/v3/klines` (1h)
+- Source: Binance Spot public klines via `data-api.binance.vision` (1h; no API key)
 - Requested lookback: ~2.0 years
 - Symbols: BTCUSDT, ETHUSDT
 - **BTCUSDT:** 17532 bars, 2024-09-04 14:00 UTC → 2026-09-05 01:00 UTC

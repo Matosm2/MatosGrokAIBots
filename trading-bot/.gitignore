@@ -13,4 +13,6 @@ build/
 htmlcov/
 data/
 .webhook_secret
-backtest/cache/
+# OHLCV caches from offline backtests (keep .gitkeep)
+backtest/cache/*.csv
+backtest/cache/*.meta.json

@@ -1,4 +1,7 @@
-"""Fetch and cache public Binance Spot OHLCV (no auth)."""
+"""Fetch and cache public Binance Spot OHLCV (no auth).
+
+Uses data-api.binance.vision (works from restricted regions where api.binance.com may 451).
+"""
 
 from __future__ import annotations
 

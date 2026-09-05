@@ -2,7 +2,7 @@
 
 Pure-Python, bar-close spot long-only backtest mirroring
 [`strategies/ema-rsi-trend-v1.1.pine`](../strategies/ema-rsi-trend-v1.1.pine).
-**No TradingView dependency.** Uses public Binance Spot klines (no API keys).
+**No TradingView dependency.** Uses public Binance Spot klines via data-api.binance.vision (no API keys).
 
 ## Strategy Bot checklist
 
