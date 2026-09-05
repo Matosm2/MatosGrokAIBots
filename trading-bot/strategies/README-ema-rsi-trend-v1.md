@@ -3,7 +3,7 @@
 Pine Script strategy for paper-first TradingView → bot webhooks.
 
 **Script:** [`ema-rsi-trend-v1.1.pine`](./ema-rsi-trend-v1.1.pine)  
-**strategy_id:** `ema-rsi-trend-v1`
+**strategy_id:** `ema-rsi-trend-v1.1`
 
 ## Rules
 
