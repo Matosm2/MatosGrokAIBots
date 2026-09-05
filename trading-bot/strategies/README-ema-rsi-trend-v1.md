@@ -3,7 +3,7 @@
 Pine Script strategy for paper-first TradingView → bot webhooks.
 
 **Script:** [`ema-rsi-trend-v1.1.pine`](./ema-rsi-trend-v1.1.pine)  
-**strategy_id:** `ema-rsi-trend-v1`
+**strategy_id:** `ema-rsi-trend-v1.1`
 
 ## Rules
 
@@ -48,7 +48,7 @@ Pine Script strategy for paper-first TradingView → bot webhooks.
   "symbol": "{{ticker}}",
   "side": "buy",
   "qty_pct": 2.5,
-  "strategy_id": "ema-rsi-trend-v1",
+  "strategy_id": "ema-rsi-trend-v1.1",
   "price": {{close}},
   "alert_id": "{{ticker}}-{{time}}-ema-rsi-v1-buy",
   "secret": "YOUR_WEBHOOK_SECRET"
@@ -66,7 +66,7 @@ Pine Script strategy for paper-first TradingView → bot webhooks.
   "symbol": "{{ticker}}",
   "side": "sell",
   "qty_pct": 12,
-  "strategy_id": "ema-rsi-trend-v1",
+  "strategy_id": "ema-rsi-trend-v1.1",
   "price": {{close}},
   "alert_id": "{{ticker}}-{{time}}-ema-rsi-v1-sell",
   "secret": "YOUR_WEBHOOK_SECRET"
