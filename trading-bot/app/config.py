@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     # Persist portfolio + idempotency under this directory (empty = memory only)
     data_dir: str = "data"
 
+    # Fail-closed on weak WEBHOOK_SECRET even in paper when True
+    # (also forced when DATA_DIR is an absolute path e.g. Railway /data)
+    paper_require_strong_secret: bool = False
+
     # App
     log_level: str = "INFO"
     host: str = "0.0.0.0"
@@ -68,16 +72,27 @@ class Settings(BaseSettings):
             return v.strip().lower()
         return v  # type: ignore[return-value]
 
-    @model_validator(mode="after")
-    def fail_closed_live_default_secret(self) -> Settings:
-        """Refuse live trading with a default / insecure webhook secret."""
+    def _requires_strong_webhook_secret(self) -> bool:
+        """Live always; paper when PAPER_REQUIRE_STRONG_SECRET or absolute DATA_DIR."""
         if self.trading_mode == "live":
-            secret = (self.webhook_secret or "").strip()
-            if secret.lower() in {s.lower() for s in _INSECURE_WEBHOOK_DEFAULTS}:
-                raise ValueError(
-                    "WEBHOOK_SECRET is insecure/default; refuse live trading "
-                    "(fail-closed). Set a long random secret before TRADING_MODE=live."
-                )
+            return True
+        if self.paper_require_strong_secret:
+            return True
+        # Absolute DATA_DIR (e.g. /data on Railway/Docker) => treat as non-local deploy
+        dd = (self.data_dir or "").strip()
+        return dd.startswith("/")
+
+    @model_validator(mode="after")
+    def fail_closed_insecure_webhook_secret(self) -> Settings:
+        """Refuse default/weak WEBHOOK_SECRET when live or non-local paper deploy."""
+        if self.insecure_webhook_secret and self._requires_strong_webhook_secret():
+            raise ValueError(
+                "WEBHOOK_SECRET is insecure/default; refuse to start (fail-closed). "
+                "Set a long random secret. Local paper with relative DATA_DIR "
+                "(or empty) still allows defaults; set PAPER_REQUIRE_STRONG_SECRET=1 "
+                "or use absolute DATA_DIR=/data to enforce."
+            )
+        if self.trading_mode == "live":
             if not self.binance_api_key or not self.binance_api_secret:
                 raise ValueError(
                     "BINANCE_API_KEY/SECRET required when TRADING_MODE=live"

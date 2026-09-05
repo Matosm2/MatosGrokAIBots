@@ -12,3 +12,4 @@ build/
 .coverage
 htmlcov/
 data/
+.webhook_secret
