@@ -13,7 +13,7 @@ FastAPI service that receives **TradingView alert webhooks**, validates signals,
 - Risk gates: per-trade % (buys only), max position %, max open positions, daily loss circuit breaker (buys halted; sells still allowed), allow-list
 - Paper executor (default) with meaningful cash/equity/realized PnL; live Spot MARKET orders via REST (`httpx`) with LOT_SIZE / minNotional rounding and live balance sync
 - Idempotent `alert_id` handling with claim/commit/abort (failed live orders are **not** marked duplicate)
-- Authenticated `/health` and `/trades` (same webhook secret header)
+- Public `/livez` for Docker/K8s liveness; authenticated `/health` and `/trades` (webhook secret header)
 - Fail-closed startup if `WEBHOOK_SECRET` is default/insecure when `TRADING_MODE=live`
 
 ## Quick start (local)
@@ -27,7 +27,13 @@ cp .env.example .env        # edit WEBHOOK_SECRET; leave TRADING_MODE=paper
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Health check (requires secret header):
+Liveness (no auth — used by Docker healthcheck):
+
+```bash
+curl http://127.0.0.1:8000/livez
+```
+
+Detailed health (requires secret header):
 
 ```bash
 curl -H 'X-Webhook-Secret: change-me-to-a-long-random-string' http://127.0.0.1:8000/health

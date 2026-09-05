@@ -76,8 +76,11 @@ Pine Script strategy for paper-first TradingView → bot webhooks.
 ### Option B — single “Any alert() function call”
 
 Uses Pine-built JSON with **normalized** symbol (`BINANCE:` stripped). Still use Once Per Bar Close.
+`qty_pct` comes from the script inputs **Buy qty_pct (webhook)** / **Sell qty_pct (webhook)** (defaults 2.5 / 12).
 
 Replace `YOUR_WEBHOOK_SECRET` with the bot `WEBHOOK_SECRET`. Keep bot `TRADING_MODE=paper` until risk behaviour is verified.
+
+Sell `alert()` / alertcondition only fire when `strategy.position_size > 0` (no flat reject noise).
 
 ## Bot compatibility notes
 

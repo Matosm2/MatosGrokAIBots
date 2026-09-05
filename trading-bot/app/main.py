@@ -40,14 +40,29 @@ def get_portfolio() -> PortfolioState:
     return _state
 
 
+def secrets_equal(provided: Optional[str], expected: Optional[str]) -> bool:
+    """Length-safe constant-time compare for webhook secrets.
+
+    ``secrets.compare_digest`` on bytes raises ValueError when lengths differ;
+    always return False instead of 500ing the request.
+    """
+    if not provided or not expected:
+        return False
+    try:
+        return secrets.compare_digest(
+            provided.encode("utf-8"),
+            expected.encode("utf-8"),
+        )
+    except (TypeError, ValueError):
+        return False
+
+
 def require_webhook_auth(
     settings: Settings = Depends(get_settings),
     x_webhook_secret: Optional[str] = Header(default=None),
 ) -> None:
     """Auth gate for private endpoints (/health, /trades)."""
-    provided = x_webhook_secret or ""
-    expected = settings.webhook_secret or ""
-    if not expected or not secrets.compare_digest(provided, expected):
+    if not secrets_equal(x_webhook_secret, settings.webhook_secret):
         raise HTTPException(status_code=401, detail="Invalid or missing webhook secret")
 
 
@@ -110,6 +125,12 @@ app = FastAPI(
 )
 
 
+@app.get("/livez")
+async def livez() -> dict[str, str]:
+    """Unauthenticated liveness probe for Docker/K8s healthchecks."""
+    return {"status": "ok"}
+
+
 @app.get("/health", response_model=HealthResponse)
 async def health(
     settings: Settings = Depends(get_settings),
@@ -146,14 +167,8 @@ async def tradingview_webhook(
     executor: TradeExecutor = Depends(get_executor),
     x_webhook_secret: Optional[str] = Header(default=None),
 ) -> WebhookResponse:
-    header_ok = (
-        bool(x_webhook_secret)
-        and secrets.compare_digest(x_webhook_secret, settings.webhook_secret)
-    )
-    body_ok = (
-        bool(alert.secret)
-        and secrets.compare_digest(alert.secret, settings.webhook_secret)
-    )
+    header_ok = secrets_equal(x_webhook_secret, settings.webhook_secret)
+    body_ok = secrets_equal(alert.secret, settings.webhook_secret)
     if not (header_ok or body_ok):
         log_event(logger, "auth_failed", path=str(request.url.path))
         raise HTTPException(status_code=401, detail="Invalid or missing webhook secret")
