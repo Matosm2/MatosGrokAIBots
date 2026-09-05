@@ -14,6 +14,7 @@ FastAPI service that receives **TradingView alert webhooks**, validates signals,
 - Paper executor (default) with meaningful cash/equity/realized PnL; live Spot MARKET orders via REST (`httpx`) with LOT_SIZE / minNotional rounding and live balance sync
 - Idempotent `alert_id` handling with claim/commit/abort (failed live orders are **not** marked duplicate)
 - Public `/livez` for Docker/K8s liveness; authenticated `/health` and `/trades` (webhook secret header)
+- Paper **dashboard** at `/dashboard` (login form → HttpOnly session cookie; secret never in the URL)
 - Fail-closed startup if `WEBHOOK_SECRET` is default/insecure when `TRADING_MODE=live`
 
 ## Quick start (local)
@@ -126,6 +127,78 @@ List recent trades:
 curl -H 'X-Webhook-Secret: change-me-to-a-long-random-string' http://127.0.0.1:8000/trades
 ```
 
+
+## Paper dashboard
+
+Open `http://127.0.0.1:8000/dashboard` (or your deployed HTTPS host).
+
+1. Enter the same `WEBHOOK_SECRET` used for TradingView alerts.
+2. The secret is POSTed once; the server sets an **HttpOnly** `dashboard_session` cookie (HMAC of the secret — the raw secret is not kept in the cookie or query string).
+3. The page shows **mode**, **equity**, **cash**, **open positions**, **daily PnL**, **last alert**, and a **trade log**.
+
+Log out via the button (clears the cookie). Keep `TRADING_MODE=paper` unless you intentionally go live.
+
+## Durable deploy (Railway preferred)
+
+Do **not** keep relying on an ephemeral Cloudflare tunnel for production paper alerts. Deploy once, get a stable HTTPS URL, then point TradingView at it.
+
+### Required environment variables
+
+| Variable | Required | Notes |
+|----------|----------|-------|
+| `WEBHOOK_SECRET` | **yes** | Long random string; used by TV webhook + dashboard login |
+| `TRADING_MODE` | yes | Keep **`paper`** (default). Never set `live` until keys + risk review |
+| `PAPER_EQUITY_USDT` | recommended | Starting paper equity (default `10000`) |
+| `DATA_DIR` | recommended | Persist portfolio/idempotency — use `/data` with a volume |
+| `ALLOWED_SYMBOLS` | optional | Default BTC/ETH/SOL/BNB USDT |
+| `RISK_PER_TRADE_PCT` / `MAX_POSITION_PCT` / `MAX_OPEN_POSITIONS` / `MAX_DAILY_LOSS_PCT` | optional | See risk table below |
+| `BINANCE_API_KEY` / `BINANCE_API_SECRET` | live only | Leave empty in paper |
+| `PORT` | platform | Railway injects this; Dockerfile/`Procfile` honour it |
+| `LOG_LEVEL` | optional | Default `INFO` |
+
+### Railway (Docker)
+
+1. Create a Railway project and connect this GitHub repo.
+2. Set the service **root directory** to `trading-bot` (monorepo) **or** deploy from a repo that contains the Dockerfile at the root.
+3. `railway.toml` uses the Dockerfile builder and healthchecks `/livez`.
+4. Add a **persistent volume** mounted at `/data`, and set `DATA_DIR=/data`.
+5. Set env vars from the table above (`TRADING_MODE=paper`, strong `WEBHOOK_SECRET`, etc.).
+6. Deploy. Note the public HTTPS URL, e.g. `https://YOUR_SERVICE.up.railway.app`.
+7. Verify:
+   - `curl https://YOUR_HOST/livez` → `{"status":"ok"}`
+   - Open `https://YOUR_HOST/dashboard` and sign in with `WEBHOOK_SECRET`
+
+CLI (optional, if already logged in):
+
+```bash
+cd trading-bot
+# railway login   # only if needed
+railway up
+```
+
+### Docker / Compose
+
+```bash
+cd trading-bot
+cp .env.example .env   # set WEBHOOK_SECRET; keep TRADING_MODE=paper
+docker compose up --build -d
+```
+
+Compose mounts a named volume at `/data` (`DATA_DIR=/data`). Image `HEALTHCHECK` probes `/livez`.
+
+### Cut over TradingView webhooks (tunnel → stable URL)
+
+After deploy:
+
+1. In TradingView, open each alert that still points at a Cloudflare tunnel / ngrok URL.
+2. Change **Webhook URL** to: `https://YOUR_STABLE_HOST/webhook/tradingview`
+3. Keep the JSON **Message** body (including `"secret"`) unchanged, **or** keep using header auth if your TV plan supports custom headers.
+4. Fire a test alert (or use the manual `curl` below against the new host).
+5. Confirm on `/dashboard` (last alert + trade log) and/or `GET /trades` with `X-Webhook-Secret`.
+6. Disable/stop the old tunnel so you do not double-process alerts.
+
+Until cutover is done, leave the tunnel running only if you still need it; prefer completing cutover in one sitting.
+
 ## Binance API keys
 
 1. Create an API key on Binance **Spot** with **Enable Trading** only.
@@ -175,7 +248,9 @@ See [`strategies/`](./strategies/) for TradingView Pine scripts (e.g. EMA RSI Tr
 ```
 trading-bot/
   app/
-    main.py           # FastAPI routes
+    main.py           # FastAPI routes + lifespan
+    dashboard.py      # /dashboard login + HTML UI
+    deps.py           # Shared auth / runtime deps
     config.py         # Settings / env defaults
     models.py         # Pydantic schemas
     risk.py           # Risk engine + portfolio state
@@ -186,8 +261,10 @@ trading-bot/
   strategies/         # Optional Pine scripts (separate PRs)
   tests/
   .env.example
-  Dockerfile
+  Dockerfile          # uvicorn + /livez HEALTHCHECK + /data volume
   docker-compose.yml
+  railway.toml
+  Procfile
   requirements.txt
   pyproject.toml
 ```

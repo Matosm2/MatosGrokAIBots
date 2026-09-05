@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import secrets
 from contextlib import asynccontextmanager
 from typing import AsyncIterator, Optional
 
@@ -12,6 +11,15 @@ from fastapi.responses import JSONResponse
 
 from app.binance_client import BinanceClient
 from app.config import Settings, get_settings
+from app.dashboard import router as dashboard_router
+from app.deps import (
+    clear_runtime,
+    get_executor,
+    get_portfolio,
+    require_webhook_auth,
+    secrets_equal,
+    set_runtime,
+)
 from app.executor import TradeExecutor
 from app.idempotency import IdempotencyStore
 from app.logging_config import log_event, setup_logging
@@ -21,83 +29,49 @@ from app.risk import PortfolioState
 
 logger = logging.getLogger(__name__)
 
-# App-scoped singletons (set in lifespan)
-_state: Optional[PortfolioState] = None
-_executor: Optional[TradeExecutor] = None
-_binance: Optional[BinanceClient] = None
-_store: Optional[JsonStore] = None
-
-
-def get_executor() -> TradeExecutor:
-    if _executor is None:
-        raise RuntimeError("Executor not initialized")
-    return _executor
-
-
-def get_portfolio() -> PortfolioState:
-    if _state is None:
-        raise RuntimeError("Portfolio not initialized")
-    return _state
-
-
-def secrets_equal(provided: Optional[str], expected: Optional[str]) -> bool:
-    """Length-safe constant-time compare for webhook secrets.
-
-    ``secrets.compare_digest`` on bytes raises ValueError when lengths differ;
-    always return False instead of 500ing the request.
-    """
-    if not provided or not expected:
-        return False
-    try:
-        return secrets.compare_digest(
-            provided.encode("utf-8"),
-            expected.encode("utf-8"),
-        )
-    except (TypeError, ValueError):
-        return False
-
-
-def require_webhook_auth(
-    settings: Settings = Depends(get_settings),
-    x_webhook_secret: Optional[str] = Header(default=None),
-) -> None:
-    """Auth gate for private endpoints (/health, /trades)."""
-    if not secrets_equal(x_webhook_secret, settings.webhook_secret):
-        raise HTTPException(status_code=401, detail="Invalid or missing webhook secret")
+# Re-export for tests / callers that imported from app.main
+__all__ = [
+    "app",
+    "create_app",
+    "secrets_equal",
+    "get_executor",
+    "get_portfolio",
+    "require_webhook_auth",
+]
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    global _state, _executor, _binance, _store
     settings = get_settings()
     setup_logging(settings.log_level)
 
     data_dir = (settings.data_dir or "").strip()
-    _store = JsonStore(data_dir) if data_dir else JsonStore("")
+    store = JsonStore(data_dir) if data_dir else JsonStore("")
 
     # Load persisted portfolio or start from paper equity
-    loaded = _store.load("portfolio.json", default=None) if _store.enabled else None
+    loaded = store.load("portfolio.json", default=None) if store.enabled else None
     if isinstance(loaded, dict) and loaded:
-        _state = PortfolioState.from_dict(loaded)
-        log_event(logger, "portfolio_loaded", equity=_state.equity_usdt)
+        state = PortfolioState.from_dict(loaded)
+        log_event(logger, "portfolio_loaded", equity=state.equity_usdt)
     else:
-        _state = PortfolioState(equity_usdt=settings.paper_equity_usdt)
+        state = PortfolioState(equity_usdt=settings.paper_equity_usdt)
 
     # Seed default prices for paper so alerts without price still work in tests/demo
-    _state.prices.setdefault("BTCUSDT", 60_000.0)
-    _state.prices.setdefault("ETHUSDT", 3_000.0)
-    _state.prices.setdefault("SOLUSDT", 150.0)
-    _state.prices.setdefault("BNBUSDT", 500.0)
-    _state.mark_equity()
+    state.prices.setdefault("BTCUSDT", 60_000.0)
+    state.prices.setdefault("ETHUSDT", 3_000.0)
+    state.prices.setdefault("SOLUSDT", 150.0)
+    state.prices.setdefault("BNBUSDT", 500.0)
+    state.mark_equity()
 
     idem = IdempotencyStore(
         ttl_seconds=settings.idempotency_ttl_seconds,
-        store=_store if _store.enabled else None,
+        store=store if store.enabled else None,
     )
-    _binance = BinanceClient(settings)
-    _executor = TradeExecutor(
-        settings, _state, idem, _binance, store=_store if _store.enabled else None
+    binance = BinanceClient(settings)
+    executor = TradeExecutor(
+        settings, state, idem, binance, store=store if store.enabled else None
     )
+    set_runtime(state, executor)
     log_event(
         logger,
         "startup",
@@ -111,18 +85,21 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             "WEBHOOK_SECRET is a default/insecure value — fine for local paper; "
             "live mode will refuse to start until you set a strong secret."
         )
-    yield
-    if _binance:
-        await _binance.aclose()
-    log_event(logger, "shutdown")
+    try:
+        yield
+    finally:
+        await binance.aclose()
+        clear_runtime()
+        log_event(logger, "shutdown")
 
 
 app = FastAPI(
     title="TradingView → Binance Bot",
-    version="1.1.0",
+    version="1.2.0",
     description="Webhook bridge from TradingView alerts to Binance Spot (paper by default).",
     lifespan=lifespan,
 )
+app.include_router(dashboard_router)
 
 
 @app.get("/livez")
