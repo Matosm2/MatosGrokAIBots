@@ -143,6 +143,10 @@ pip install -r requirements.txt
 pytest -q
 ```
 
+## Pine strategies
+
+See [`strategies/`](./strategies/) for TradingView Pine scripts (e.g. EMA RSI Trend v1.1) and alert webhook templates.
+
 ## Project layout
 
 ```
