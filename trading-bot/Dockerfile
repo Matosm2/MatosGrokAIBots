@@ -13,9 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 
-# Persist portfolio + idempotency (mount a volume at /data in production)
+# Persist portfolio + idempotency: mkdir only.
+# Do NOT use Docker VOLUME here — Railway rejects it; attach a Railway Volume at /data in the UI.
 RUN mkdir -p /data
-VOLUME ["/data"]
 
 EXPOSE 8000
 
