@@ -62,3 +62,16 @@ Separate research harness under [`jewel_replay/`](jewel_replay/) — CSV Slow/Hi
 (V-zone + V-wide), synthetic fixture for CI. Not part of the ema-rsi Binance kline runner.
 See [`../strategies/README-jewel-strength-hold-v1.md`](../strategies/README-jewel-strength-hold-v1.md).
 
+## Related: research sketches (TV-free)
+
+Offline sketches under [`sketches/`](sketches/) — including
+`close-above-ema20-hold-v1`, `donchian-20-10-spot-v1`, plus earlier ADX/MACD/HTF.
+**Dual sizing:** Mode A gate = 100% when-in (PASS/FAIL); Mode B ops = 2.5%.
+Not paper/live; does not change live/paper defaults.
+
+```bash
+python -m backtest.sketches
+```
+
+See [`sketches/README.md`](sketches/README.md).
+
