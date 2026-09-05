@@ -1,0 +1,108 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © Matosm2 — ema-rsi-trend-v1.1 (paper-first)
+//
+// Strategy overview
+// -----------------
+// Trend-follow entries on EMA20/EMA50 with RSI14 confirmation; exits on EMA
+// crossunder or RSI crossunder 40. Signal/price only — does NOT read bot
+// open-state or exchange positions.
+//
+// cooldown_bars
+// -------------
+// Number of bars AFTER an exit (SELL) before a new BUY / re-entry is allowed.
+// Default = 6. Set to 0 to disable. This is NOT a cooldown after entries.
+//
+// Stops
+// -----
+// No hard stop in v1.1 — exits are signal-only (EMA crossunder / RSI
+// crossunder 40). A hard stop is required in a later brief before real live.
+//
+// Paper universe for this bot: BTCUSDT + ETHUSDT only (see strategy README).
+// Webhook alert_id must use {{time}} (not {{timenow}}).
+
+//@version=5
+strategy(
+     title              = "EMA RSI Trend v1.1",
+     shorttitle         = "ema-rsi-v1.1",
+     overlay            = true,
+     initial_capital    = 10000,
+     default_qty_type   = strategy.percent_of_equity,
+     default_qty_value  = 2.5,
+     commission_type    = strategy.commission.percent,
+     commission_value   = 0.1,
+     pyramiding         = 0,
+     process_orders_on_close = true
+ )
+
+// ——— Inputs ———
+fastLen       = input.int(20, "Fast EMA", minval=1)
+slowLen       = input.int(50, "Slow EMA", minval=1)
+rsiLen        = input.int(14, "RSI Length", minval=1)
+rsiBuyMin     = input.int(50, "RSI buy minimum", minval=1, maxval=100)
+rsiSellLevel  = input.int(40, "RSI sell crossunder level", minval=1, maxval=100)
+// Bars after exit (SELL) before new BUY/re-entry; 0 disables. NOT after entries.
+cooldownBars  = input.int(6, "Cooldown bars after exit", minval=0,
+     tooltip="Bars after an exit (SELL) before a new BUY is allowed. 0 = disabled. Does not apply after entries.")
+buyQtyPct     = input.float(2.5, "Buy qty_pct (webhook)", minval=0.1, maxval=100, step=0.1)
+sellQtyPct    = input.float(12.0, "Sell qty_pct (webhook)", minval=0.1, maxval=100, step=0.1)
+strategyId    = input.string("ema-rsi-trend-v1", "strategy_id for webhook")
+
+// ——— Indicators ———
+emaFast = ta.ema(close, fastLen)
+emaSlow = ta.ema(close, slowLen)
+rsi     = ta.rsi(close, rsiLen)
+
+plot(emaFast, "EMA Fast", color=color.new(color.teal, 0))
+plot(emaSlow, "EMA Slow", color=color.new(color.orange, 0))
+
+// ——— Cooldown: bars since last exit (SELL) ———
+var int lastExitBar = na
+if strategy.position_size[1] > 0 and strategy.position_size <= 0
+    lastExitBar := bar_index
+
+cooldownOk = cooldownBars == 0 or na(lastExitBar) or (bar_index - lastExitBar) >= cooldownBars
+
+// ——— Signals (price / strategy state only — no bot open-state) ———
+emaCrossUp   = ta.crossover(emaFast, emaSlow)
+emaCrossDown = ta.crossunder(emaFast, emaSlow)
+rsiCrossDown = ta.crossunder(rsi, rsiSellLevel)
+
+longCondition = emaCrossUp and rsi >= rsiBuyMin and close >= emaSlow and cooldownOk
+exitCondition = emaCrossDown or rsiCrossDown
+
+if longCondition
+    strategy.entry("Long", strategy.long)
+
+if exitCondition and strategy.position_size > 0
+    strategy.close("Long")
+
+// ——— Alertcondition helpers (create TWO TradingView alerts) ———
+// Buy webhook JSON (paste into alert Message; set condition = this buy alert):
+// {
+//   "symbol": "{{ticker}}",
+//   "side": "buy",
+//   "qty_pct": 2.5,
+//   "strategy_id": "ema-rsi-trend-v1",
+//   "price": {{close}},
+//   "alert_id": "{{ticker}}-{{time}}-ema-rsi-v1-buy",
+//   "secret": "YOUR_WEBHOOK_SECRET"
+// }
+alertcondition(longCondition, title="EMA-RSI v1.1 Buy",
+     message='{"symbol":"{{ticker}}","side":"buy","qty_pct":2.5,"strategy_id":"ema-rsi-trend-v1","price":{{close}},"alert_id":"{{ticker}}-{{time}}-ema-rsi-v1-buy","secret":"YOUR_WEBHOOK_SECRET"}')
+
+// Sell webhook JSON:
+// {
+//   "symbol": "{{ticker}}",
+//   "side": "sell",
+//   "qty_pct": 12,
+//   "strategy_id": "ema-rsi-trend-v1",
+//   "price": {{close}},
+//   "alert_id": "{{ticker}}-{{time}}-ema-rsi-v1-sell",
+//   "secret": "YOUR_WEBHOOK_SECRET"
+// }
+alertcondition(exitCondition, title="EMA-RSI v1.1 Sell",
+     message='{"symbol":"{{ticker}}","side":"sell","qty_pct":12,"strategy_id":"ema-rsi-trend-v1","price":{{close}},"alert_id":"{{ticker}}-{{time}}-ema-rsi-v1-sell","secret":"YOUR_WEBHOOK_SECRET"}')
+
+// Visual markers
+plotshape(longCondition, title="Buy", style=shape.triangleup, location=location.belowbar, size=size.tiny, color=color.lime)
+plotshape(exitCondition and strategy.position_size > 0, title="Sell", style=shape.triangledown, location=location.abovebar, size=size.tiny, color=color.red)
