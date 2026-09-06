@@ -2,7 +2,7 @@
 
 Path B research wave: five new single-TF long-only IDs × 16 TFs = 80 BTCUSDT cells.
 
-**RESEARCH ONLY** — no paper / alerts / webhook. No ETH OOS in this package (parent runs after PASS_6m).
+**RESEARCH ONLY** — no paper / alerts / webhook.
 
 ## IDs
 
@@ -19,6 +19,8 @@ Path B research wave: five new single-TF long-only IDs × 16 TFs = 80 BTCUSDT ce
 ```bash
 cd trading-bot
 python -m backtest.path_b.fresh_wave_v3
+python -m backtest.path_b.fresh_wave_v3 --oos-ladder
 ```
 
-Scoreboard: `results/fresh-wave-v3-scoreboard.md`
+Scoreboard: `results/fresh-wave-v3-scoreboard.md`  
+OOS ladder: `results/fresh-wave-v3-oos-ladder.md` (ETH→SOL→BNB on PASS_6m only; adx/elder/tsi not OOS'd)
