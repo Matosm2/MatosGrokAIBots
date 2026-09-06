@@ -40,8 +40,11 @@ cd trading-bot && source .venv/bin/activate
 pytest tests/test_path_b_mtf_ohlcv.py tests/test_jewel_mtf_hub_join.py -q
 python -m backtest.path_b.mtf_ohlcv            # full 160
 python -m backtest.path_b.mtf_ohlcv --mapping-only
+python -m backtest.path_b.mtf_ohlcv --eth-oos   # ETH OOS on 4 BTC PASS cells
 ```
 
 Scoreboard: `results/owned-tf-sweep-v1-scoreboard.md`
+
+ETH OOS (PASS cells only): `results/owned-tf-sweep-v1-eth-oos.md`
 
 Gate: 6m Mode-A ≥ 1.2× B&H. Not wired to paper/live. Hold merge until asked.
