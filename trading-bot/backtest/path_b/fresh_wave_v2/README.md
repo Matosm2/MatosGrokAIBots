@@ -19,6 +19,8 @@ Path B research wave: five new single-TF long-only IDs × 16 TFs = 80 BTCUSDT ce
 ```bash
 cd trading-bot
 python -m backtest.path_b.fresh_wave_v2
+python -m backtest.path_b.fresh_wave_v2 --oos-ladder
 ```
 
-Scoreboard: `results/fresh-wave-v2-scoreboard.md`
+Scoreboard: `results/fresh-wave-v2-scoreboard.md`  
+OOS ladder: `results/fresh-wave-v2-oos-ladder.md` (ETH→SOL→BNB on PASS_6m only)
