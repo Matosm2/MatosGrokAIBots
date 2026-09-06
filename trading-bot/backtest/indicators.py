@@ -506,3 +506,202 @@ def ichimoku(
                 cloud_top[i] = max(senkou_a[i], senkou_b[i])
     return tenkan, kijun, senkou_a, senkou_b, cloud_top
 
+
+
+def parabolic_sar(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    *,
+    af_start: float = 0.02,
+    af_step: float = 0.02,
+    af_max: float = 0.2,
+) -> list[float | None]:
+    """Wilder Parabolic SAR (Pine ta.sar / TradingView default).
+
+    Returns SAR value per bar. First bar is None (needs prior extreme).
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n < 2:
+        return out
+
+    # Seed: assume uptrend if close[1] >= close[0], else downtrend
+    bull = closes[1] >= closes[0]
+    af = af_start
+    ep = highs[0] if bull else lows[0]
+    sar = lows[0] if bull else highs[0]
+    out[0] = None
+
+    for i in range(1, n):
+        prev_sar = sar
+        # Advance SAR
+        sar = prev_sar + af * (ep - prev_sar)
+
+        # Clamp SAR so it does not penetrate prior two bars' extremes
+        if bull:
+            if i >= 2:
+                sar = min(sar, lows[i - 1], lows[i - 2])
+            else:
+                sar = min(sar, lows[i - 1])
+        else:
+            if i >= 2:
+                sar = max(sar, highs[i - 1], highs[i - 2])
+            else:
+                sar = max(sar, highs[i - 1])
+
+        # Check flip
+        if bull:
+            if lows[i] < sar:
+                bull = False
+                sar = ep
+                ep = lows[i]
+                af = af_start
+            else:
+                if highs[i] > ep:
+                    ep = highs[i]
+                    af = min(af + af_step, af_max)
+        else:
+            if highs[i] > sar:
+                bull = True
+                sar = ep
+                ep = highs[i]
+                af = af_start
+            else:
+                if lows[i] < ep:
+                    ep = lows[i]
+                    af = min(af + af_step, af_max)
+
+        out[i] = sar
+    return out
+
+
+def cci(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 20,
+    constant: float = 0.015,
+) -> list[float | None]:
+    """Commodity Channel Index (Pine ta.cci)."""
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+    tp = [(highs[i] + lows[i] + closes[i]) / 3.0 for i in range(n)]
+    for i in range(length - 1, n):
+        window = tp[i - length + 1 : i + 1]
+        mean = sum(window) / length
+        md = sum(abs(x - mean) for x in window) / length
+        if md == 0.0:
+            out[i] = 0.0
+        else:
+            out[i] = (tp[i] - mean) / (constant * md)
+    return out
+
+
+def aroon(
+    highs: list[float],
+    lows: list[float],
+    length: int = 25,
+) -> tuple[list[float | None], list[float | None]]:
+    """Aroon Up / Aroon Down (Pine ta.aroon). Window is `length` bars back inclusive.
+
+    AroonUp = 100 * (length - bars_since_highest_high) / length
+    AroonDown = 100 * (length - bars_since_lowest_low) / length
+    First valid at index `length` (needs length+1 highs/lows spanning lookback).
+    Pine uses highest/lowest over `length` periods looking back from prior bar
+    through current: period = length, first at index length.
+    """
+    n = len(highs)
+    up: list[float | None] = [None] * n
+    down: list[float | None] = [None] * n
+    if length <= 0 or n <= length:
+        return up, down
+    for i in range(length, n):
+        # lookback window of `length` bars ending at i: [i-length+1 .. i] is length bars
+        # Pine ta.aroon(length): period length, uses highest of high over length,
+        # bars since = length - distance from start... Standard:
+        # window [i - length : i] inclusive of i is length+1? TradingView:
+        # aroon length N: lookback N bars (not including current? or including?)
+        # Common: for i >= length, window highs[i-length+1:i+1] length bars,
+        # bars_since_hh = length - 1 - argmax (0 = most recent)
+        # Actually Pine: `100 * (highestbars(high, length+1) + length)/length` wait.
+        # Standard formula used by most libs (and TV):
+        #   AroonUp = 100 * (n - periods_since_hh) / n  where n = length
+        #   periods_since_hh in [0, n] over window of n+1 bars [i-n .. i]
+        window_h = highs[i - length : i + 1]  # length+1 bars
+        window_l = lows[i - length : i + 1]
+        # index of max high / min low within window (0 = oldest)
+        hh_idx = max(range(len(window_h)), key=lambda k: window_h[k])
+        ll_idx = min(range(len(window_l)), key=lambda k: window_l[k])
+        bars_since_hh = (len(window_h) - 1) - hh_idx  # 0 if high is current
+        bars_since_ll = (len(window_l) - 1) - ll_idx
+        up[i] = 100.0 * (length - bars_since_hh) / length
+        down[i] = 100.0 * (length - bars_since_ll) / length
+    return up, down
+
+
+def williams_r(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 14,
+) -> list[float | None]:
+    """Williams %R (Pine ta.wpr). Range typically [-100, 0]."""
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+    for i in range(length - 1, n):
+        hh = max(highs[i - length + 1 : i + 1])
+        ll = min(lows[i - length + 1 : i + 1])
+        denom = hh - ll
+        if denom == 0.0:
+            out[i] = 0.0 if closes[i] >= hh else -100.0
+        else:
+            out[i] = -100.0 * (hh - closes[i]) / denom
+    return out
+
+
+def vortex(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 14,
+) -> tuple[list[float | None], list[float | None]]:
+    """Vortex Indicator VI+ / VI− (Pine ta.vortex / TC2000).
+
+    VI+ = sum(|H - prevL|, n) / sum(TR, n)
+    VI− = sum(|L - prevH|, n) / sum(TR, n)
+    """
+    n = len(closes)
+    vip: list[float | None] = [None] * n
+    vim: list[float | None] = [None] * n
+    if length <= 0 or n < length + 1:
+        return vip, vim
+
+    tr_s = true_range(highs, lows, closes)
+    vm_plus = [0.0] * n
+    vm_minus = [0.0] * n
+    for i in range(1, n):
+        vm_plus[i] = abs(highs[i] - lows[i - 1])
+        vm_minus[i] = abs(lows[i] - highs[i - 1])
+
+    # Rolling sums starting once we have `length` VM samples (from index 1)
+    for i in range(length, n):
+        # window i-length+1 .. i inclusive = length bars (all have VM from i>=1)
+        sp = sum(vm_plus[i - length + 1 : i + 1])
+        sm = sum(vm_minus[i - length + 1 : i + 1])
+        tr_sum = 0.0
+        ok = True
+        for j in range(i - length + 1, i + 1):
+            if tr_s[j] is None:
+                ok = False
+                break
+            tr_sum += tr_s[j]  # type: ignore[operator]
+        if not ok or tr_sum == 0.0:
+            continue
+        vip[i] = sp / tr_sum
+        vim[i] = sm / tr_sum
+    return vip, vim
