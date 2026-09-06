@@ -124,3 +124,33 @@ def test_normalize_aliases():
     assert normalize_tf("4H") == "4h"
     assert normalize_tf("1D") == "1d"
     assert normalize_tf("2D") == "2d"
+
+
+def test_longwin_windows_and_strategy_ids():
+    from backtest.path_b.mtf_ohlcv.longwin import (
+        RESEARCH_ID,
+        SIZING,
+        WINDOWS,
+    )
+    from backtest.path_b.mtf_ohlcv.sweep import STRATEGY_IDS
+
+    assert RESEARCH_ID == "owned-tf-sweep-v1-longwin"
+    assert len(STRATEGY_IDS) == 10
+    assert len(SWEEP_TFS) == 16
+    labels = [w[0] for w in WINDOWS]
+    assert labels[0] == "full(~2y)"
+    assert "6m" in labels
+    modes = [s[0] for s in SIZING]
+    assert modes == ["gate", "ops"]
+    assert SIZING[0][1] == 100.0
+    assert SIZING[1][1] == 2.5
+
+
+def test_longwin_gate_helpers():
+    from backtest.path_b.mtf_ohlcv.longwin import _gate_label, _ratio
+
+    assert _gate_label(1, 12.0, 10.0) == "PASS"  # 1.2×
+    assert _gate_label(1, 11.9, 10.0) == "FAIL"
+    assert _gate_label(0, 20.0, 10.0) == "FAIL"
+    assert _ratio(12.0, 10.0) == pytest.approx(1.2)
+    assert _ratio(5.0, 0.0) == 999.0

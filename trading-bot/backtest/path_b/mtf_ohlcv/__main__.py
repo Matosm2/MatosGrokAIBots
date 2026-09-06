@@ -1,6 +1,6 @@
-"""CLI: python -m backtest.path_b.mtf_ohlcv [--refresh] [--tfs 1h,4h,1d]
+"""CLI: python -m backtest.path_b.mtf_ohlcv [--refresh] [--tfs 1h,4h,1d] [--longwin]
 
-Runs owned-tf-sweep-v1 scoreboard (10 strategies × TFs).
+Runs owned-tf-sweep-v1 (6m) or owned-tf-sweep-v1-longwin (LEAD full~2y + 6m).
 """
 
 from __future__ import annotations
@@ -12,7 +12,9 @@ from backtest.path_b.mtf_ohlcv.timeframes import SWEEP_TFS, mapping_table, order
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="owned-tf-sweep-v1 scoreboard")
+    ap = argparse.ArgumentParser(
+        description="owned-tf-sweep-v1 / owned-tf-sweep-v1-longwin scoreboard"
+    )
     ap.add_argument("--refresh", action="store_true")
     ap.add_argument("--years", type=float, default=2.5)
     ap.add_argument(
@@ -22,6 +24,11 @@ def main() -> None:
         help="Comma list of TFs (default: priority then backfill all 16)",
     )
     ap.add_argument("--mapping-only", action="store_true")
+    ap.add_argument(
+        "--longwin",
+        action="store_true",
+        help="LEAD full(~2y) Mode-A gate + report 6m (owned-tf-sweep-v1-longwin)",
+    )
     args = ap.parse_args()
 
     if args.mapping_only:
@@ -35,15 +42,42 @@ def main() -> None:
         tfs = tuple(x.strip() for x in args.tfs.split(",") if x.strip())
     else:
         tfs = ordered_tfs()
-        # ordered_tfs is priority+rest of SWEEP_TFS
         assert set(tfs) >= set(SWEEP_TFS)
+
+    if args.longwin:
+        from backtest.path_b.mtf_ohlcv.longwin import (
+            run_longwin_sweep,
+            write_longwin_scoreboard,
+        )
+
+        results = run_longwin_sweep(years=args.years, refresh=args.refresh, tfs=tfs)
+        path = write_longwin_scoreboard(results)
+        lw = [r for r in results if r.gate_longwin == "PASS"]
+        s6 = [r for r in results if r.gate_6m == "PASS"]
+        print(f"\nLongwin scoreboard written: {path}")
+        print(
+            f"Cells: {len(results)}  PASS_longwin: {len(lw)}  "
+            f"PASS_6m: {len(s6)}  ERROR: {sum(1 for r in results if r.error)}"
+        )
+        for r in lw:
+            g = next(
+                m for m in r.metrics if m.window == "full(~2y)" and m.mode == "gate"
+            )
+            print(
+                f"  PASS_longwin {r.strategy_id} @ {r.tf} "
+                f"ratio={g.ratio:.3f} n={g.trades} wr={g.win_rate_pct:.1f}% "
+                f"(6m={r.gate_6m})"
+            )
+        return
 
     results = run_sweep(years=args.years, refresh=args.refresh, tfs=tfs)
     path = write_scoreboard(results)
     passes = [r for r in results if r.gate == "PASS"]
-    print(f"
-Scoreboard written: {path}")
-    print(f"Cells: {len(results)}  PASS: {len(passes)}  FAIL/ERR: {len(results) - len(passes)}")
+    print(f"\nScoreboard written: {path}")
+    print(
+        f"Cells: {len(results)}  PASS: {len(passes)}  "
+        f"FAIL/ERR: {len(results) - len(passes)}"
+    )
     for r in passes:
         print(f"  PASS {r.strategy_id} @ {r.tf} ratio={r.ratio:.3f}")
 

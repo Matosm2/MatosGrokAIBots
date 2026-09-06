@@ -45,3 +45,16 @@ python -m backtest.path_b.mtf_ohlcv --mapping-only
 Scoreboard: `results/owned-tf-sweep-v1-scoreboard.md`
 
 Gate: 6m Mode-A ≥ 1.2× B&H. Not wired to paper/live. Hold merge until asked.
+
+## owned-tf-sweep-v1-longwin
+
+Same 10×16 matrix / frozen params / HTF map. **LEAD gate** = full(~2y) Mode-A ≥ 1.2× B&H;
+also report 6m Mode-A + PASS/FAIL_6m. dual-mom vs 50/50 both windows. WR + n both windows.
+Mode-B ops 2.5% informational. ETH OOS not in this run.
+
+```bash
+cd trading-bot && source .venv/bin/activate
+python -m backtest.path_b.mtf_ohlcv --longwin
+```
+
+Scoreboard: `results/owned-tf-sweep-v1-longwin-scoreboard.md`
