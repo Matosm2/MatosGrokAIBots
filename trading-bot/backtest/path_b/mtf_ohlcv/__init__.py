@@ -9,6 +9,7 @@ from backtest.path_b.mtf_ohlcv.timeframes import (
     ordered_tfs,
 )
 from backtest.path_b.mtf_ohlcv.sweep import RESEARCH_ID, STRATEGY_IDS, run_sweep, write_scoreboard
+from backtest.path_b.mtf_ohlcv.eth_oos import ETH_OOS_CELLS, run_eth_oos, write_eth_oos_report
 
 __all__ = [
     "M2_M4_HTF",
@@ -21,4 +22,7 @@ __all__ = [
     "ordered_tfs",
     "run_sweep",
     "write_scoreboard",
+    "ETH_OOS_CELLS",
+    "run_eth_oos",
+    "write_eth_oos_report",
 ]
