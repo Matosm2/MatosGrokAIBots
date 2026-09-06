@@ -154,3 +154,18 @@ def test_longwin_gate_helpers():
     assert _gate_label(0, 20.0, 10.0) == "FAIL"
     assert _ratio(12.0, 10.0) == pytest.approx(1.2)
     assert _ratio(5.0, 0.0) == 999.0
+
+
+def test_dual_mom_oos_scope_and_framing():
+    from backtest.path_b.mtf_ohlcv.dual_mom_oos import (
+        DUAL_MOM_OOS_TFS,
+        RESEARCH_ID,
+        STRATEGY_ID,
+    )
+    from backtest.path_b.mtf_ohlcv.sweep import DM_PARAMS
+
+    assert RESEARCH_ID == "owned-tf-sweep-v1-dual-mom-oos"
+    assert STRATEGY_ID == "dual-mom-btc-eth-v1"
+    assert DUAL_MOM_OOS_TFS == ("1d", "2d")
+    assert DM_PARAMS.lookback == 20
+

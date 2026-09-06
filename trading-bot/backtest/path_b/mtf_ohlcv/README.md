@@ -58,3 +58,17 @@ python -m backtest.path_b.mtf_ohlcv --longwin
 ```
 
 Scoreboard: `results/owned-tf-sweep-v1-longwin-scoreboard.md`
+
+
+## owned-tf-sweep-v1-dual-mom-oos
+
+Focused dual-mom report: **`dual-mom-btc-eth-v1` @ `1d` + `2d` only**.
+Reuses longwin / `run_dual_mom` harness. Gate both windows vs **50/50 BTC+ETH B&H**
+(not ETH-only). Does **not** rerun ema-rsi / sma200 ETH OOS.
+
+```bash
+cd trading-bot && source .venv/bin/activate
+python -m backtest.path_b.mtf_ohlcv --dual-mom-oos
+```
+
+Results: `results/owned-tf-sweep-v1-dual-mom-oos.md`
