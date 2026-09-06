@@ -705,3 +705,141 @@ def vortex(
         vip[i] = sp / tr_sum
         vim[i] = sm / tr_sum
     return vip, vim
+
+
+def donchian(
+    highs: list[float],
+    lows: list[float],
+    length: int,
+) -> tuple[list[float | None], list[float | None]]:
+    """Donchian channel upper/lower over the prior `length` bars (excludes current).
+
+    upper[i] = max(highs[i-length : i])  # prior length highs
+    lower[i] = min(lows[i-length : i])
+    First usable index is `length` (needs length prior bars).
+    """
+    n = len(highs)
+    upper: list[float | None] = [None] * n
+    lower: list[float | None] = [None] * n
+    if length <= 0 or n <= length:
+        return upper, lower
+    for i in range(length, n):
+        upper[i] = max(highs[i - length : i])
+        lower[i] = min(lows[i - length : i])
+    return upper, lower
+
+
+def _ema_skip_none(values: list[float | None], length: int) -> list[float | None]:
+    """EMA over dense non-None values, mapped back to original indices."""
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0:
+        return out
+    dense: list[float] = []
+    idx_map: list[int] = []
+    for i, v in enumerate(values):
+        if v is None:
+            continue
+        dense.append(v)
+        idx_map.append(i)
+    if len(dense) < length:
+        return out
+    smoothed = ema(dense, length)
+    for j, i in enumerate(idx_map):
+        out[i] = smoothed[j]
+    return out
+
+
+def tsi(
+    closes: list[float],
+    long_length: int = 25,
+    short_length: int = 13,
+) -> list[float | None]:
+    """Blau True Strength Index (TradingView ta.tsi semantics).
+
+    TSI = 100 * EMA(EMA(change, long), short) / EMA(EMA(|change|, long), short)
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if long_length <= 0 or short_length <= 0 or n < 2:
+        return out
+    change: list[float | None] = [None] * n
+    abs_change: list[float | None] = [None] * n
+    for i in range(1, n):
+        c = closes[i] - closes[i - 1]
+        change[i] = c
+        abs_change[i] = abs(c)
+    ds_pc = _ema_skip_none(_ema_skip_none(change, long_length), short_length)
+    ds_apc = _ema_skip_none(_ema_skip_none(abs_change, long_length), short_length)
+    for i in range(n):
+        pc, apc = ds_pc[i], ds_apc[i]
+        if pc is None or apc is None or apc == 0.0:
+            continue
+        out[i] = 100.0 * pc / apc
+    return out
+
+
+def schaff_stc(
+    closes: list[float],
+    fast_length: int = 23,
+    slow_length: int = 50,
+    cycle_length: int = 10,
+    factor: float = 0.5,
+) -> list[float | None]:
+    """Schaff Trend Cycle (classic Doug Schaff; MACD stoch ×2 with factor smooth).
+
+    Defaults STC(23, 50, 10) with factor 0.5.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if (
+        fast_length <= 0
+        or slow_length <= 0
+        or cycle_length <= 0
+        or n < max(fast_length, slow_length) + cycle_length
+    ):
+        return out
+
+    e_fast = ema(closes, fast_length)
+    e_slow = ema(closes, slow_length)
+    macd: list[float | None] = [None] * n
+    for i in range(n):
+        if e_fast[i] is None or e_slow[i] is None:
+            continue
+        macd[i] = e_fast[i] - e_slow[i]  # type: ignore[operator]
+
+    def _stoch_series(src: list[float | None], length: int) -> list[float | None]:
+        st: list[float | None] = [None] * n
+        for i in range(n):
+            if i + 1 < length:
+                continue
+            window = src[i - length + 1 : i + 1]
+            if any(x is None for x in window):
+                continue
+            vals = [float(x) for x in window]  # type: ignore[arg-type]
+            hh = max(vals)
+            ll = min(vals)
+            if hh == ll:
+                st[i] = 0.0 if vals[-1] >= hh else 100.0
+            else:
+                st[i] = 100.0 * (vals[-1] - ll) / (hh - ll)
+        return st
+
+    def _factor_smooth(src: list[float | None], f: float) -> list[float | None]:
+        sm: list[float | None] = [None] * n
+        prev: float | None = None
+        for i in range(n):
+            v = src[i]
+            if v is None:
+                continue
+            if prev is None:
+                prev = v
+            else:
+                prev = prev + f * (v - prev)
+            sm[i] = prev
+        return sm
+
+    k1 = _stoch_series(macd, cycle_length)
+    d1 = _factor_smooth(k1, factor)
+    k2 = _stoch_series(d1, cycle_length)
+    return _factor_smooth(k2, factor)
