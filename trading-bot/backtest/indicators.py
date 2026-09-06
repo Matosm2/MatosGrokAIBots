@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 
 def ema(values: list[float], length: int) -> list[float | None]:
     """Exponential moving average. Seed = SMA of first `length` closes (Pine/TV)."""
@@ -843,3 +845,99 @@ def schaff_stc(
     d1 = _factor_smooth(k1, factor)
     k2 = _stoch_series(d1, cycle_length)
     return _factor_smooth(k2, factor)
+
+
+def roc(values: list[float], length: int) -> list[float | None]:
+    """Rate of change in percent: 100 * (v[i] / v[i-length] - 1). Pine ta.roc."""
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n <= length:
+        return out
+    for i in range(length, n):
+        prev = values[i - length]
+        if prev == 0.0:
+            out[i] = 0.0
+        else:
+            out[i] = 100.0 * (values[i] / prev - 1.0)
+    return out
+
+
+def wma(values: list[float | None], length: int) -> list[float | None]:
+    """Weighted moving average; most recent bar has weight `length` (Pine ta.wma)."""
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+    denom = length * (length + 1) / 2.0
+    for i in range(length - 1, n):
+        window = values[i - length + 1 : i + 1]
+        if any(v is None for v in window):
+            continue
+        s = 0.0
+        for j, v in enumerate(window):
+            s += float(v) * (j + 1)  # type: ignore[arg-type]
+        out[i] = s / denom
+    return out
+
+
+def fisher_transform(
+    highs: list[float],
+    lows: list[float],
+    length: int = 10,
+) -> tuple[list[float | None], list[float | None]]:
+    """Ehlers Fisher Transform of median price (UsingTheFisherTransform.pdf).
+
+    Price = (H+L)/2. Normalize over `length` with 0.33/0.67 smooth, clamp ±0.999,
+    Fish = 0.5*ln((1+v)/(1-v)) + 0.5*Fish[1]. Trigger = Fish[1].
+    Returns (fish, trigger).
+    """
+    n = len(highs)
+    fish: list[float | None] = [None] * n
+    trigger: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return fish, trigger
+
+    value1 = 0.0
+    prev_fish = 0.0
+    for i in range(n):
+        if i + 1 < length:
+            continue
+        price = (highs[i] + lows[i]) / 2.0
+        window_p = [(highs[j] + lows[j]) / 2.0 for j in range(i - length + 1, i + 1)]
+        hh = max(window_p)
+        ll = min(window_p)
+        if hh == ll:
+            raw = 0.0
+        else:
+            raw = 0.33 * 2.0 * ((price - ll) / (hh - ll) - 0.5) + 0.67 * value1
+        if raw > 0.99:
+            raw = 0.999
+        elif raw < -0.99:
+            raw = -0.999
+        value1 = raw
+        cur = 0.5 * math.log((1.0 + value1) / (1.0 - value1)) + 0.5 * prev_fish
+        fish[i] = cur
+        if i >= 1 and fish[i - 1] is not None:
+            trigger[i] = fish[i - 1]
+        prev_fish = cur
+    return fish, trigger
+
+
+def coppock_curve(
+    closes: list[float],
+    roc_long: int = 14,
+    roc_short: int = 11,
+    wma_len: int = 10,
+) -> list[float | None]:
+    """Coppock = WMA(ROC(roc_long) + ROC(roc_short), wma_len)."""
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    r_long = roc(closes, roc_long)
+    r_short = roc(closes, roc_short)
+    summed: list[float | None] = [None] * n
+    for i in range(n):
+        a, b = r_long[i], r_short[i]
+        if a is None or b is None:
+            continue
+        summed[i] = a + b
+    return wma(summed, wma_len)
