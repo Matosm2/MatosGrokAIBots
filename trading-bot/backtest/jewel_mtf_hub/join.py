@@ -4,7 +4,8 @@ HTF values become available only after the HTF bar closes.
 For an LTF decision at LTF close time T_ltf_close, use the latest HTF bar
 whose close time <= T_ltf_close.
 
-Supported TFs: 4H, 1D, 2D (crypto-style continuous UTC sessions).
+Supports owned-tf-sweep-v1 TFs plus 1W (UTC continuous crypto sessions).
+Same close-time rule as jewel-mtf-hub-regime-v1 (#12).
 """
 
 from __future__ import annotations
@@ -13,31 +14,68 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
-# Bar durations in milliseconds (UTC continuous sessions).
+_MS_M = 60_000
+_MS_H = 60 * _MS_M
+_MS_D = 24 * _MS_H
+
+# Canonical uppercase keys used by normalize_tf / bar_close_ms.
 TF_MS: dict[str, int] = {
-    "4H": 4 * 60 * 60 * 1000,
-    "1D": 24 * 60 * 60 * 1000,
-    "2D": 2 * 24 * 60 * 60 * 1000,
+    "5M": 5 * _MS_M,
+    "10M": 10 * _MS_M,
+    "15M": 15 * _MS_M,
+    "30M": 30 * _MS_M,
+    "90M": 90 * _MS_M,
+    "1H": 1 * _MS_H,
+    "2H": 2 * _MS_H,
+    "3H": 3 * _MS_H,
+    "4H": 4 * _MS_H,
+    "5H": 5 * _MS_H,
+    "6H": 6 * _MS_H,
+    "7H": 7 * _MS_H,
+    "9H": 9 * _MS_H,
+    "12H": 12 * _MS_H,
+    "1D": 1 * _MS_D,
+    "2D": 2 * _MS_D,
+    "1W": 7 * _MS_D,
 }
 
 _TF_ALIASES: dict[str, str] = {
+    "5M": "5M",
+    "10M": "10M",
+    "15M": "15M",
+    "30M": "30M",
+    "90M": "90M",
+    "1H": "1H",
+    "2H": "2H",
+    "3H": "3H",
     "4H": "4H",
     "4HOUR": "4H",
     "4HR": "4H",
     "240": "4H",
+    "5H": "5H",
+    "6H": "6H",
+    "7H": "7H",
+    "9H": "9H",
+    "12H": "12H",
     "1D": "1D",
     "D": "1D",
     "1DAY": "1D",
     "DAILY": "1D",
     "2D": "2D",
     "2DAY": "2D",
+    "1W": "1W",
+    "W": "1W",
+    "1WEEK": "1W",
+    "WEEKLY": "1W",
 }
 
 
 def normalize_tf(tf: str) -> str:
     key = tf.strip().upper().replace(" ", "")
     if key not in _TF_ALIASES:
-        raise ValueError(f"Unsupported TF {tf!r}; expected one of 4H, 1D, 2D")
+        raise ValueError(
+            f"Unsupported TF {tf!r}; expected one of {', '.join(TF_MS)}"
+        )
     return _TF_ALIASES[key]
 
 

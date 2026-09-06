@@ -25,8 +25,11 @@ def test_normalize_tf_aliases():
     assert normalize_tf("4h") == "4H"
     assert normalize_tf("daily") == "1D"
     assert normalize_tf("2D") == "2D"
+    assert normalize_tf("1h") == "1H"
+    assert normalize_tf("5m") == "5M"
+    assert normalize_tf("1w") == "1W"
     with pytest.raises(ValueError):
-        normalize_tf("1h")
+        normalize_tf("99m")
 
 
 def test_bar_close_ms_durations():

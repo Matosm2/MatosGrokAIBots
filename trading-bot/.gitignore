@@ -19,3 +19,7 @@ backtest/cache/*.csv
 backtest/cache/*.meta.json
 # Jewel Path B generated reports (keep fixtures + .gitkeep)
 backtest/jewel_replay/results/*.md
+
+# owned-tf-sweep-v1 OHLCV caches
+backtest/cache/mtf/*.csv
+backtest/cache/mtf/*.meta.json
