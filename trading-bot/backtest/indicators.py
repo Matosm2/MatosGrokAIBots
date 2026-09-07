@@ -1393,3 +1393,51 @@ def choppiness_index(
         else:
             out[i] = 100.0 * math.log10(sum_tr / span) / log_n
     return out
+
+
+def cyber_cycle(
+    highs: list[float],
+    lows: list[float],
+    alpha: float = 0.07,
+) -> tuple[list[float | None], list[float | None]]:
+    """Ehlers Cyber Cycle (Rocket Science for Traders) × Trigger=Cycle[1].
+
+    Price = (H+L)/2; Smooth = (P + 2P[1] + 2P[2] + P[3]) / 6;
+    Cycle = (1−0.5α)² (Smooth − 2 Smooth[1] + Smooth[2])
+          + 2(1−α) Cycle[1] − (1−α)² Cycle[2].
+    Trigger = Cycle[1]. No Fisher graft.
+    """
+    n = len(highs)
+    cycle: list[float | None] = [None] * n
+    trigger: list[float | None] = [None] * n
+    if n == 0 or alpha <= 0.0 or alpha >= 1.0:
+        return cycle, trigger
+
+    price = [(highs[i] + lows[i]) / 2.0 for i in range(n)]
+    smooth: list[float | None] = [None] * n
+    for i in range(n):
+        if i < 3:
+            smooth[i] = price[i]
+        else:
+            smooth[i] = (
+                price[i] + 2.0 * price[i - 1] + 2.0 * price[i - 2] + price[i - 3]
+            ) / 6.0
+
+    a = alpha
+    c1 = (1.0 - 0.5 * a) ** 2
+    c2 = 2.0 * (1.0 - a)
+    c3 = (1.0 - a) ** 2
+
+    # Seed first two cycles as zero (Ehlers); then recurse.
+    for i in range(n):
+        if i < 2:
+            cycle[i] = 0.0
+            continue
+        s0, s1, s2 = smooth[i], smooth[i - 1], smooth[i - 2]
+        cy1, cy2 = cycle[i - 1], cycle[i - 2]
+        if s0 is None or s1 is None or s2 is None or cy1 is None or cy2 is None:
+            cycle[i] = 0.0
+            continue
+        cycle[i] = c1 * (s0 - 2.0 * s1 + s2) + c2 * cy1 - c3 * cy2
+        trigger[i] = cy1
+    return cycle, trigger
