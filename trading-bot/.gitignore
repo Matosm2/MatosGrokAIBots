@@ -21,3 +21,6 @@ backtest/cache/*.meta.json
 backtest/jewel_replay/results/*.md
 backtest/cache/mtf/*.csv
 backtest/cache/mtf/*.meta.json
+
+# Binance USDT-M fundingRate cache (Path B)
+backtest/cache/funding/

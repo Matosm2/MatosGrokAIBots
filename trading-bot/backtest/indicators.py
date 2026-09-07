@@ -1441,3 +1441,49 @@ def cyber_cycle(
         cycle[i] = c1 * (s0 - 2.0 * s1 + s2) + c2 * cy1 - c3 * cy2
         trigger[i] = cy1
     return cycle, trigger
+
+
+def mesa_sine_wave(
+    closes: list[float],
+    dominant_cycle: int = 15,
+    advance_deg: float = 45.0,
+) -> tuple[list[float | None], list[float | None]]:
+    """Ehlers / Tulip fixed-period MESA Sine Wave (Sine × LeadSine).
+
+    DFT window of length `dominant_cycle` on close; phase → sin(phase),
+    LeadSine = sin(phase + advance_deg). Default Advance=45° (π/4).
+    No Fisher / RSI graft. Returns (sine, lead_sine); warm-up = dominant_cycle bars.
+    """
+    n = len(closes)
+    sine: list[float | None] = [None] * n
+    lead: list[float | None] = [None] * n
+    period = int(dominant_cycle)
+    if period < 1 or n <= period:
+        return sine, lead
+
+    pi = math.pi
+    tpi = 2.0 * pi
+    adv = math.radians(float(advance_deg))
+
+    for i in range(period, n):
+        rp = 0.0
+        ip = 0.0
+        for j in range(period):
+            weight = closes[i - j]
+            ang = tpi * j / period
+            rp += math.cos(ang) * weight
+            ip += math.sin(ang) * weight
+        if abs(rp) > 0.001:
+            phase = math.atan(ip / rp)
+        else:
+            phase = (tpi / 2.0) * (-1.0 if ip < 0 else 1.0)
+        if rp < 0.0:
+            phase += pi
+        phase += pi / 2.0
+        if phase < 0.0:
+            phase += tpi
+        if phase > tpi:
+            phase -= tpi
+        sine[i] = math.sin(phase)
+        lead[i] = math.sin(phase + adv)
+    return sine, lead
