@@ -22,6 +22,8 @@ Parked: RVI / CHOP / Elder Impulse. Chandelier = exit-module only (v5).
 cd trading-bot
 python -m backtest.path_b.fresh_wave_v6
 # optional: --prefer-coarse  --tfs 2d,1d,12h,4h  --refresh
+python -m backtest.path_b.fresh_wave_v6 --oos-ladder
 ```
 
 Scoreboard: `results/fresh-wave-v6-scoreboard.md`
+OOS ladder: `results/fresh-wave-v6-oos-ladder.md` (twiggs-mf-v1 @ 3h|p21|B; ETH→SOL→BNB)
