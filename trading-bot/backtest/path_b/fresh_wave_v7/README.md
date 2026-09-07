@@ -2,7 +2,7 @@
 
 Path B research wave (FROZEN 2026-09-07): RVI Signal, CHOP breakout, Elder Impulse — last Part B seats (B6–B8).
 
-**RESEARCH ONLY** — no paper / alerts / webhook. BTC scoreboard only (no ETH OOS in this PR). Hold #15–#24 unmerged.
+**RESEARCH ONLY** — no paper / alerts / webhook. BTC scoreboard + OOS stop-ladder on PASS_6m elder cells. Hold #15–#24 unmerged.
 
 ## IDs
 
@@ -21,3 +21,9 @@ python -m backtest.path_b.fresh_wave_v7
 ```
 
 Scoreboard: `results/fresh-wave-v7-scoreboard.md`
+
+```bash
+python -m backtest.path_b.fresh_wave_v7 --oos-ladder
+```
+
+OOS stop-ladder (PASS_6m elder cells only; hard-stop rvi/chop): `results/fresh-wave-v7-oos-ladder.md`
