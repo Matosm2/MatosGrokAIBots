@@ -1487,3 +1487,183 @@ def mesa_sine_wave(
         sine[i] = math.sin(phase)
         lead[i] = math.sin(phase + adv)
     return sine, lead
+
+
+def ema_of_optional(values: list[float | None], length: int) -> list[float | None]:
+    """EMA over non-None densified values; map results back to original indices."""
+    n = len(values)
+    out: list[float | None] = [None] * n
+    dense: list[float] = []
+    idx: list[int] = []
+    for i, v in enumerate(values):
+        if v is None:
+            continue
+        dense.append(v)
+        idx.append(i)
+    if length <= 0 or len(dense) < length:
+        return out
+    smoothed = ema(dense, length)
+    for j, i in enumerate(idx):
+        out[i] = smoothed[j]
+    return out
+
+
+def smi_blau(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 13,
+    smooth1: int = 3,
+    smooth2: int = 3,
+    signal_len: int = 3,
+) -> tuple[list[float | None], list[float | None]]:
+    """Blau Stochastic Momentum Index (−100..+100) + EMA signal.
+
+    Midpoint relative range, double-smoothed — not classic Stochastic %K/%D.
+    """
+    n = len(closes)
+    smi: list[float | None] = [None] * n
+    sig: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return smi, sig
+
+    mid_diff: list[float | None] = [None] * n
+    half_range: list[float | None] = [None] * n
+    for i in range(length - 1, n):
+        window_h = highs[i - length + 1 : i + 1]
+        window_l = lows[i - length + 1 : i + 1]
+        hh = max(window_h)
+        ll = min(window_l)
+        mid_diff[i] = closes[i] - 0.5 * (hh + ll)
+        half_range[i] = 0.5 * (hh - ll)
+
+    m1 = ema_of_optional(mid_diff, smooth1)
+    h1 = ema_of_optional(half_range, smooth1)
+    m2 = ema_of_optional(m1, smooth2)
+    h2 = ema_of_optional(h1, smooth2)
+
+    for i in range(n):
+        if m2[i] is None or h2[i] is None:
+            continue
+        denom = h2[i]
+        if denom is None or denom == 0.0:
+            smi[i] = 0.0
+        else:
+            smi[i] = 100.0 * (m2[i] / denom)
+
+    sig = ema_of_optional(smi, signal_len)
+    return smi, sig
+
+
+def accumulation_distribution_line(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+) -> list[float]:
+    """Cumulative ADL (Chaikin): CLV × volume running sum."""
+    n = len(closes)
+    out: list[float] = [0.0] * n
+    cum = 0.0
+    for i in range(n):
+        hl = highs[i] - lows[i]
+        if hl == 0.0:
+            clv = 0.0
+        else:
+            clv = ((closes[i] - lows[i]) - (highs[i] - closes[i])) / hl
+        cum += clv * volumes[i]
+        out[i] = cum
+    return out
+
+
+def chaikin_oscillator(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    fast: int = 3,
+    slow: int = 10,
+) -> list[float | None]:
+    """Chaikin Oscillator = EMA(fast, ADL) − EMA(slow, ADL). Not CMF/OBV/MFI."""
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if fast <= 0 or slow <= 0 or n < slow:
+        return out
+    adl = accumulation_distribution_line(highs, lows, closes, volumes)
+    e_fast = ema(adl, fast)
+    e_slow = ema(adl, slow)
+    for i in range(n):
+        if e_fast[i] is None or e_slow[i] is None:
+            continue
+        out[i] = e_fast[i] - e_slow[i]  # type: ignore[operator]
+    return out
+
+
+def laguerre_filter(values: list[float], gamma: float = 0.8) -> list[float | None]:
+    """Ehlers Laguerre filter on price (not Laguerre RSI).
+
+    L0..L3 recursive FIR; output = (L0 + 2*L1 + 2*L2 + L3) / 6.
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if n == 0:
+        return out
+    g = gamma
+    l0 = l1 = l2 = l3 = 0.0
+    for i, price in enumerate(values):
+        if i == 0:
+            l0 = l1 = l2 = l3 = price
+        else:
+            prev0, prev1, prev2, prev3 = l0, l1, l2, l3
+            l0 = (1.0 - g) * price + g * prev0
+            l1 = -g * l0 + prev0 + g * prev1
+            l2 = -g * l1 + prev1 + g * prev2
+            l3 = -g * l2 + prev2 + g * prev3
+        out[i] = (l0 + 2.0 * l1 + 2.0 * l2 + l3) / 6.0
+    return out
+
+
+def session_vwap_bands(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    day_ids: list[int],
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    """UTC-session VWAP ±1σ (volume-weighted). Resets when day_ids change.
+
+    src = typical price (H+L+C)/3. σ from VW variance of src (TV-style).
+    Returns (vwap, lower_2sigma, upper_2sigma). ≠ Bollinger (SMA±σ of close).
+    """
+    n = len(closes)
+    vwap: list[float | None] = [None] * n
+    lo2: list[float | None] = [None] * n
+    hi2: list[float | None] = [None] * n
+    if n == 0:
+        return vwap, lo2, hi2
+
+    sum_pv = 0.0
+    sum_v = 0.0
+    sum_p2v = 0.0
+    cur_day = day_ids[0] - 1
+
+    for i in range(n):
+        if day_ids[i] != cur_day:
+            cur_day = day_ids[i]
+            sum_pv = 0.0
+            sum_v = 0.0
+            sum_p2v = 0.0
+        tp = (highs[i] + lows[i] + closes[i]) / 3.0
+        vol = volumes[i]
+        sum_pv += tp * vol
+        sum_p2v += tp * tp * vol
+        sum_v += vol
+        if sum_v <= 0.0:
+            continue
+        vw = sum_pv / sum_v
+        var = max(sum_p2v / sum_v - vw * vw, 0.0)
+        sd = math.sqrt(var)
+        vwap[i] = vw
+        lo2[i] = vw - 2.0 * sd
+        hi2[i] = vw + 2.0 * sd
+    return vwap, lo2, hi2
