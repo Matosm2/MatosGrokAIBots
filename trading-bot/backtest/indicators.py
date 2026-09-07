@@ -941,3 +941,214 @@ def coppock_curve(
             continue
         summed[i] = a + b
     return wma(summed, wma_len)
+
+
+def macd_hist(
+    closes: list[float],
+    fast: int = 12,
+    slow: int = 26,
+    signal: int = 9,
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    """MACD line, signal, histogram (EMA fast−slow; signal=EMA of MACD)."""
+    n = len(closes)
+    macd_line: list[float | None] = [None] * n
+    signal_line: list[float | None] = [None] * n
+    hist: list[float | None] = [None] * n
+    if fast <= 0 or slow <= 0 or signal <= 0 or n < slow:
+        return macd_line, signal_line, hist
+    e_fast = ema(closes, fast)
+    e_slow = ema(closes, slow)
+    for i in range(n):
+        if e_fast[i] is None or e_slow[i] is None:
+            continue
+        macd_line[i] = e_fast[i] - e_slow[i]  # type: ignore[operator]
+    signal_line = _ema_skip_none(macd_line, signal)
+    for i in range(n):
+        if macd_line[i] is None or signal_line[i] is None:
+            continue
+        hist[i] = macd_line[i] - signal_line[i]  # type: ignore[operator]
+    return macd_line, signal_line, hist
+
+
+def force_index(
+    closes: list[float], volumes: list[float]
+) -> list[float | None]:
+    """Elder Force Index raw: (close − close[1]) × volume."""
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    for i in range(1, n):
+        out[i] = (closes[i] - closes[i - 1]) * volumes[i]
+    return out
+
+
+def cmf(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    length: int = 21,
+) -> list[float | None]:
+    """Chaikin Money Flow over `length` bars."""
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+    mfv: list[float] = [0.0] * n
+    for i in range(n):
+        hl = highs[i] - lows[i]
+        if hl == 0.0:
+            clv = 0.0
+        else:
+            clv = ((closes[i] - lows[i]) - (highs[i] - closes[i])) / hl
+        mfv[i] = clv * volumes[i]
+    sum_mfv = sum(mfv[:length])
+    sum_vol = sum(volumes[:length])
+    out[length - 1] = (sum_mfv / sum_vol) if sum_vol != 0.0 else 0.0
+    for i in range(length, n):
+        sum_mfv += mfv[i] - mfv[i - length]
+        sum_vol += volumes[i] - volumes[i - length]
+        out[i] = (sum_mfv / sum_vol) if sum_vol != 0.0 else 0.0
+    return out
+
+
+def mfi(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    length: int = 14,
+) -> list[float | None]:
+    """Money Flow Index (volume-weighted RSI of typical price)."""
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length + 1:
+        return out
+    tp = [(highs[i] + lows[i] + closes[i]) / 3.0 for i in range(n)]
+    pos_mf = [0.0] * n
+    neg_mf = [0.0] * n
+    for i in range(1, n):
+        raw = tp[i] * volumes[i]
+        if tp[i] > tp[i - 1]:
+            pos_mf[i] = raw
+        elif tp[i] < tp[i - 1]:
+            neg_mf[i] = raw
+    for i in range(length, n):
+        pos = sum(pos_mf[i - length + 1 : i + 1])
+        neg = sum(neg_mf[i - length + 1 : i + 1])
+        if neg == 0.0:
+            out[i] = 100.0
+        else:
+            ratio = pos / neg
+            out[i] = 100.0 - (100.0 / (1.0 + ratio))
+    return out
+
+
+def linreg_channel(
+    closes: list[float],
+    length: int = 20,
+    k_sigma: float = 2.0,
+) -> tuple[
+    list[float | None],
+    list[float | None],
+    list[float | None],
+    list[float | None],
+    list[float | None],
+]:
+    """Rolling linear regression mid / ±kσ bands / slope / R².
+
+    Returns (mid, upper, lower, slope, r2).
+    """
+    n = len(closes)
+    mid: list[float | None] = [None] * n
+    upper: list[float | None] = [None] * n
+    lower: list[float | None] = [None] * n
+    slope: list[float | None] = [None] * n
+    r2: list[float | None] = [None] * n
+    if length <= 1 or n < length:
+        return mid, upper, lower, slope, r2
+    # Precompute x stats for 0..L-1
+    xs = list(range(length))
+    x_mean = (length - 1) / 2.0
+    ss_xx = sum((x - x_mean) ** 2 for x in xs)
+    for i in range(length - 1, n):
+        window = closes[i - length + 1 : i + 1]
+        y_mean = sum(window) / length
+        ss_xy = sum((xs[j] - x_mean) * (window[j] - y_mean) for j in range(length))
+        b = ss_xy / ss_xx if ss_xx != 0.0 else 0.0
+        a = y_mean - b * x_mean
+        fitted = [a + b * xs[j] for j in range(length)]
+        resid = [window[j] - fitted[j] for j in range(length)]
+        ss_res = sum(r * r for r in resid)
+        ss_tot = sum((y - y_mean) ** 2 for y in window)
+        sigma = math.sqrt(ss_res / length) if length > 0 else 0.0
+        mid_i = fitted[-1]
+        mid[i] = mid_i
+        upper[i] = mid_i + k_sigma * sigma
+        lower[i] = mid_i - k_sigma * sigma
+        slope[i] = b
+        r2[i] = 1.0 - (ss_res / ss_tot) if ss_tot > 0.0 else 0.0
+    return mid, upper, lower, slope, r2
+
+
+def ultimate_oscillator(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    short: int = 7,
+    mid: int = 14,
+    long: int = 28,
+) -> list[float | None]:
+    """Williams Ultimate Oscillator (7/14/28 classic weights 4:2:1)."""
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if short <= 0 or mid <= 0 or long <= 0 or n < long + 1:
+        return out
+    bp = [0.0] * n
+    tr = [0.0] * n
+    for i in range(n):
+        prev_c = closes[i - 1] if i > 0 else closes[i]
+        true_low = min(lows[i], prev_c)
+        true_high = max(highs[i], prev_c)
+        bp[i] = closes[i] - true_low
+        tr[i] = true_high - true_low
+    for i in range(long, n):
+        avg_s_bp = sum(bp[i - short + 1 : i + 1])
+        avg_s_tr = sum(tr[i - short + 1 : i + 1])
+        avg_m_bp = sum(bp[i - mid + 1 : i + 1])
+        avg_m_tr = sum(tr[i - mid + 1 : i + 1])
+        avg_l_bp = sum(bp[i - long + 1 : i + 1])
+        avg_l_tr = sum(tr[i - long + 1 : i + 1])
+        if avg_s_tr == 0.0 or avg_m_tr == 0.0 or avg_l_tr == 0.0:
+            continue
+        raw = (
+            4.0 * (avg_s_bp / avg_s_tr)
+            + 2.0 * (avg_m_bp / avg_m_tr)
+            + 1.0 * (avg_l_bp / avg_l_tr)
+        )
+        out[i] = 100.0 * raw / 7.0
+    return out
+
+
+def chandelier_exit_long(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    atr_length: int = 22,
+    mult: float = 3.0,
+) -> list[float | None]:
+    """Chandelier Exit long trail: rolling HH(atr_length) − mult×ATR(atr_length).
+
+    Helper only — not a primary strategy seat. ≠ SuperTrend.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if atr_length <= 0 or n < atr_length:
+        return out
+    atr_s = atr(highs, lows, closes, atr_length)
+    for i in range(atr_length - 1, n):
+        a = atr_s[i]
+        if a is None:
+            continue
+        hh = max(highs[i - atr_length + 1 : i + 1])
+        out[i] = hh - mult * a
+    return out
