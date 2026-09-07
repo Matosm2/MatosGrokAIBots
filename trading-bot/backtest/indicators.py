@@ -1297,3 +1297,99 @@ def demarker(
         out[i] = 0.0 if denom == 0.0 else smax / denom
     return out
 
+
+
+def relative_vigor_index(
+    opens: list[float],
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 10,
+    signal_length: int = 4,
+) -> tuple[list[float | None], list[float | None]]:
+    """Ehlers Relative Vigor Index + Signal (symmetric 4-bar weights).
+
+    Value1 = ((c-o)+2*(c1-o1)+2*(c2-o2)+(c3-o3))/6
+    Value2 = ((h-l)+2*(h1-l1)+2*(h2-l2)+(h3-l3))/6
+    RVI = Sum(Value1, length) / Sum(Value2, length)
+    Signal = (RVI+2*RVI[1]+2*RVI[2]+RVI[3])/6  (when signal_length==4 classic)
+    For signal_length != 4, fall back to SMA(RVI, signal_length).
+    """
+    n = len(closes)
+    rvi: list[float | None] = [None] * n
+    signal: list[float | None] = [None] * n
+    if length <= 0 or n < length + 3:
+        return rvi, signal
+
+    v1 = [0.0] * n
+    v2 = [0.0] * n
+    for i in range(3, n):
+        v1[i] = (
+            (closes[i] - opens[i])
+            + 2.0 * (closes[i - 1] - opens[i - 1])
+            + 2.0 * (closes[i - 2] - opens[i - 2])
+            + (closes[i - 3] - opens[i - 3])
+        ) / 6.0
+        v2[i] = (
+            (highs[i] - lows[i])
+            + 2.0 * (highs[i - 1] - lows[i - 1])
+            + 2.0 * (highs[i - 2] - lows[i - 2])
+            + (highs[i - 3] - lows[i - 3])
+        ) / 6.0
+
+    # First RVI index needs length bars of v1/v2 starting at index 3
+    first = 3 + length - 1
+    if first >= n:
+        return rvi, signal
+    sum1 = sum(v1[3 : 3 + length])
+    sum2 = sum(v2[3 : 3 + length])
+    rvi[first] = 0.0 if sum2 == 0.0 else sum1 / sum2
+    for i in range(first + 1, n):
+        sum1 += v1[i] - v1[i - length]
+        sum2 += v2[i] - v2[i - length]
+        rvi[i] = 0.0 if sum2 == 0.0 else sum1 / sum2
+
+    if signal_length == 4:
+        for i in range(first + 3, n):
+            a, b, c, d = rvi[i], rvi[i - 1], rvi[i - 2], rvi[i - 3]
+            if a is None or b is None or c is None or d is None:
+                continue
+            signal[i] = (a + 2.0 * b + 2.0 * c + d) / 6.0
+    else:
+        signal = _sma_nullable(rvi, signal_length)
+    return rvi, signal
+
+
+def choppiness_index(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 14,
+) -> list[float | None]:
+    """Choppiness Index CHOP(length) in ~[0, 100].
+
+    CHOP = 100 * log10(sum(TR, n) / (HH - LL)) / log10(n)
+    Low CHOP = trending; high CHOP = choppy.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 1 or n < length:
+        return out
+    tr = true_range(highs, lows, closes)
+    # true_range[0] is high-low; rest use prior close — fine for CHOP
+    log_n = math.log10(float(length))
+    if log_n == 0.0:
+        return out
+    for i in range(length - 1, n):
+        window_tr = tr[i - length + 1 : i + 1]
+        if any(x is None for x in window_tr):
+            continue
+        sum_tr = sum(float(x) for x in window_tr)  # type: ignore[arg-type]
+        hh = max(highs[i - length + 1 : i + 1])
+        ll = min(lows[i - length + 1 : i + 1])
+        span = hh - ll
+        if span <= 0.0 or sum_tr <= 0.0:
+            out[i] = 100.0
+        else:
+            out[i] = 100.0 * math.log10(sum_tr / span) / log_n
+    return out
