@@ -2,7 +2,7 @@
 
 Path B research wave (FROZEN 2026-09-07): Elder Triple Screen+FI, CMF, LinReg+R², MFI-only, Ultimate Oscillator. Chandelier Exit = helper only.
 
-**RESEARCH ONLY** — no paper / alerts / webhook. No ETH OOS in this PR. Part B parked.
+**RESEARCH ONLY** — no paper / alerts / webhook. Part B parked. OOS stop-ladder via `--oos-ladder`.
 
 ## IDs
 
@@ -21,6 +21,8 @@ Path B research wave (FROZEN 2026-09-07): Elder Triple Screen+FI, CMF, LinReg+R�
 cd trading-bot
 python -m backtest.path_b.fresh_wave_v5
 # optional: --prefer-4h-1d  --tfs 2d,1d,12h,4h  --refresh
+# OOS: python -m backtest.path_b.fresh_wave_v5 --oos-ladder
 ```
 
 Scoreboard: `results/fresh-wave-v5-scoreboard.md`
+OOS ladder: `results/fresh-wave-v5-oos-ladder.md`
