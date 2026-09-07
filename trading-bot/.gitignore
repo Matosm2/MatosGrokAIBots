@@ -19,3 +19,8 @@ backtest/cache/*.csv
 backtest/cache/*.meta.json
 # Jewel Path B generated reports (keep fixtures + .gitkeep)
 backtest/jewel_replay/results/*.md
+backtest/cache/mtf/*.csv
+backtest/cache/mtf/*.meta.json
+
+# Binance USDT-M fundingRate cache (Path B)
+backtest/cache/funding/
