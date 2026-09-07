@@ -1152,3 +1152,148 @@ def chandelier_exit_long(
         hh = max(highs[i - atr_length + 1 : i + 1])
         out[i] = hh - mult * a
     return out
+
+def _sma_nullable(values: list[float | None], length: int) -> list[float | None]:
+    """SMA over nullable series; window must be fully non-None."""
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+    for i in range(length - 1, n):
+        window = values[i - length + 1 : i + 1]
+        if any(v is None for v in window):
+            continue
+        out[i] = sum(float(v) for v in window) / length  # type: ignore[arg-type]
+    return out
+
+
+def _mass_index_sum(
+    ratio: list[float | None], sum_length: int
+) -> list[float | None]:
+    n = len(ratio)
+    out: list[float | None] = [None] * n
+    if sum_length <= 0 or n < sum_length:
+        return out
+    for i in range(sum_length - 1, n):
+        window = ratio[i - sum_length + 1 : i + 1]
+        if any(v is None for v in window):
+            continue
+        out[i] = sum(float(v) for v in window)  # type: ignore[arg-type]
+    return out
+
+
+def mass_index(
+    highs: list[float],
+    lows: list[float],
+    ema_length: int = 9,
+    sum_length: int = 25,
+) -> list[float | None]:
+    """Dorsey Mass Index: rolling sum of Single/Double EMA(HL) ratio.
+
+    Single = EMA(high-low, ema_length); Double = EMA(Single, ema_length).
+    MI = sum(Single/Double) over sum_length bars.
+    """
+    n = len(highs)
+    if ema_length <= 0 or sum_length <= 0 or n < ema_length:
+        return [None] * n
+    hl = [highs[i] - lows[i] for i in range(n)]
+    single = ema(hl, ema_length)
+    double = _ema_skip_none(single, ema_length)
+    ratio: list[float | None] = [None] * n
+    for i in range(n):
+        s, d = single[i], double[i]
+        if s is None or d is None or d == 0.0:
+            continue
+        ratio[i] = s / d
+    return _mass_index_sum(ratio, sum_length)
+
+
+def kst(
+    closes: list[float],
+    roc_lengths: tuple[int, int, int, int] = (10, 15, 20, 30),
+    sma_lengths: tuple[int, int, int, int] = (10, 10, 10, 15),
+    signal_length: int = 9,
+    weights: tuple[float, float, float, float] = (1.0, 2.0, 3.0, 4.0),
+) -> tuple[list[float | None], list[float | None]]:
+    """Pring Know Sure Thing (KST) line + signal SMA.
+
+    KST = sum weight_i * SMA(ROC(roc_i), sma_i). Signal = SMA(KST, signal_length).
+    """
+    n = len(closes)
+    kst_line: list[float | None] = [None] * n
+    if len(roc_lengths) != 4 or len(sma_lengths) != 4 or len(weights) != 4:
+        return kst_line, [None] * n
+    rcmas: list[list[float | None]] = []
+    for roc_l, sma_l in zip(roc_lengths, sma_lengths):
+        r = roc(closes, roc_l)
+        rcmas.append(_sma_nullable(r, sma_l))
+    for i in range(n):
+        vals = [rcmas[j][i] for j in range(4)]
+        if any(v is None for v in vals):
+            continue
+        kst_line[i] = sum(weights[j] * float(vals[j]) for j in range(4))  # type: ignore[arg-type]
+    signal = _sma_nullable(kst_line, signal_length)
+    return kst_line, signal
+
+
+def twiggs_money_flow(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    length: int = 21,
+) -> list[float | None]:
+    """Twiggs Money Flow (Incredible Charts): Wilder RMA(AD) / RMA(Volume).
+
+    AD uses True High/Low vs prior close — not CMF (SMA of CLV*vol).
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+    ad: list[float | None] = [None] * n
+    vol_s: list[float | None] = [None] * n
+    for i in range(n):
+        prev_c = closes[i - 1] if i > 0 else closes[i]
+        th = max(highs[i], prev_c)
+        tl = min(lows[i], prev_c)
+        span = th - tl
+        if span == 0.0:
+            ad[i] = 0.0
+        else:
+            ad[i] = volumes[i] * ((closes[i] - tl) - (th - closes[i])) / span
+        vol_s[i] = volumes[i]
+    ad_r = rma(ad, length)
+    vol_r = rma(vol_s, length)
+    for i in range(n):
+        a, v = ad_r[i], vol_r[i]
+        if a is None or v is None:
+            continue
+        out[i] = 0.0 if v == 0.0 else a / v
+    return out
+
+
+def demarker(
+    highs: list[float],
+    lows: list[float],
+    length: int = 14,
+) -> list[float | None]:
+    """DeMarker oscillator DeM(length) in [0, 1]. No RSI graft."""
+    n = len(highs)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length + 1:
+        return out
+    demax = [0.0] * n
+    demin = [0.0] * n
+    for i in range(1, n):
+        if highs[i] > highs[i - 1]:
+            demax[i] = highs[i] - highs[i - 1]
+        if lows[i] < lows[i - 1]:
+            demin[i] = lows[i - 1] - lows[i]
+    for i in range(length, n):
+        smax = sum(demax[i - length + 1 : i + 1])
+        smin = sum(demin[i - length + 1 : i + 1])
+        denom = smax + smin
+        out[i] = 0.0 if denom == 0.0 else smax / denom
+    return out
+
