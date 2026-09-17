@@ -115,10 +115,13 @@ def compute_signals(
             prev_c = closes[i - 1] if i > 0 else 0.0
             prev_s = sma_vals[i - 1] if i > 0 else None
             prev_pv = pvo_vals[i - 1] if i > 0 else None
-            prev_gate = (prev_pv > 0.0) if params.gate_variant == "pvo_pos" else (
-                prev_pv is not None and i > 1 and pvo_vals[i - 1] is not None and pvo_vals[i - 2] is not None
-                and pvo_vals[i - 1] > pvo_vals[i - 2] and sig_vals[i - 1] is not None and pvo_vals[i - 1] > sig_vals[i - 1]
-            )
+            prev_gate = False
+            if prev_pv is not None:
+                if params.gate_variant == "pvo_pos":
+                    prev_gate = prev_pv > 0.0
+                elif i > 1 and pvo_vals[i - 2] is not None and sig_vals[i - 1] is not None:
+                    prev_gate = prev_pv > pvo_vals[i - 2] and prev_pv > sig_vals[i - 1]
+
             cond_now = c > s and gate_active
             cond_prev = prev_s is not None and prev_c > prev_s and prev_gate
             if cond_now and not cond_prev:
