@@ -1791,3 +1791,200 @@ def accumulative_swing_index(
         out[i] = cum
     return out
 
+
+def alma(
+    values: list[float],
+    length: int = 9,
+    offset: float = 0.85,
+    sigma: float = 6.0,
+) -> list[float | None]:
+    """Arnaud Legoux Moving Average (ALMA).
+
+    FIR filter with Gaussian distribution weights centered at offset * (length - 1).
+    TradingView / LuxAlgo formula:
+      m = floor(offset * (length - 1))  # or float in TV: offset * (length - 1)
+      s = length / sigma
+      weight_i = exp(- (i - m)^2 / (2 * s^2)) for i in 0 .. length - 1
+      ALMA[t] = sum(weight_i * values[t - length + 1 + i]) / sum(weight_i)
+    Returns None for indices < length - 1.
+    """
+    import math
+
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length or sigma <= 0.0:
+        return out
+
+    m = offset * (length - 1)
+    s = length / sigma
+    two_s_sq = 2.0 * s * s
+
+    weights = [math.exp(-((i - m) ** 2) / two_s_sq) for i in range(length)]
+    sum_w = sum(weights)
+    if sum_w == 0.0:
+        return out
+
+    # Pre-normalize weights
+    norm_weights = [w / sum_w for w in weights]
+
+    for t in range(length - 1, n):
+        # values window from t - length + 1 up to t
+        window = values[t - length + 1 : t + 1]
+        val = sum(norm_weights[i] * window[i] for i in range(length))
+        out[t] = val
+
+    return out
+
+
+def cmo(values: list[float], length: int = 20) -> list[float | None]:
+    """Chande Momentum Oscillator (CMO).
+
+    CMO = 100 * (Su - Sd) / (Su + Sd)
+    where:
+      Su = sum of positive close differences over length
+      Sd = sum of absolute negative close differences over length
+    Values range between -100 and +100.
+    Returns None for indices < length.
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n <= length:
+        return out
+
+    # Compute 1-bar deltas
+    diffs = [0.0] * n
+    for i in range(1, n):
+        diffs[i] = values[i] - values[i - 1]
+
+    u = [diff if diff > 0.0 else 0.0 for diff in diffs]
+    d = [-diff if diff < 0.0 else 0.0 for diff in diffs]
+
+    su = sum(u[1 : length + 1])
+    sd = sum(d[1 : length + 1])
+    denom = su + sd
+    out[length] = (100.0 * (su - sd) / denom) if denom != 0.0 else 0.0
+
+    for i in range(length + 1, n):
+        su += u[i] - u[i - length]
+        sd += d[i] - d[i - length]
+        denom = su + sd
+        out[i] = (100.0 * (su - sd) / denom) if denom != 0.0 else 0.0
+
+    return out
+
+
+def ehlers_cg(
+    prices: list[float],
+    length: int = 10,
+) -> tuple[list[float | None], list[float | None]]:
+    """Ehlers Center of Gravity (CG) Oscillator and Trigger.
+
+    Price = hl2 (or input prices, e.g. (high+low)/2)
+    CG = - sum_{i=0}^{length-1} (1 + i) * Price[t - i] / sum_{i=0}^{length-1} Price[t - i]
+    Trigger = CG[1] (1-bar delayed CG)
+    Returns (cg, trigger).
+    """
+    n = len(prices)
+    cg: list[float | None] = [None] * n
+    trigger: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return cg, trigger
+
+    for t in range(length - 1, n):
+        num = 0.0
+        denom = 0.0
+        for i in range(length):
+            p = prices[t - i]
+            num += (1.0 + i) * p
+            denom += p
+        if denom != 0.0:
+            cg[t] = -num / denom
+        else:
+            cg[t] = 0.0
+
+    for t in range(1, n):
+        trigger[t] = cg[t - 1]
+
+    return cg, trigger
+
+
+def ehlers_roofing_filter(
+    prices: list[float],
+    hp_period: int = 48,
+    ss_period: int = 10,
+) -> list[float | None]:
+    """Ehlers Roofing Filter.
+
+    Two-pole HighPass filter (hp_period) cascades into a two-pole SuperSmoother filter (ss_period).
+    Documented IIR coefficients (per John Ehlers, Cycle Analytics for Traders / MESA):
+
+    HighPass (2-pole):
+      theta = 0.707 * 2 * pi / hp_period
+      alpha1 = (cos(theta) + sin(theta) - 1.0) / cos(theta)
+      c1 = (1.0 - alpha1 / 2.0)^2
+      c2 = 2.0 * (1.0 - alpha1)
+      c3 = - (1.0 - alpha1)^2
+      HP[t] = c1 * (Price[t] - 2*Price[t-1] + Price[t-2]) + c2 * HP[t-1] + c3 * HP[t-2]
+
+    SuperSmoother (2-pole):
+      a1 = exp(-sqrt(2) * pi / ss_period)
+      b1 = 2 * a1 * cos(sqrt(2) * pi / ss_period)
+      c2_ss = b1
+      c3_ss = - a1^2
+      c1_ss = 1.0 - c2_ss - c3_ss
+      Roof[t] = c1_ss * ((HP[t] + HP[t-1]) / 2.0) + c2_ss * Roof[t-1] + c3_ss * Roof[t-2]
+
+    Returns Roofing series (float). Warmup returns None until HP and SS stabilize (max(hp, ss)).
+    """
+    import math
+
+    n = len(prices)
+    roof: list[float | None] = [None] * n
+    if n < 4 or hp_period <= 2 or ss_period <= 2:
+        return roof
+
+    # HighPass coefficients
+    hp_rad = 0.707 * 2.0 * math.pi / hp_period
+    cos_hp = math.cos(hp_rad)
+    sin_hp = math.sin(hp_rad)
+    if cos_hp == 0.0:
+        return roof
+    alpha1 = (cos_hp + sin_hp - 1.0) / cos_hp
+    c1 = (1.0 - alpha1 / 2.0) ** 2
+    c2 = 2.0 * (1.0 - alpha1)
+    c3 = -((1.0 - alpha1) ** 2)
+
+    # SuperSmoother coefficients
+    ss_rad = math.sqrt(2.0) * math.pi / ss_period
+    a1 = math.exp(-ss_rad)
+    b1 = 2.0 * a1 * math.cos(ss_rad)
+    c2_ss = b1
+    c3_ss = -(a1**2)
+    c1_ss = 1.0 - c2_ss - c3_ss
+
+    hp = [0.0] * n
+    for t in range(n):
+        if t == 0:
+            hp[t] = 0.0
+        elif t == 1:
+            hp[t] = 0.0
+        else:
+            diff = prices[t] - 2.0 * prices[t - 1] + prices[t - 2]
+            hp[t] = c1 * diff + c2 * hp[t - 1] + c3 * hp[t - 2]
+
+    ss = [0.0] * n
+    warmup = max(hp_period, ss_period) * 2
+    for t in range(n):
+        if t == 0:
+            ss[t] = 0.0
+        elif t == 1:
+            ss[t] = (hp[1] + hp[0]) / 2.0
+        else:
+            inp = (hp[t] + hp[t - 1]) / 2.0
+            ss[t] = c1_ss * inp + c2_ss * ss[t - 1] + c3_ss * ss[t - 2]
+            if t >= warmup:
+                roof[t] = ss[t]
+
+    return roof
+
+

@@ -17,5 +17,6 @@ TV-free offline bar-close backtests (not paper/live).
 | fresh-wave-v9 | `fresh_wave_v9/` | `python -m backtest.path_b.fresh_wave_v9` |
 | fresh-wave-v10 | `fresh_wave_v10/` | `python -m backtest.path_b.fresh_wave_v10` |
 | stage1-reopen-v1 | `stage1_reopen_v1/` | `python -m backtest.path_b.stage1_reopen_v1` |
+| stage2-sol-aware-v1 | `stage2_sol_aware_v1/` | `python -m backtest.path_b.stage2_sol_aware_v1` |
 
 Feed: `mtf_ohlcv/` (5m agg + 1d native).
