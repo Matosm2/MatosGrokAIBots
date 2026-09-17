@@ -2363,5 +2363,225 @@ def zlema(
     return ema(src_comp, length)
 
 
+def cti(closes: list[float], length: int = 20) -> list[float | None]:
+    """Ehlers Correlation Trend Indicator (CTI, TASC May 2020).
+
+    Computes the Pearson correlation coefficient r between closes and an ideal rising
+    straight line (Y_i = i) over a rolling window of length L.
+    Values range from -1.0 (perfect downtrend) to +1.0 (perfect uptrend).
+
+    Formula:
+      X_i = closes[t - L + 1 + i], Y_i = i for i in 0..L-1
+      r = (L*Sxy - Sx*Sy) / sqrt((L*Sxx - Sx^2) * (L*Syy - Sy^2))
+    Returns None for indices < length - 1.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 1 or n < length:
+        return out
+
+    L = length
+    Sy = L * (L - 1) / 2.0
+    Syy = (L - 1) * L * (2 * L - 1) / 6.0
+    denom_y = L * Syy - Sy * Sy
+    if denom_y <= 0.0:
+        return out
+
+    for t in range(length - 1, n):
+        window = closes[t - length + 1 : t + 1]
+        Sx = sum(window)
+        Sxx = sum(x * x for x in window)
+        Sxy = sum(i * window[i] for i in range(L))
+        denom_x = L * Sxx - Sx * Sx
+        if denom_x > 1e-12:
+            prod = denom_x * denom_y
+            r = (L * Sxy - Sx * Sy) / math.sqrt(prod)
+            out[t] = max(-1.0, min(1.0, r))
+        else:
+            out[t] = 0.0
+
+    return out
+
+
+def atr_percent(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 14,
+) -> list[float | None]:
+    """ATR as a percentage of close price: 100 * ATR(length) / close."""
+    atr_vals = atr(highs, lows, closes, length)
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    for i in range(n):
+        a = atr_vals[i]
+        c = closes[i]
+        if a is not None and c is not None and c > 0:
+            out[i] = 100.0 * a / c
+        else:
+            out[i] = None
+    return out
+
+
+def median_filter(values: list[float], length: int = 20) -> list[float | None]:
+    """Rolling median over window of size length."""
+    import statistics
+
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+
+    for t in range(length - 1, n):
+        window = values[t - length + 1 : t + 1]
+        out[t] = statistics.median(window)
+    return out
+
+
+def mad(values: list[float], length: int = 20) -> list[float | None]:
+    """Median Absolute Deviation (MAD) over rolling window of size length.
+
+    For window W:
+      med = median(W)
+      mad = median(|x - med| for x in W)
+    """
+    import statistics
+
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+
+    for t in range(length - 1, n):
+        window = values[t - length + 1 : t + 1]
+        m = statistics.median(window)
+        devs = [abs(x - m) for x in window]
+        out[t] = statistics.median(devs)
+    return out
+
+
+def mad_channel(
+    values: list[float],
+    length: int = 20,
+    k: float = 2.0,
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    """Rolling Median +/- k * (1.4826 * MAD) channel.
+
+    1.4826 * MAD yields the normal distribution consistency estimator for sigma.
+    Returns (median_series, upper_band, lower_band).
+    """
+    import statistics
+
+    n = len(values)
+    med_out: list[float | None] = [None] * n
+    upper_out: list[float | None] = [None] * n
+    lower_out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return med_out, upper_out, lower_out
+
+    for t in range(length - 1, n):
+        window = values[t - length + 1 : t + 1]
+        m = statistics.median(window)
+        devs = [abs(x - m) for x in window]
+        mad_val = statistics.median(devs)
+        mad_sigma = 1.4826 * mad_val
+        med_out[t] = m
+        upper_out[t] = m + k * mad_sigma
+        lower_out[t] = m - k * mad_sigma
+
+    return med_out, upper_out, lower_out
+
+
+def vidya(
+    closes: list[float],
+    ema_len: int = 9,
+    cmo_len: int = 12,
+) -> list[float | None]:
+    """Chande Variable Index Dynamic Average (VIDYA).
+
+    Uses Chande Momentum Oscillator (CMO) to scale EMA smoothing constant:
+      cmo = CMO(close, cmo_len)  in [-100, +100]
+      F = 2.0 / (ema_len + 1)
+      alpha = F * abs(cmo) / 100.0
+      vidya[t] = alpha * close[t] + (1 - alpha) * vidya[t-1]
+
+    Scale convention: CMO is in [-100, 100], |CMO|/100 in [0, 1].
+    When momentum collapses (|CMO|->0), alpha->0 and VIDYA flattens.
+    When momentum is extreme (|CMO|->100), alpha->F (standard EMA speed).
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if ema_len <= 0 or cmo_len <= 0 or n <= cmo_len:
+        return out
+
+    cmo_vals = cmo(closes, cmo_len)
+    f_const = 2.0 / (ema_len + 1.0)
+
+    # Initialize VIDYA at first valid CMO bar
+    first_valid = -1
+    for i in range(n):
+        if cmo_vals[i] is not None:
+            first_valid = i
+            break
+
+    if first_valid == -1 or first_valid >= n:
+        return out
+
+    out[first_valid] = closes[first_valid]
+    for i in range(first_valid + 1, n):
+        cm = cmo_vals[i]
+        prev = out[i - 1]
+        if cm is not None and prev is not None:
+            alpha = f_const * (abs(cm) / 100.0)
+            alpha = max(0.0, min(1.0, alpha))
+            out[i] = alpha * closes[i] + (1.0 - alpha) * prev
+        else:
+            out[i] = prev
+
+    return out
+
+
+def supersmoother(
+    prices: list[float],
+    length: int = 20,
+) -> list[float | None]:
+    """Ehlers 2-pole SuperSmoother filter (NO high-pass filter, strictly NOT Roofing).
+
+    Per John Ehlers (Cybernetic Analysis for Stocks and Futures, Ch. 13):
+      theta = sqrt(2) * pi / length
+      a1 = exp(-theta)
+      b1 = 2 * a1 * cos(theta)
+      c2 = b1
+      c3 = - (a1^2)
+      c1 = 1 - c2 - c3
+      filt[t] = c1 * (price[t] + price[t-1]) / 2 + c2 * filt[t-1] + c3 * filt[t-2]
+
+    Returns float series with warmup None for t < length - 1.
+    """
+    n = len(prices)
+    out: list[float | None] = [None] * n
+    if length <= 1 or n < 3:
+        return out
+
+    ss_rad = math.sqrt(2.0) * math.pi / length
+    a1 = math.exp(-ss_rad)
+    b1 = 2.0 * a1 * math.cos(ss_rad)
+    c2 = b1
+    c3 = -(a1**2)
+    c1 = 1.0 - c2 - c3
+
+    filt = [0.0] * n
+    for t in range(n):
+        if t == 0 or t == 1:
+            filt[t] = prices[t]
+        else:
+            filt[t] = c1 * (prices[t] + prices[t - 1]) / 2.0 + c2 * filt[t - 1] + c3 * filt[t - 2]
+        if t >= length - 1:
+            out[t] = filt[t]
+
+    return out
+
+
+
 
 
