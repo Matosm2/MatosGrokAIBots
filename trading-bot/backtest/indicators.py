@@ -2582,6 +2582,172 @@ def supersmoother(
     return out
 
 
+def frama(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 16,
+    batch: int | None = None,
+) -> list[float | None]:
+    """Ehlers Fractal Adaptive Moving Average (FRAMA).
+
+    Reference: John Ehlers, "FRAMA - Fractal Adaptive Moving Average",
+    Technical Analysis of Stocks & Commodities, Oct 2005 / MESA Software.
+
+    Formula (N even):
+      half = length // 2
+      For window of length N ending at bar t (from t - length + 1 to t):
+        First half [t - length + 1, t - half]:
+          HH1 = max(highs), LL1 = min(lows)
+          N1 = (HH1 - LL1) / half
+        Second half [t - half + 1, t]:
+          HH2 = max(highs), LL2 = min(lows)
+          N2 = (HH2 - LL2) / half
+        Full window [t - length + 1, t]:
+          HH3 = max(highs), LL3 = min(lows)
+          N3 = (HH3 - LL3) / length
+
+        If N1 + N2 > 0 and N3 > 0:
+          D = (log(N1 + N2) - log(N3)) / log(2.0)
+        Else:
+          D = 1.0
+        D = clamp(D, 1.0, 2.0)
+
+        alpha = exp(-4.6 * (D - 1.0))
+        alpha = clamp(alpha, 0.01, 1.0)
+
+        frama[t] = alpha * closes[t] + (1 - alpha) * frama[t - 1]
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length < 2 or length % 2 != 0 or n < length:
+        return out
+
+    half = length // 2
+    log2 = math.log(2.0)
+    prev_frama: float | None = None
+
+    for t in range(n):
+        if t < length - 1:
+            continue
+
+        w_first_h = highs[t - length + 1 : t - half + 1]
+        w_first_l = lows[t - length + 1 : t - half + 1]
+        hh1 = max(w_first_h)
+        ll1 = min(w_first_l)
+        n1 = (hh1 - ll1) / half
+
+        w_second_h = highs[t - half + 1 : t + 1]
+        w_second_l = lows[t - half + 1 : t + 1]
+        hh2 = max(w_second_h)
+        ll2 = min(w_second_l)
+        n2 = (hh2 - ll2) / half
+
+        w_full_h = highs[t - length + 1 : t + 1]
+        w_full_l = lows[t - length + 1 : t + 1]
+        hh3 = max(w_full_h)
+        ll3 = min(w_full_l)
+        n3 = (hh3 - ll3) / length
+
+        if (n1 + n2) > 0.0 and n3 > 0.0:
+            d = (math.log(n1 + n2) - math.log(n3)) / log2
+        else:
+            d = 1.0
+
+        if d < 1.0:
+            d = 1.0
+        elif d > 2.0:
+            d = 2.0
+
+        alpha = math.exp(-4.6 * (d - 1.0))
+        if alpha < 0.01:
+            alpha = 0.01
+        elif alpha > 1.0:
+            alpha = 1.0
+
+        if prev_frama is None:
+            curr = closes[t]
+        else:
+            curr = alpha * closes[t] + (1.0 - alpha) * prev_frama
+
+        prev_frama = curr
+        out[t] = curr
+
+    return out
+
+
+def hma(values: list[float], length: int) -> list[float | None]:
+    """Hull Moving Average (Alan Hull / ta.hma).
+
+    Formula:
+      HMA(n) = WMA(2 * WMA(close, n/2) - WMA(close, n), round(sqrt(n)))
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+
+    half_len = max(1, length // 2)
+    sqrt_len = max(1, int(round(math.sqrt(length))))
+
+    wma_half = wma([float(v) for v in values], half_len)
+    wma_full = wma([float(v) for v in values], length)
+
+    raw_diff: list[float | None] = [None] * n
+    for i in range(n):
+        wh = wma_half[i]
+        wf = wma_full[i]
+        if wh is not None and wf is not None:
+            raw_diff[i] = 2.0 * wh - wf
+
+    hma_series = wma(raw_diff, sqrt_len)
+    return hma_series
+
+
+def mcginley_dynamic(
+    values: list[float],
+    length: int = 14,
+    k: float = 1.0,
+) -> list[float | None]:
+    """McGinley Dynamic indicator (John R. McGinley).
+
+    Formula (Investopedia standard):
+      MD[t] = MD[t-1] + (close[t] - MD[t-1]) / (k * N * (close[t] / MD[t-1])^4)
+      with seed MD[0] = close[0], and guard MD[t-1] != 0.
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n == 0:
+        return out
+
+    denom_mult = k * length
+    prev_md: float | None = None
+
+    for i in range(n):
+        c = values[i]
+        if prev_md is None:
+            prev_md = c
+            out[i] = c
+            continue
+
+        if prev_md != 0.0 and c > 0.0:
+            ratio = c / prev_md
+            ratio4 = ratio**4
+            denom = denom_mult * ratio4
+            if denom == 0.0:
+                md_val = c
+            else:
+                md_val = prev_md + (c - prev_md) / denom
+        else:
+            md_val = c
+
+        prev_md = md_val
+        out[i] = md_val
+
+    return out
+
+
+
 
 
 
