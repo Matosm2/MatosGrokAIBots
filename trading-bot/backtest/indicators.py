@@ -2180,4 +2180,188 @@ def ehlers_itrend_trigger(
     return itrend_out, trigger_out
 
 
+def rvol(volumes: list[float], length: int = 20) -> list[float | None]:
+    """Relative Volume (RVOL) = Volume / SMA(Volume, length)."""
+    n = len(volumes)
+    out: list[float | None] = [None] * n
+    vol_sma = sma(volumes, length)
+    for i in range(n):
+        s = vol_sma[i]
+        if s is not None and s > 0:
+            out[i] = volumes[i] / s
+        else:
+            out[i] = None
+    return out
+
+
+def pivothigh(highs: list[float], left: int, right: int) -> list[float | None]:
+    """Confirmed Pivot High (Pine Script ta.pivothigh(high, left, right)).
+
+    A bar at index `i - right` is a pivot high if its high is strictly greater than
+    all highs in [i - right - left, i - right) and greater than or equal to
+    all highs in (i - right, i].
+    The confirmed value is returned at bar `i` (confirmation bar, closed-bar safe).
+    """
+    n = len(highs)
+    out: list[float | None] = [None] * n
+    if left < 1 or right < 1 or n < left + right + 1:
+        return out
+
+    for i in range(left + right, n):
+        pivot_idx = i - right
+        p_val = highs[pivot_idx]
+        is_pivot = True
+        # Check left
+        for j in range(pivot_idx - left, pivot_idx):
+            if highs[j] >= p_val:
+                is_pivot = False
+                break
+        # Check right
+        if is_pivot:
+            for j in range(pivot_idx + 1, i + 1):
+                if highs[j] > p_val:
+                    is_pivot = False
+                    break
+        if is_pivot:
+            out[i] = p_val
+    return out
+
+
+def pivotlow(lows: list[float], left: int, right: int) -> list[float | None]:
+    """Confirmed Pivot Low (Pine Script ta.pivotlow(low, left, right)).
+
+    A bar at index `i - right` is a pivot low if its low is strictly less than
+    all lows in [i - right - left, i - right) and less than or equal to
+    all lows in (i - right, i].
+    The confirmed value is returned at bar `i` (confirmation bar, closed-bar safe).
+    """
+    n = len(lows)
+    out: list[float | None] = [None] * n
+    if left < 1 or right < 1 or n < left + right + 1:
+        return out
+
+    for i in range(left + right, n):
+        pivot_idx = i - right
+        p_val = lows[pivot_idx]
+        is_pivot = True
+        # Check left
+        for j in range(pivot_idx - left, pivot_idx):
+            if lows[j] <= p_val:
+                is_pivot = False
+                break
+        # Check right
+        if is_pivot:
+            for j in range(pivot_idx + 1, i + 1):
+                if lows[j] < p_val:
+                    is_pivot = False
+                    break
+        if is_pivot:
+            out[i] = p_val
+    return out
+
+
+def eom(
+    highs: list[float],
+    lows: list[float],
+    volumes: list[float],
+    length: int = 14,
+    divisor: float = 10_000_000.0,
+) -> list[float | None]:
+    """Ease of Movement / Arms EMV (Pine Script ta.eom(length, divisor)).
+
+    DistanceMoved = ((high + low) / 2) - ((high[1] + low[1]) / 2)
+    BoxRatio = (volume / divisor) / (high - low)
+    EMV_raw = DistanceMoved / BoxRatio
+    EMV = SMA(EMV_raw, length)
+    """
+    n = len(highs)
+    out: list[float | None] = [None] * n
+    if n < 2 or length <= 0 or divisor <= 0:
+        return out
+
+    raw_emv: list[float] = [0.0] * n
+    for i in range(1, n):
+        dm = ((highs[i] + lows[i]) / 2.0) - ((highs[i - 1] + lows[i - 1]) / 2.0)
+        rng = highs[i] - lows[i]
+        vol = volumes[i]
+        if rng > 0 and vol > 0:
+            br = (vol / divisor) / rng
+            raw_emv[i] = dm / br if br != 0 else 0.0
+        else:
+            raw_emv[i] = 0.0
+
+    return sma(raw_emv, length)
+
+
+def pvo(
+    volumes: list[float],
+    fast_len: int = 12,
+    slow_len: int = 26,
+    signal_len: int = 9,
+) -> tuple[list[float | None], list[float | None]]:
+    """Percentage Volume Oscillator (Pine Script PVO).
+
+    fastV = EMA(volume, fast_len)
+    slowV = EMA(volume, slow_len)
+    PVO = 100 * (fastV - slowV) / slowV
+    Signal = EMA(PVO, signal_len)
+    """
+    n = len(volumes)
+    pvo_out: list[float | None] = [None] * n
+    sig_out: list[float | None] = [None] * n
+    if n < slow_len or fast_len <= 0 or slow_len <= 0:
+        return pvo_out, sig_out
+
+    fast_v = ema(volumes, fast_len)
+    slow_v = ema(volumes, slow_len)
+
+    for i in range(n):
+        fv = fast_v[i]
+        sv = slow_v[i]
+        if fv is not None and sv is not None and sv > 0:
+            pvo_out[i] = 100.0 * (fv - sv) / sv
+        else:
+            pvo_out[i] = None
+
+    # Compute signal line as EMA over valid PVO values
+    valid_pvo = [v if v is not None else 0.0 for v in pvo_out]
+    sig_raw = ema(valid_pvo, signal_len)
+    for i in range(n):
+        if pvo_out[i] is not None:
+            sig_out[i] = sig_raw[i]
+        else:
+            sig_out[i] = None
+
+    return pvo_out, sig_out
+
+
+def zlema(
+    values: list[float],
+    length: int,
+) -> list[float | None]:
+    """Zero-Lag Exponential Moving Average (lag-compensated form).
+
+    lag = round((length - 1) / 2)
+    src_comp = values[i] + (values[i] - values[i - lag])
+    zlema = EMA(src_comp, length)
+
+    Canonical lag-compensation formula (NOT the 2010 Ehlers-Way EC gain form).
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+
+    lag = int(round((length - 1) / 2.0))
+    src_comp: list[float] = [0.0] * n
+    for i in range(n):
+        if i >= lag:
+            src_comp[i] = values[i] + (values[i] - values[i - lag])
+        else:
+            src_comp[i] = values[i]
+
+    return ema(src_comp, length)
+
+
+
 
