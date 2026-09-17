@@ -1988,3 +1988,196 @@ def ehlers_roofing_filter(
     return roof
 
 
+def vwma(
+    closes: list[float],
+    volumes: list[float],
+    length: int,
+) -> list[float | None]:
+    """Volume Weighted Moving Average (TradingView ta.vwma).
+
+    VWMA = sum(close * volume, length) / sum(volume, length)
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+
+    vp_window = sum(closes[i] * volumes[i] for i in range(length))
+    v_window = sum(volumes[:length])
+    out[length - 1] = vp_window / v_window if v_window > 0 else closes[length - 1]
+
+    for i in range(length, n):
+        vp_window += closes[i] * volumes[i] - closes[i - length] * volumes[i - length]
+        v_window += volumes[i] - volumes[i - length]
+        out[i] = vp_window / v_window if v_window > 0 else closes[i]
+    return out
+
+
+def t3(
+    values: list[float],
+    length: int,
+    v_factor: float = 0.7,
+) -> list[float | None]:
+    """Tillson T3 Moving Average (Tim Tillson, TASC Jan 1998 / TradingView ta.t3).
+
+    T3 is a nested Generalized DEMA (GD3):
+      GD(x) = (1 + v)*EMA(x) - v*EMA(EMA(x))
+      T3 = GD(GD(GD(x)))
+    Or polynomial 6-EMA cascade:
+      c1 = -v^3
+      c2 = 3*v^2 + 3*v^3
+      c3 = -6*v^2 - 3*v - 3*v^3
+      c4 = 1 + 3*v + v^3 + 3*v^2
+      T3 = c1*e6 + c2*e5 + c3*e4 + c4*e3
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+
+    e1 = ema(values, length)
+    e2 = _ema_skip_none(e1, length)
+    e3 = _ema_skip_none(e2, length)
+    e4 = _ema_skip_none(e3, length)
+    e5 = _ema_skip_none(e4, length)
+    e6 = _ema_skip_none(e5, length)
+
+    v = v_factor
+    c1 = -(v**3)
+    c2 = 3.0 * (v**2) + 3.0 * (v**3)
+    c3 = -6.0 * (v**2) - 3.0 * v - 3.0 * (v**3)
+    c4 = 1.0 + 3.0 * v + (v**3) + 3.0 * (v**2)
+
+    for i in range(n):
+        if e3[i] is not None and e4[i] is not None and e5[i] is not None and e6[i] is not None:
+            out[i] = c1 * e6[i] + c2 * e5[i] + c3 * e4[i] + c4 * e3[i]
+    return out
+
+
+def ehlers_decycler_oscillator(
+    prices: list[float],
+    hp_period: int = 125,
+    k: float = 1.0,
+) -> list[float | None]:
+    """Ehlers Decycler Oscillator (John F. Ehlers, TASC Sep 2015).
+
+    2-pole HighPass filter removes very low frequency trend components:
+      alpha1 = (cos(rad1) + sin(rad1) - 1) / cos(rad1), rad1 = 0.707 * 2*pi / hp_period
+      HP = (1 - alpha1/2)^2 * (Price - 2*Price[1] + Price[2]) + 2*(1 - alpha1)*HP[1] - (1 - alpha1)^2 * HP[2]
+      Decycle = Price - HP
+    Second HighPass filter applied to Decycle at half period (0.5 * hp_period):
+      alpha2 = (cos(rad2) + sin(rad2) - 1) / cos(rad2), rad2 = 0.707 * 2*pi / (0.5 * hp_period)
+      DecycleOsc = (1 - alpha2/2)^2 * (Decycle - 2*Decycle[1] + Decycle[2]) + 2*(1 - alpha2)*DecycleOsc[1] - (1 - alpha2)^2 * DecycleOsc[2]
+      Osc = 100 * K * DecycleOsc / Price
+    """
+    n = len(prices)
+    out: list[float | None] = [None] * n
+    if n < 3 or hp_period <= 2:
+        return out
+
+    rad1 = 0.707 * 2.0 * math.pi / hp_period
+    cos1 = math.cos(rad1)
+    if cos1 == 0.0:
+        return out
+    alpha1 = (cos1 + math.sin(rad1) - 1.0) / cos1
+    c1 = (1.0 - alpha1 / 2.0) ** 2
+    c2 = 2.0 * (1.0 - alpha1)
+    c3 = -((1.0 - alpha1) ** 2)
+
+    rad2 = 0.707 * 2.0 * math.pi / (0.5 * hp_period)
+    cos2 = math.cos(rad2)
+    if cos2 == 0.0:
+        return out
+    alpha2 = (cos2 + math.sin(rad2) - 1.0) / cos2
+    d1 = (1.0 - alpha2 / 2.0) ** 2
+    d2 = 2.0 * (1.0 - alpha2)
+    d3 = -((1.0 - alpha2) ** 2)
+
+    hp = [0.0] * n
+    decycle = [0.0] * n
+    decycle_osc = [0.0] * n
+
+    for t in range(n):
+        if t == 0:
+            hp[t] = 0.0
+            decycle[t] = prices[0]
+            decycle_osc[t] = 0.0
+        elif t == 1:
+            hp[t] = c1 * (prices[1] - 2.0 * prices[0] + prices[0]) + c2 * hp[0]
+            decycle[t] = prices[1] - hp[t]
+            decycle_osc[t] = 0.0
+        else:
+            hp[t] = (
+                c1 * (prices[t] - 2.0 * prices[t - 1] + prices[t - 2])
+                + c2 * hp[t - 1]
+                + c3 * hp[t - 2]
+            )
+            decycle[t] = prices[t] - hp[t]
+            decycle_osc[t] = (
+                d1 * (decycle[t] - 2.0 * decycle[t - 1] + decycle[t - 2])
+                + d2 * decycle_osc[t - 1]
+                + d3 * decycle_osc[t - 2]
+            )
+
+        if prices[t] != 0.0:
+            out[t] = 100.0 * k * decycle_osc[t] / prices[t]
+        else:
+            out[t] = 0.0
+
+    return out
+
+
+def ehlers_itrend_trigger(
+    highs: list[float],
+    lows: list[float],
+    alpha: float = 0.07,
+) -> tuple[list[float | None], list[float | None]]:
+    """Ehlers Instantaneous Trendline and Trigger (simplified Pine form, alpha=0.07).
+
+    Price = (High + Low) / 2
+    Seed for bars < 7: ITrend = (Price + 2*Price[1] + Price[2]) / 4
+    Recursion for bars >= 7:
+      ITrend = (alpha - alpha^2/4)*Price + 0.5*alpha^2*Price[1] - (alpha - 0.75*alpha^2)*Price[2]
+               + 2*(1 - alpha)*ITrend[1] - (1 - alpha)^2*ITrend[2]
+    Trigger = 2 * ITrend - ITrend[2]
+    """
+    n = len(highs)
+    itrend_out: list[float | None] = [None] * n
+    trigger_out: list[float | None] = [None] * n
+    if n == 0 or alpha <= 0.0:
+        return itrend_out, trigger_out
+
+    prices = [(h + l) / 2.0 for h, l in zip(highs, lows)]
+    itrend = [0.0] * n
+
+    a = alpha
+    a2 = a * a
+    c0 = a - a2 / 4.0
+    c1 = 0.5 * a2
+    c2 = -(a - 0.75 * a2)
+    c3 = 2.0 * (1.0 - a)
+    c4 = -((1.0 - a) ** 2)
+
+    for t in range(n):
+        if t == 0:
+            itrend[t] = prices[0]
+        elif t == 1:
+            itrend[t] = (prices[1] + 2.0 * prices[0] + prices[0]) / 4.0
+        elif t < 7:
+            itrend[t] = (prices[t] + 2.0 * prices[t - 1] + prices[t - 2]) / 4.0
+        else:
+            itrend[t] = (
+                c0 * prices[t]
+                + c1 * prices[t - 1]
+                + c2 * prices[t - 2]
+                + c3 * itrend[t - 1]
+                + c4 * itrend[t - 2]
+            )
+        itrend_out[t] = itrend[t]
+        if t >= 2:
+            trigger_out[t] = 2.0 * itrend[t] - itrend[t - 2]
+
+    return itrend_out, trigger_out
+
+
+
