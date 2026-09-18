@@ -5024,6 +5024,433 @@ def varadi_dvi(
     return dvi_out, mag_out, str_out
 
 
+def dvi(
+    closes: list[float],
+    n: int = 252,
+    mag_weight: float = 0.8,
+    str_weight: float = 0.2,
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    return varadi_dvi(closes, n, mag_weight, str_weight)
+
+
+def ehlers_bandpass(
+    prices: list[float],
+    period: int = 20,
+    bandwidth: float = 0.3,
+) -> list[float | None]:
+    """
+    Ehlers Band-Pass Filter (IIR second-order cycle extractor).
+
+    Formula (John F. Ehlers, Cycle Analytics for Traders / Cybernetic Analysis):
+      beta = cos(2 * pi / period)
+      gamma = 1.0 / cos(4 * pi * delta / period)
+      alpha = gamma - sqrt(gamma * gamma - 1.0)
+      BP = 0.5 * (1.0 - alpha) * (price - price[2]) + beta * (1.0 + alpha) * BP[1] - alpha * BP[2]
+
+    Args:
+      prices: series of prices (closes or hl2)
+      period: center period of bandpass (P, default 20)
+      bandwidth: bandwidth parameter delta (default 0.3)
+
+    Returns:
+      bandpass series (float | None)
+    """
+    count = len(prices)
+    out: list[float | None] = [None] * count
+    if count < 3 or period <= 0 or bandwidth <= 0:
+        return out
+
+    import math
+
+    # Calculate filter coefficients
+    beta = math.cos(2.0 * math.pi / float(period))
+    arg = 4.0 * math.pi * float(bandwidth) / float(period)
+    cos_arg = math.cos(arg)
+    if cos_arg == 0.0:
+        cos_arg = 1e-9
+    gamma = 1.0 / cos_arg
+    val = gamma * gamma - 1.0
+    val = max(0.0, val)
+    alpha = gamma - math.sqrt(val)
+
+    c1 = 0.5 * (1.0 - alpha)
+    c2 = beta * (1.0 + alpha)
+    c3 = -alpha
+
+    # BP recurrence:
+    # BP[0] = 0.0, BP[1] = 0.0
+    bp1 = 0.0
+    bp2 = 0.0
+
+    for i in range(count):
+        if i < 2:
+            out[i] = 0.0
+            bp2 = bp1
+            bp1 = 0.0
+            continue
+        p = prices[i]
+        p2 = prices[i - 2]
+        bp = c1 * (p - p2) + c2 * bp1 + c3 * bp2
+        out[i] = bp
+        bp2 = bp1
+        bp1 = bp
+
+    return out
+
+
+def ehlers_twopole_hp(
+    prices: list[float],
+    period: int = 40,
+) -> list[float | None]:
+    """
+    Ehlers Two-Pole High-Pass Filter (removes cycle components longer than period).
+
+    Formula (John F. Ehlers, Cycle Analytics / Mesa Software):
+      a1 = exp(-1.414 * pi / period)
+      b1 = 2 * a1 * cos(1.414 * pi / period)
+      c2 = b1
+      c3 = -a1 * a1
+      c1 = (1.0 + c2 - c3) / 4.0
+      HP = c1 * (price - 2 * price[1] + price[2]) + c2 * HP[1] + c3 * HP[2]
+
+    Args:
+      prices: series of prices (closes or hl2)
+      period: high-pass cutoff period (P, default 40)
+
+    Returns:
+      high-pass filter series (float | None)
+    """
+    count = len(prices)
+    out: list[float | None] = [None] * count
+    if count < 3 or period <= 0:
+        return out
+
+    import math
+
+    a1 = math.exp(-1.414 * math.pi / float(period))
+    b1 = 2.0 * a1 * math.cos(1.414 * math.pi / float(period))
+    c2 = b1
+    c3 = -a1 * a1
+    c1 = (1.0 + c2 - c3) / 4.0
+
+    hp1 = 0.0
+    hp2 = 0.0
+
+    for i in range(count):
+        if i < 2:
+            out[i] = 0.0
+            hp2 = hp1
+            hp1 = 0.0
+            continue
+        p = prices[i]
+        p1 = prices[i - 1]
+        p2 = prices[i - 2]
+        hp = c1 * (p - 2.0 * p1 + p2) + c2 * hp1 + c3 * hp2
+        out[i] = hp
+        hp2 = hp1
+        hp1 = hp
+
+    return out
+
+
+def three_line_break(
+    closes: list[float],
+    n: int = 3,
+) -> tuple[list[int], list[bool], list[bool]]:
+    """
+    Three Line Break (close-only structure tracker on standard OHLC closes).
+
+    Maintains confirmed line direction (+1 bullish, -1 bearish) and the extremes
+    of the last N lines.
+    - If currently bullish (+1):
+        extension if close > current line high -> new bullish line;
+        bearish reversal if close < lowest low of the last N bullish lines -> new bearish line (-1).
+    - If currently bearish (-1):
+        extension if close < current line low -> new bearish line;
+        bullish reversal if close > highest high of the last N bearish lines -> new bullish line (+1).
+
+    Args:
+      closes: series of bar closes
+      n: number of lines to break for reversal (default 3)
+
+    Returns:
+      (direction_series, bullish_reversal_series, bearish_reversal_series)
+      direction: +1 for bullish, -1 for bearish, 0 before initialization
+      bullish_reversal: True on bars where a bearish->bullish reversal flip occurred
+      bearish_reversal: True on bars where a bullish->bearish reversal flip occurred
+    """
+    count = len(closes)
+    dir_out = [0] * count
+    bull_flip = [False] * count
+    bear_flip = [False] * count
+
+    if count < 2 or n < 1:
+        return dir_out, bull_flip, bear_flip
+
+    # Initialize on bar 1 based on close[1] vs close[0]
+    # Each line is stored as (low, high)
+    current_dir = 1 if closes[1] >= closes[0] else -1
+    dir_out[0] = current_dir
+
+    first_low = min(closes[0], closes[1])
+    first_high = max(closes[0], closes[1])
+    lines: list[tuple[float, float]] = [(first_low, first_high)]
+    dir_out[1] = current_dir
+
+    for i in range(2, count):
+        c = closes[i]
+        if current_dir == 1:
+            last_line_high = lines[-1][1]
+            if c > last_line_high:
+                new_low = last_line_high
+                new_high = c
+                lines.append((new_low, new_high))
+            else:
+                check_lines = lines[-n:]
+                lowest_low = min(line[0] for line in check_lines)
+                if c < lowest_low:
+                    current_dir = -1
+                    bear_flip[i] = True
+                    new_high = lines[-1][0]
+                    new_low = c
+                    lines.append((new_low, new_high))
+        else:
+            last_line_low = lines[-1][0]
+            if c < last_line_low:
+                new_high = last_line_low
+                new_low = c
+                lines.append((new_low, new_high))
+            else:
+                check_lines = lines[-n:]
+                highest_high = max(line[1] for line in check_lines)
+                if c > highest_high:
+                    current_dir = 1
+                    bull_flip[i] = True
+                    new_low = lines[-1][1]
+                    new_high = c
+                    lines.append((new_low, new_high))
+
+        dir_out[i] = current_dir
+
+    return dir_out, bull_flip, bear_flip
+
+
+def wilder_swing_index(
+    opens: list[float],
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    atr_len: int = 14,
+    limit_move: float | None = None,
+) -> list[float | None]:
+    """
+    Wilder Swing Index (SI, non-cumulative raw bar index).
+
+    Formula (J. Welles Wilder, New Concepts in Technical Trading Systems):
+      C = close, C1 = close[1]
+      O = open, O1 = open[1]
+      H = high, H1 = high[1]
+      L = low, L1 = low[1]
+
+      N = (C - C1) + 0.5 * (C - O) + 0.25 * (C1 - O1)
+      K = max(|H - C1|, |L - C1|)
+
+      Excursions:
+        diff_hc = |H - C1|
+        diff_lc = |L - C1|
+        diff_hl = H - L
+
+      R calculation (largest excursion case):
+        if diff_hc >= diff_lc and diff_hc >= diff_hl:
+          R = diff_hc - 0.5 * diff_lc + 0.25 * (C1 - O1)
+        elif diff_lc >= diff_hc and diff_lc >= diff_hl:
+          R = diff_lc - 0.5 * diff_hc + 0.25 * (C1 - O1)
+        else:
+          R = diff_hl + 0.25 * (C1 - O1)
+
+      T = ATR(atr_len) proxy or explicit limit_move
+      SI = 50.0 * (N / R) * (K / T)
+      Guard R != 0 and T != 0.
+
+    Args:
+      opens, highs, lows, closes: bar series
+      atr_len: lookback for ATR limit-move proxy (default 14)
+      limit_move: optional constant limit move (overrides ATR proxy)
+
+    Returns:
+      series of SI values (float | None)
+    """
+    count = len(closes)
+    out: list[float | None] = [None] * count
+    if count < 2:
+        return out
+
+    atr_vals = atr(highs, lows, closes, atr_len) if limit_move is None else None
+
+    for i in range(1, count):
+        c = closes[i]
+        c1 = closes[i - 1]
+        o = opens[i]
+        o1 = opens[i - 1]
+        h = highs[i]
+        l = lows[i]
+
+        t_val = limit_move if limit_move is not None else (atr_vals[i] if atr_vals else None)
+        if t_val is None or t_val <= 0.0:
+            t_val = max(h - l, 1e-6)
+
+        n_val = (c - c1) + 0.5 * (c - o) + 0.25 * (c1 - o1)
+        k_val = max(abs(h - c1), abs(l - c1))
+
+        diff_hc = abs(h - c1)
+        diff_lc = abs(l - c1)
+        diff_hl = h - l
+
+        if diff_hc >= diff_lc and diff_hc >= diff_hl:
+            r_val = diff_hc - 0.5 * diff_lc + 0.25 * (c1 - o1)
+        elif diff_lc >= diff_hc and diff_lc >= diff_hl:
+            r_val = diff_lc - 0.5 * diff_hc + 0.25 * (c1 - o1)
+        else:
+            r_val = diff_hl + 0.25 * (c1 - o1)
+
+        if r_val == 0.0:
+            out[i] = 0.0
+        else:
+            si = 50.0 * (n_val / r_val) * (k_val / t_val)
+            out[i] = si
+
+    return out
+
+
+def nison_kagi(
+    closes: list[float],
+    highs: list[float] | None = None,
+    lows: list[float] | None = None,
+    atr_mult: float = 1.0,
+    atr_len: int = 14,
+    pct_reversal: float | None = None,
+) -> tuple[list[int], list[int], list[bool], list[bool]]:
+    """
+    Nison Kagi Chart on closed bar closes.
+
+    State:
+      direction: +1 (rising line) or -1 (falling line)
+      extreme: current line peak (if direction==1) or trough (if direction==-1)
+      prior_peak: previous swing high before current down-leg
+      prior_trough: previous swing low before current up-leg
+      yang_yin: +1 (Yang / thick line) or -1 (Yin / thin line)
+
+    Rules:
+      Reversal amount R = atr_mult * ATR(atr_len) or pct_reversal * close.
+      - If direction == +1 (up-line):
+          if close > extreme:
+            extreme = close (extension up)
+          elif extreme - close >= R:
+            prior_peak = extreme
+            direction = -1
+            extreme = close
+      - If direction == -1 (down-line):
+          if close < extreme:
+            extreme = close (extension down)
+          elif close - extreme >= R:
+            prior_trough = extreme
+            direction = 1
+            extreme = close
+
+      - If direction == -1 (down-line):
+          if close < extreme:
+            extreme = close (extension down)
+          elif close - extreme >= R:
+            prior_trough = extreme
+            direction = 1
+            extreme = close
+
+      Yang / Yin status:
+      - If direction == 1 and prior_peak is not None and close > prior_peak:
+          flip to Yang (+1) if previously Yin (-1)
+      - If direction == -1 and prior_trough is not None and close < prior_trough:
+          flip to Yin (-1) if previously Yang (+1)
+
+    Args:
+      closes: bar closes
+      highs, lows: bar highs and lows for ATR calculation
+      atr_mult: multiplier on ATR for reversal amount R (default 1.0)
+      atr_len: ATR period (default 14)
+      pct_reversal: optional percentage reversal (e.g. 0.01 for 1%)
+
+    Returns:
+      (direction_series, yang_yin_series, yang_flip_series, yin_flip_series)
+      yang_yin_series: +1 for Yang (thick), -1 for Yin (thin)
+      yang_flip_series: True on bar where Yin -> Yang flip occurred (Mode A entry)
+      yin_flip_series: True on bar where Yang -> Yin flip occurred (Mode A exit)
+    """
+    count = len(closes)
+    dir_out = [0] * count
+    yy_out = [0] * count
+    yang_flip = [False] * count
+    yin_flip = [False] * count
+
+    if count < 2:
+        return dir_out, yy_out, yang_flip, yin_flip
+
+    if pct_reversal is None:
+        h = highs if highs is not None else closes
+        l = lows if lows is not None else closes
+        atr_vals = atr(h, l, closes, atr_len)
+    else:
+        atr_vals = None
+
+    direction = 1 if closes[1] >= closes[0] else -1
+    extreme = closes[1]
+    prior_peak: float | None = closes[0] if direction == -1 else None
+    prior_trough: float | None = closes[0] if direction == 1 else None
+    yang_yin = direction
+
+    dir_out[0] = direction
+    yy_out[0] = yang_yin
+    dir_out[1] = direction
+    yy_out[1] = yang_yin
+
+    for i in range(2, count):
+        c = closes[i]
+
+        if pct_reversal is not None:
+            r = closes[i - 1] * pct_reversal
+        else:
+            atr_v = atr_vals[i - 1] if atr_vals else None
+            r = (atr_v * atr_mult) if (atr_v is not None and atr_v > 0) else (closes[i - 1] * 0.01)
+
+        if direction == 1:
+            if c > extreme:
+                extreme = c
+            elif (extreme - c) >= r:
+                prior_peak = extreme
+                direction = -1
+                extreme = c
+        else:
+            if c < extreme:
+                extreme = c
+            elif (c - extreme) >= r:
+                prior_trough = extreme
+                direction = 1
+                extreme = c
+
+        if direction == 1 and prior_peak is not None and c > prior_peak:
+            if yang_yin != 1:
+                yang_flip[i] = True
+            yang_yin = 1
+        elif direction == -1 and prior_trough is not None and c < prior_trough:
+            if yang_yin != -1:
+                yin_flip[i] = True
+            yang_yin = -1
+
+        dir_out[i] = direction
+        yy_out[i] = yang_yin
+
+    return dir_out, yy_out, yang_flip, yin_flip
+
+
+
 
 
 
