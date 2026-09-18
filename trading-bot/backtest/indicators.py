@@ -6409,6 +6409,179 @@ def ravi(
     return out
 
 
+def chaikin_volatility(
+    highs: list[float],
+    lows: list[float],
+    ema_len: int = 10,
+    roc_len: int = 10,
+) -> list[float | None]:
+    """Marc Chaikin's Volatility indicator.
+
+    hl = high - low
+    emaHL = ema(hl, ema_len)
+    cv = 100.0 * (emaHL - emaHL[roc_len]) / emaHL[roc_len]
+
+    != ATR%ile / != Mass Index / != VPCI.
+    """
+    n = len(highs)
+    out: list[float | None] = [None] * n
+    if n == 0 or ema_len <= 0 or roc_len <= 0:
+        return out
+
+    hl = [max(h - l, 0.0) for h, l in zip(highs, lows, strict=False)]
+    ema_hl = ema(hl, ema_len)
+
+    for i in range(n):
+        if i < roc_len:
+            out[i] = None
+            continue
+        cur = ema_hl[i]
+        prev = ema_hl[i - roc_len]
+        if cur is not None and prev is not None:
+            if prev == 0.0:
+                out[i] = 0.0
+            else:
+                out[i] = 100.0 * (cur - prev) / prev
+        else:
+            out[i] = None
+
+    return out
+
+
+def outside_bar(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    mid_frac: float = 0.5,
+) -> tuple[list[bool], list[bool], list[bool]]:
+    """Outside bar detection and polarity classification.
+
+    outside = high > high[1] and low < low[1]
+    mid = low + mid_frac * (high - low)  (default 0.5 -> (high+low)/2)
+    bullOut = outside and close > mid
+    bearOut = outside and close < mid
+
+    Returns (outside, bull_out, bear_out).
+    != Heikin-Ashi / != HHLL pivot BOS / != body-engulfing.
+    """
+    n = len(highs)
+    outside = [False] * n
+    bull_out = [False] * n
+    bear_out = [False] * n
+
+    for i in range(1, n):
+        h = highs[i]
+        l = lows[i]
+        c = closes[i]
+        hp = highs[i - 1]
+        lp = lows[i - 1]
+
+        if h > hp and l < lp:
+            outside[i] = True
+            mid = l + mid_frac * (h - l)
+            if c > mid:
+                bull_out[i] = True
+            elif c < mid:
+                bear_out[i] = True
+
+    return outside, bull_out, bear_out
+
+
+def ulcer_index(
+    closes: list[float],
+    ui_len: int = 14,
+) -> list[float | None]:
+    """Peter Martin's Ulcer Index (UI).
+
+    hh = highest(close, ui_len)
+    pd = 100.0 * (close - hh) / hh (percentage drawdown)
+    ui = sqrt(sma(pd * pd, ui_len))
+
+    != Mass Index / != ATR%ile / != VHF / != RAVI.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n == 0 or ui_len <= 0:
+        return out
+
+    pd_sq: list[float] = [0.0] * n
+    for i in range(n):
+        start = max(0, i - ui_len + 1)
+        hh = max(closes[start : i + 1])
+        c = closes[i]
+        if hh > 0.0:
+            pd = 100.0 * (c - hh) / hh
+        else:
+            pd = 0.0
+        pd_sq[i] = pd * pd
+
+    sma_pd_sq = sma(pd_sq, ui_len)
+    for i in range(n):
+        s_val = sma_pd_sq[i]
+        if s_val is not None:
+            out[i] = math.sqrt(max(s_val, 0.0))
+
+    return out
+
+
+def parkinson_vol(
+    highs: list[float],
+    lows: list[float],
+    n_park: int = 10,
+) -> list[float | None]:
+    """Parkinson Historical Volatility.
+
+    lr2 = math.pow(math.log(high / low), 2)  (guarded for positive prices)
+    park = math.sqrt(sma(lr2, n_park) / (4.0 * math.log(2)))
+
+    != ATR%ile / != Chaikin CV / != Garman-Klass.
+    """
+    n = len(highs)
+    out: list[float | None] = [None] * n
+    if n == 0 or n_park <= 0:
+        return out
+
+    lr2: list[float] = [0.0] * n
+    denom = 4.0 * math.log(2.0)
+
+    for i in range(n):
+        h = highs[i]
+        l = lows[i]
+        if h > 0.0 and l > 0.0 and h >= l:
+            ratio = max(h / l, 1.0)
+            val = math.log(ratio)
+            lr2[i] = val * val
+        else:
+            lr2[i] = 0.0
+
+    sma_lr2 = sma(lr2, n_park)
+    for i in range(n):
+        s_val = sma_lr2[i]
+        if s_val is not None:
+            out[i] = math.sqrt(max(s_val / denom, 0.0))
+
+    return out
+
+
+def inside_bar(
+    highs: list[float],
+    lows: list[float],
+) -> list[bool]:
+    """Inside bar detection.
+
+    inside = high < high[1] and low > low[1]
+
+    != HHLL pivot BOS / != Donchian / != NR7 / != Heikin-Ashi.
+    """
+    n = len(highs)
+    out = [False] * n
+    for i in range(1, n):
+        if highs[i] < highs[i - 1] and lows[i] > lows[i - 1]:
+            out[i] = True
+    return out
+
+
+
 
 
 
