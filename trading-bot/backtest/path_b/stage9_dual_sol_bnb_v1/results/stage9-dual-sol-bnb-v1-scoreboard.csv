@@ -1,0 +1,193 @@
+symbol,strategy_id,tf,mode_params,sol_smoke,bnb_smoke,sol_retention_note,n_6m,wr_6m_pct,mode_a_ret_6m_pct,bh_ret_6m_pct,ratio_bh_6m,pass_6m,n_full,wr_full_pct,mode_a_ret_full_pct,bh_ret_full_pct,ratio_bh_full,pass_full,ops_ret_6m_pct,ops_ret_full_pct,notes
+BTCUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N12),Y,Y,—,141,28.37,-29.8698,9.4882,-3.1481,FAIL,567,29.98,-82.7773,27.0883,-3.0558,FAIL,-0.8245,-4.0507,—
+BTCUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N10),Y,Y,—,156,25.64,-37.4894,9.4882,-3.9512,FAIL,634,29.34,-86.3319,27.0883,-3.1871,FAIL,-1.1020,-4.5825,—
+BTCUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N13),Y,Y,—,282,18.79,-58.4121,9.4882,-6.1563,FAIL,1094,20.66,-96.4144,27.0883,-3.5593,FAIL,-2.1102,-7.7175,—
+BTCUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N20),Y,Y,—,103,28.16,-26.7828,9.4882,-2.8228,FAIL,429,31.70,-60.3776,27.0883,-2.2289,FAIL,-0.7092,-2.0490,—
+BTCUSDT,psy-midline-fifty-cross-v1,1h,"mode_b|(N12,os25)",Y,Y,—,48,25.00,-20.0016,9.4882,-2.1081,FAIL,194,32.99,-49.2146,27.0883,-1.8168,FAIL,-0.5433,-1.5621,—
+BTCUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N12),Y,Y,—,38,26.32,-17.1564,10.0911,-1.7001,FAIL,152,32.89,-25.2046,27.4297,-0.9189,FAIL,-0.4092,-0.4783,—
+BTCUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N10),Y,Y,—,40,32.50,-4.1438,10.0911,-0.4106,FAIL,155,34.19,-12.8945,27.4297,-0.4701,FAIL,-0.0517,-0.1354,—
+BTCUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N13),Y,Y,—,61,22.95,-15.2143,10.0911,-1.5077,FAIL,261,25.29,-39.8687,27.4297,-1.4535,FAIL,-0.3512,-1.0159,—
+BTCUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N20),Y,Y,—,30,40.00,9.3072,10.0911,0.9223,FAIL,112,40.18,-6.5732,27.4297,-0.2396,FAIL,0.3017,0.0633,Near-miss 6m (0.92x B&H)
+BTCUSDT,psy-midline-fifty-cross-v1,4h,"mode_b|(N12,os25)",Y,Y,—,8,37.50,-15.4782,10.0911,-1.5338,FAIL,40,42.50,-19.9634,27.4297,-0.7278,FAIL,-0.4042,-0.4911,THIN-N FLAG (BTC 6m n=8 in thin band [6..10])
+BTCUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N20),Y,Y,—,261,18.01,-57.4110,9.4882,-6.0508,FAIL,1042,17.47,-95.3592,27.0883,-3.5203,FAIL,-2.0400,-7.1610,—
+BTCUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N10),Y,Y,—,402,16.92,-72.1100,9.4882,-7.6000,FAIL,1595,19.94,-99.0949,27.0883,-3.6582,FAIL,-3.0694,-10.8684,—
+BTCUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N14),Y,Y,—,347,16.14,-66.1300,9.4882,-6.9697,FAIL,1330,17.52,-98.2524,27.0883,-3.6271,FAIL,-2.6016,-9.3880,—
+BTCUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N30),Y,Y,—,212,17.92,-46.5994,9.4882,-4.9113,FAIL,862,16.36,-92.5567,27.0883,-3.4168,FAIL,-1.4919,-6.0677,—
+BTCUSDT,disparity-sma-zero-cross-v1,1h,"mode_b|(N20,ext2.0)",Y,Y,—,21,19.05,-23.8358,9.4882,-2.5122,FAIL,123,39.84,-27.5255,27.0883,-1.0161,FAIL,-0.6631,-0.7235,—
+BTCUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N20),Y,Y,—,55,21.82,-12.4975,10.0911,-1.2385,FAIL,242,19.83,-45.7490,27.4297,-1.6679,FAIL,-0.2597,-1.2429,—
+BTCUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N10),Y,Y,—,100,20.00,-27.6960,10.0911,-2.7446,FAIL,385,23.12,-61.7832,27.4297,-2.2524,FAIL,-0.7513,-2.1452,—
+BTCUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N14),Y,Y,—,85,18.82,-17.1990,10.0911,-1.7044,FAIL,313,21.41,-57.1398,27.4297,-2.0831,FAIL,-0.4103,-1.8706,—
+BTCUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N30),Y,Y,—,52,15.38,-14.4885,10.0911,-1.4358,FAIL,215,16.74,-51.1402,27.4297,-1.8644,FAIL,-0.3136,-1.4582,—
+BTCUSDT,disparity-sma-zero-cross-v1,4h,"mode_b|(N20,ext2.0)",Y,Y,—,20,45.00,4.8388,10.0911,0.4795,FAIL,78,44.87,26.7659,27.4297,0.9758,FAIL,0.1345,0.8071,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(10,21,4)",Y,Y,—,330,22.73,-67.1650,9.4882,-7.0788,FAIL,1290,24.96,-97.6434,27.0883,-3.6046,FAIL,-2.7031,-8.7184,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(8,21,4)",Y,Y,—,364,22.80,-70.5073,9.4882,-7.4311,FAIL,1406,24.04,-98.3148,27.0883,-3.6294,FAIL,-2.9634,-9.4794,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(12,21,4)",Y,Y,—,313,23.32,-65.8704,9.4882,-6.9424,FAIL,1221,25.39,-97.2215,27.0883,-3.5891,FAIL,-2.6083,-8.3385,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(10,14,3)",Y,Y,—,419,21.72,-74.2946,9.4882,-7.8302,FAIL,1627,24.34,-99.0460,27.0883,-3.6564,FAIL,-3.2959,-11.1336,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_b|(10,21,4,os53)",Y,Y,—,47,27.66,-17.3516,9.4882,-1.8288,FAIL,190,31.05,-43.6332,27.0883,-1.6108,FAIL,-0.4659,-1.3463,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(10,21,4)",Y,Y,—,81,33.33,-25.3817,10.0911,-2.5153,FAIL,319,33.54,-49.1044,27.4297,-1.7902,FAIL,-0.6945,-1.4683,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(8,21,4)",Y,Y,—,87,31.03,-30.8538,10.0911,-3.0575,FAIL,340,32.65,-54.1381,27.4297,-1.9737,FAIL,-0.8778,-1.7191,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(12,21,4)",Y,Y,—,79,34.18,-30.5538,10.0911,-3.0278,FAIL,295,35.25,-43.8117,27.4297,-1.5972,FAIL,-0.8746,-1.2198,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(10,14,3)",Y,Y,—,100,35.00,-25.0636,10.0911,-2.4837,FAIL,397,31.99,-50.0617,27.4297,-1.8251,FAIL,-0.6903,-1.5136,—
+BTCUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_b|(10,21,4,os53)",Y,Y,—,8,25.00,-8.4565,10.0911,-0.8380,FAIL,42,33.33,-12.9482,27.4297,-0.4721,FAIL,-0.2133,-0.3065,THIN-N FLAG (BTC 6m n=8 in thin band [6..10])
+BTCUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(20,5)",Y,Y,—,85,24.71,-11.9429,9.4882,-1.2587,FAIL,356,24.44,-57.5097,27.0883,-2.1230,FAIL,-0.2565,-1.8365,—
+BTCUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(14,3)",Y,Y,—,153,20.92,-35.6945,9.4882,-3.7620,FAIL,589,22.24,-80.2352,27.0883,-2.9620,FAIL,-1.0379,-3.7560,—
+BTCUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(21,5)",Y,Y,—,83,25.30,-9.6650,9.4882,-1.0186,FAIL,350,24.29,-59.0489,27.0883,-2.1799,FAIL,-0.1925,-1.9281,—
+BTCUSDT,rmi-midline-fifty-cross-v1,1h,"mode_b|(20,5,os30)",Y,Y,—,59,32.20,-3.4812,9.4882,-0.3669,FAIL,231,30.74,-33.4670,27.0883,-1.2355,FAIL,-0.0692,-0.7823,—
+BTCUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(20,5)",Y,Y,—,25,44.00,-0.8729,10.0911,-0.0865,FAIL,92,33.70,-13.7853,27.4297,-0.5026,FAIL,0.0385,-0.0824,—
+BTCUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(14,3)",Y,Y,—,32,31.25,-3.5358,10.0911,-0.3504,FAIL,135,25.93,-5.4571,27.4297,-0.1989,FAIL,-0.0220,0.1518,—
+BTCUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(21,5)",Y,Y,—,24,41.67,1.0266,10.0911,0.1017,FAIL,87,33.33,-9.9755,27.4297,-0.3637,FAIL,0.0840,-0.0221,—
+BTCUSDT,rmi-midline-fifty-cross-v1,4h,"mode_b|(20,5,os30)",Y,Y,—,18,27.78,9.6964,10.0911,0.9609,FAIL,62,30.65,-14.4943,27.4297,-0.5284,FAIL,0.2905,-0.2793,Near-miss 6m (0.96x B&H)
+BTCUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N20,k4.0)",Y,Y,—,73,21.92,-15.2539,9.4882,-1.6077,FAIL,331,17.52,-68.1315,27.0883,-2.5152,FAIL,-0.4022,-2.7877,—
+BTCUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N20,k3.0)",Y,Y,—,114,15.79,-19.8188,9.4882,-2.0888,FAIL,479,18.16,-75.2597,27.0883,-2.7783,FAIL,-0.5341,-3.3778,—
+BTCUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N14,k4.0)",Y,Y,—,52,17.31,-12.6036,9.4882,-1.3284,FAIL,249,18.88,-56.6416,27.0883,-2.0910,FAIL,-0.3275,-2.0456,—
+BTCUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N30,k4.0)",Y,Y,—,87,18.39,-15.1631,9.4882,-1.5981,FAIL,377,16.45,-67.7391,27.0883,-2.5007,FAIL,-0.3674,-2.7156,—
+BTCUSDT,accel-bands-break-inside-exit-v1,1h,"mode_b|(N20,k4.0)",Y,Y,—,43,18.60,-9.9691,9.4882,-1.0507,FAIL,201,18.41,-57.2329,27.0883,-2.1128,FAIL,-0.2562,-2.0751,—
+BTCUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N20,k4.0)",Y,Y,—,17,11.76,-3.1266,10.0911,-0.3098,FAIL,84,22.62,-20.0798,27.4297,-0.7320,FAIL,-0.0607,-0.5000,—
+BTCUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N20,k3.0)",Y,Y,—,28,3.57,-11.2306,10.0911,-1.1129,FAIL,118,18.64,-28.6187,27.4297,-1.0433,FAIL,-0.2760,-0.7662,—
+BTCUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N14,k4.0)",Y,Y,—,15,20.00,0.7925,10.0911,0.0785,FAIL,66,27.27,-9.7435,27.4297,-0.3552,FAIL,0.0379,-0.2210,—
+BTCUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N30,k4.0)",Y,Y,—,26,3.85,-6.2324,10.0911,-0.6176,FAIL,84,25.00,-1.4054,27.4297,-0.0512,FAIL,-0.1184,0.0682,—
+BTCUSDT,accel-bands-break-inside-exit-v1,4h,"mode_b|(N20,k4.0)",Y,Y,—,10,20.00,5.1027,10.0911,0.5057,FAIL,48,29.17,3.0337,27.4297,0.1106,FAIL,0.1423,0.1210,THIN-N FLAG (BTC 6m n=10 in thin band [6..10])
+ETHUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N13),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,1h,"mode_b|(N12,os25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N13),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,psy-midline-fifty-cross-v1,4h,"mode_b|(N12,os25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N30),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,1h,"mode_b|(N20,ext2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N30),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,disparity-sma-zero-cross-v1,4h,"mode_b|(N20,ext2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(10,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(8,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(12,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(10,14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_b|(10,21,4,os53)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(10,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(8,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(12,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(10,14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_b|(10,21,4,os53)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(20,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(21,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rmi-midline-fifty-cross-v1,1h,"mode_b|(20,5,os30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(20,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(21,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rmi-midline-fifty-cross-v1,4h,"mode_b|(20,5,os30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N20,k3.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N14,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N30,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,1h,"mode_b|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N20,k3.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N14,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N30,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,accel-bands-break-inside-exit-v1,4h,"mode_b|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N13),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,1h,"mode_b|(N12,os25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N13),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,psy-midline-fifty-cross-v1,4h,"mode_b|(N12,os25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N30),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,1h,"mode_b|(N20,ext2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N30),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,disparity-sma-zero-cross-v1,4h,"mode_b|(N20,ext2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(10,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(8,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(12,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(10,14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_b|(10,21,4,os53)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(10,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(8,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(12,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(10,14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_b|(10,21,4,os53)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(20,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(21,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rmi-midline-fifty-cross-v1,1h,"mode_b|(20,5,os30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(20,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(21,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rmi-midline-fifty-cross-v1,4h,"mode_b|(20,5,os30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N20,k3.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N14,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N30,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,1h,"mode_b|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N20,k3.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N14,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N30,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,accel-bands-break-inside-exit-v1,4h,"mode_b|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N13),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,1h,"mode_b|(N12,os25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N13),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,psy-midline-fifty-cross-v1,4h,"mode_b|(N12,os25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,1h,mode_a|(N30),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,1h,"mode_b|(N20,ext2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N10),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,4h,mode_a|(N30),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,disparity-sma-zero-cross-v1,4h,"mode_b|(N20,ext2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(10,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(8,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(12,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_a|(10,14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,1h,"mode_b|(10,21,4,os53)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(10,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(8,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(12,21,4)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_a|(10,14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wavetrend-wt1-wt2-cross-v1,4h,"mode_b|(10,21,4,os53)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(20,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rmi-midline-fifty-cross-v1,1h,"mode_a|(21,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rmi-midline-fifty-cross-v1,1h,"mode_b|(20,5,os30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(20,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(14,3)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rmi-midline-fifty-cross-v1,4h,"mode_a|(21,5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rmi-midline-fifty-cross-v1,4h,"mode_b|(20,5,os30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N20,k3.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N14,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,1h,"mode_a|(N30,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,1h,"mode_b|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N20,k3.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N14,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,4h,"mode_a|(N30,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,accel-bands-break-inside-exit-v1,4h,"mode_b|(N20,k4.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
