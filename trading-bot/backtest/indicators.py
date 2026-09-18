@@ -4023,3 +4023,291 @@ def swenlin_pmo(
     return pmo_out, sig_out
 
 
+def demark_rei(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 8,
+) -> list[float | None]:
+    """DeMark Range Expansion Index (TD REI) (Thomas DeMark).
+
+    Formula (DeMark / S&C V.15:8 / Sierra Chart / ProRealCode):
+      For bar t >= 2:
+        s[t] = (high[t] - high[t-2]) + (low[t] - low[t-2])
+        v[t] = 1 if ((high[t-2] >= close[t-7] or high[t-2] >= close[t-8] or
+                      high[t] >= close[t-5] or high[t] >= close[t-6]) and
+                     (low[t-2] <= close[t-7] or low[t-2] <= close[t-8] or
+                      low[t] <= close[t-5] or low[t] <= close[t-6]))
+               else 0
+        (Note: for t < 8, condition checks are bounded or evaluate false / zero).
+        num[t] = sum(v[i] * s[i], length)
+        den[t] = sum(abs(high[i] - high[i-2]) + abs(low[i] - low[i-2]), length)
+        rei[t] = 100 * num[t] / den[t] if den[t] != 0 else 0
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n < length + 2 or length <= 0:
+        return out
+
+    s = [0.0] * n
+    v = [0.0] * n
+    abs_s = [0.0] * n
+
+    for t in range(2, n):
+        h = highs[t]
+        l = lows[t]
+        h2 = highs[t - 2]
+        l2 = lows[t - 2]
+        s_val = (h - h2) + (l - l2)
+        s[t] = s_val
+        abs_s[t] = abs(h - h2) + abs(l - l2)
+
+        # DeMark Basic overlap test
+        # Need close[t-5], close[t-6], close[t-7], close[t-8]
+        # Condition 1: (H[t-2] >= C[t-7] or H[t-2] >= C[t-8] or H[t] >= C[t-5] or H[t] >= C[t-6])
+        # Condition 2: (L[t-2] <= C[t-7] or L[t-2] <= C[t-8] or L[t] <= C[t-5] or L[t] <= C[t-6])
+        cond1 = False
+        cond2 = False
+        if t >= 5:
+            cond1 = cond1 or (h >= closes[t - 5])
+            cond2 = cond2 or (l <= closes[t - 5])
+        if t >= 6:
+            cond1 = cond1 or (h >= closes[t - 6])
+            cond2 = cond2 or (l <= closes[t - 6])
+        if t >= 7:
+            cond1 = cond1 or (h2 >= closes[t - 7])
+            cond2 = cond2 or (l2 <= closes[t - 7])
+        if t >= 8:
+            cond1 = cond1 or (h2 >= closes[t - 8])
+            cond2 = cond2 or (l2 <= closes[t - 8])
+
+        v[t] = 1.0 if (cond1 and cond2) else 0.0
+
+    vs = [v[i] * s[i] for i in range(n)]
+
+    # Rolling sum of vs and abs_s over length
+    # Note: REI requires at least length bars
+    first_idx = length + 1  # since s starts at index 2
+    if n <= first_idx:
+        return out
+
+    sum_vs = sum(vs[2 : 2 + length])
+    sum_abs = sum(abs_s[2 : 2 + length])
+    out[first_idx] = (100.0 * sum_vs / sum_abs) if sum_abs != 0.0 else 0.0
+
+    for t in range(first_idx + 1, n):
+        sum_vs += vs[t] - vs[t - length]
+        sum_abs += abs_s[t] - abs_s[t - length]
+        out[t] = (100.0 * sum_vs / sum_abs) if sum_abs != 0.0 else 0.0
+
+    return out
+
+
+def khalil_pzo(
+    closes: list[float],
+    n_len: int = 14,
+) -> list[float | None]:
+    """Khalil & Steckler Price Zone Oscillator (PZO).
+
+    Formula (TASC Jun 2011 / thinkorswim / LuxAlgo):
+      signed = close > close[1] ? close : close < close[1] ? -close : 0.0
+      cp = ema(signed, n_len)
+      tc = ema(close, n_len)
+      pzo = 100.0 * cp / tc if tc != 0.0 else 0.0
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n < n_len + 1 or n_len <= 0:
+        return out
+
+    signed = [0.0] * n
+    for t in range(1, n):
+        c = closes[t]
+        cp = closes[t - 1]
+        if c > cp:
+            signed[t] = c
+        elif c < cp:
+            signed[t] = -c
+        else:
+            signed[t] = 0.0
+
+    cp_series = ema(signed, n_len)
+    tc_series = ema(closes, n_len)
+
+    for t in range(n):
+        cp_val = cp_series[t]
+        tc_val = tc_series[t]
+        if cp_val is not None and tc_val is not None:
+            out[t] = (100.0 * cp_val / tc_val) if tc_val != 0.0 else 0.0
+
+    return out
+
+
+def mobius_tmo(
+    opens: list[float],
+    closes: list[float],
+    length: int = 14,
+    calc_length: int = 5,
+    smooth_length: int = 3,
+) -> tuple[list[float | None], list[float | None]]:
+    """Mobius True Momentum Oscillator (TMO) (Mobius @ ThinkScript Lounge / useThinkScript).
+
+    Formula:
+      For each bar t >= length:
+        vote = sum(close[t] > open[t-i] ? 1 : close[t] < open[t-i] ? -1 : 0 for i in 0..length-1)
+      ema1 = ema(vote, calc_length)
+      main = ema(ema1, smooth_length)
+      signal = ema(main, smooth_length)
+    """
+    n = len(closes)
+    main_out: list[float | None] = [None] * n
+    sig_out: list[float | None] = [None] * n
+    if n < length or length <= 0 or calc_length <= 0 or smooth_length <= 0:
+        return main_out, sig_out
+
+    votes = [0.0] * n
+    for t in range(length - 1, n):
+        v = 0
+        c = closes[t]
+        for i in range(length):
+            op = opens[t - i]
+            if c > op:
+                v += 1
+            elif c < op:
+                v -= 1
+        votes[t] = float(v)
+
+    # First valid vote is at length - 1
+    valid_votes = votes[length - 1 :]
+    ema1_valid = ema(valid_votes, calc_length)
+    ema1_series: list[float | None] = [None] * n
+    for idx, val in enumerate(ema1_valid):
+        ema1_series[length - 1 + idx] = val
+
+    main_series = _ema_series(ema1_series, smooth_length)
+    sig_series = _ema_series(main_series, smooth_length)
+
+    return main_series, sig_series
+
+
+def donovan_range_filter(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    period: int = 20,
+    mult: float = 1.618,
+    use_hl2: bool = False,
+) -> tuple[list[float | None], list[int | None]]:
+    """DonovanWall Range Filter (TradingView 'Range Filter [DW]').
+
+    Formula:
+      src = hl2 if use_hl2 else close
+      diff = abs(src - src[1])
+      wper = 2 * period - 1
+      av_chg = ema(ema(diff, period), wper)
+      rng = av_chg * mult
+
+      Ratchet filt:
+        if src - rng > filt[1]:
+          filt = src - rng
+        elif src + rng < filt[1]:
+          filt = src + rng
+        else:
+          filt = filt[1]
+
+      Direction flip:
+        if filt > filt[1]:
+          dir = 1
+        elif filt < filt[1]:
+          dir = -1
+        else:
+          dir = dir[1]
+    """
+    n = len(closes)
+    filt_out: list[float | None] = [None] * n
+    dir_out: list[int | None] = [None] * n
+    if n < 2 or period <= 0:
+        return filt_out, dir_out
+
+    src = [0.0] * n
+    for t in range(n):
+        src[t] = (highs[t] + lows[t]) / 2.0 if use_hl2 else closes[t]
+
+    diff = [0.0] * n
+    for t in range(1, n):
+        diff[t] = abs(src[t] - src[t - 1])
+
+    wper = 2 * period - 1
+    ema_diff = ema(diff, period)
+    av_chg = _ema_series(ema_diff, wper)
+
+    # Find first valid index of av_chg
+    first_valid = -1
+    for t in range(n):
+        if av_chg[t] is not None:
+            first_valid = t
+            break
+
+    if first_valid == -1:
+        return filt_out, dir_out
+
+    # Initialize at first_valid
+    cur_filt = src[first_valid]
+    cur_dir = 1
+    filt_out[first_valid] = cur_filt
+    dir_out[first_valid] = cur_dir
+
+    for t in range(first_valid + 1, n):
+        rng_val = float(av_chg[t]) * mult  # av_chg[t] is not None
+        s = src[t]
+
+        if s - rng_val > cur_filt:
+            cur_filt = s - rng_val
+        elif s + rng_val < cur_filt:
+            cur_filt = s + rng_val
+
+        # Direction flip
+        prev_filt = filt_out[t - 1]
+        assert prev_filt is not None
+        if cur_filt > prev_filt:
+            cur_dir = 1
+        elif cur_filt < prev_filt:
+            cur_dir = -1
+
+        filt_out[t] = cur_filt
+        dir_out[t] = cur_dir
+
+    return filt_out, dir_out
+
+
+def clv_sma(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    n_len: int = 14,
+) -> list[float | None]:
+    """Close Location Value (CLV) SMA (Achelis / Investopedia / StockCharts).
+
+    Volume-free close-in-range oscillator.
+    Formula:
+      rng = high - low
+      clv = (2.0 * close - high - low) / rng if rng != 0.0 else 0.0
+      clvs = sma(clv, n_len)
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n < n_len or n_len <= 0:
+        return out
+
+    clv = [0.0] * n
+    for t in range(n):
+        rng = highs[t] - lows[t]
+        if rng != 0.0:
+            clv[t] = (2.0 * closes[t] - highs[t] - lows[t]) / rng
+        else:
+            clv[t] = 0.0
+
+    return sma(clv, n_len)
+
+
+

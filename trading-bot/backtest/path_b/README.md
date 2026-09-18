@@ -25,4 +25,9 @@ TV-free offline bar-close backtests (not paper/live).
 | stage7-dual-sol-bnb-v1 | `stage7_dual_sol_bnb_v1/` | `python -m backtest.path_b.stage7_dual_sol_bnb_v1` |
 | stage8-dual-sol-bnb-v1 | `stage8_dual_sol_bnb_v1/` | `python -m backtest.path_b.stage8_dual_sol_bnb_v1` |
 
+| stage10-dual-sol-bnb-v1 | `stage10_dual_sol_bnb_v1/` | `python -m backtest.path_b.stage10_dual_sol_bnb_v1` |
+| stage11-dual-sol-bnb-v1 | `stage11_dual_sol_bnb_v1/` | `python -m backtest.path_b.stage11_dual_sol_bnb_v1` |
+| stage12-dual-sol-bnb-v1 | `stage12_dual_sol_bnb_v1/` | `python -m backtest.path_b.stage12_dual_sol_bnb_v1` |
+| stage13-dual-sol-bnb-v1 | `stage13_dual_sol_bnb_v1/` | `python -m backtest.path_b.stage13_dual_sol_bnb_v1` |
+
 Feed: `mtf_ohlcv/` (5m agg + 1d native).
