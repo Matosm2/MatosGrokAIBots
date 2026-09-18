@@ -5450,6 +5450,213 @@ def nison_kagi(
     return dir_out, yy_out, yang_flip, yin_flip
 
 
+# ---------------------------------------------------------------------------
+# Stage 17 Indicators (Path B Track 1 Dual SOL+BNB)
+# ---------------------------------------------------------------------------
+
+def heikin_ashi_bias(
+    opens: list[float],
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+) -> tuple[list[float], list[float], list[bool]]:
+    """Heikin-Ashi Bias (HA close vs HA open polarity).
+
+    Formula (StockCharts / Investopedia HA):
+      HA_Close = (Open + High + Low + Close) / 4
+      HA_Open = (HA_Open[1] + HA_Close[1]) / 2 (seed: (Open[0] + Close[0]) / 2)
+      bull = HA_Close > HA_Open
+
+    Returns:
+      (ha_open, ha_close, bull)
+    """
+    n = len(closes)
+    ha_open: list[float] = [0.0] * n
+    ha_close: list[float] = [0.0] * n
+    bull: list[bool] = [False] * n
+
+    if n == 0:
+        return ha_open, ha_close, bull
+
+    ha_close[0] = (opens[0] + highs[0] + lows[0] + closes[0]) / 4.0
+    ha_open[0] = (opens[0] + closes[0]) / 2.0
+    bull[0] = ha_close[0] > ha_open[0]
+
+    for i in range(1, n):
+        ha_close[i] = (opens[i] + highs[i] + lows[i] + closes[i]) / 4.0
+        ha_open[i] = (ha_open[i - 1] + ha_close[i - 1]) / 2.0
+        bull[i] = ha_close[i] > ha_open[i]
+
+    return ha_open, ha_close, bull
+
+
+def blau_ergodic_mdi(
+    closes: list[float],
+    r: int = 20,
+    s: int = 5,
+    u: int = 3,
+    ul: int = 3,
+) -> tuple[list[float | None], list[float | None]]:
+    """Blau Ergodic Mean Deviation Index (Ergodic MDI) & Signal.
+
+    Formula (William Blau / MQL5):
+      md = close - ema(close, r)
+      mdi = ema(ema(md, s), u)
+      sig = ema(mdi, ul)
+
+    Prefer defaults: (20, 5, 3, 3).
+    Returns:
+      (mdi, sig)
+    """
+    n = len(closes)
+    mdi_out: list[float | None] = [None] * n
+    sig_out: list[float | None] = [None] * n
+    if n == 0 or r <= 0 or s <= 0 or u <= 0 or ul <= 0:
+        return mdi_out, sig_out
+
+    ema_c = ema(closes, r)
+    md: list[float | None] = [None] * n
+    for i in range(n):
+        if ema_c[i] is not None:
+            md[i] = closes[i] - float(ema_c[i])
+        else:
+            md[i] = None
+
+    mdi1 = _ema_series(md, s)
+    mdi = _ema_series(mdi1, u)
+    sig = _ema_series(mdi, ul)
+
+    return mdi, sig
+
+
+def dss_bressert(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    pds: int = 10,
+    ema_len: int = 9,
+    trigger_len: int = 5,
+) -> tuple[list[float | None], list[float | None]]:
+    """Double Smoothed Stochastic (DSS Bressert) & Trigger.
+
+    Formula (Blau / Bressert):
+      pre = ema(stoch(close, high, low, PDS), EMAlen)
+      dss = ema(stoch(pre, pre, pre, PDS), EMAlen)
+      trig = ema(dss, TriggerLen)
+
+    Prefer defaults: (10, 9, 5).
+    Returns:
+      (dss, trig)
+    """
+    n = len(closes)
+    dss_out: list[float | None] = [None] * n
+    trig_out: list[float | None] = [None] * n
+    if n == 0 or pds <= 0 or ema_len <= 0 or trigger_len <= 0 or n < pds:
+        return dss_out, trig_out
+
+    # Step 1: stoch(close, high, low, pds)
+    k1: list[float | None] = [None] * n
+    for i in range(pds - 1, n):
+        h_win = highs[i - pds + 1 : i + 1]
+        l_win = lows[i - pds + 1 : i + 1]
+        max_h = max(h_win)
+        min_l = min(l_win)
+        rng = max_h - min_l
+        k1[i] = 100.0 * (closes[i] - min_l) / rng if rng != 0.0 else 0.0
+
+    pre = _ema_series(k1, ema_len)
+
+    # Step 2: stoch(pre, pre, pre, pds)
+    k2: list[float | None] = [None] * n
+    for i in range(n):
+        if i < pds - 1:
+            continue
+        win = pre[i - pds + 1 : i + 1]
+        if any(v is None for v in win):
+            continue
+        win_vals = [float(v) for v in win]
+        max_pre = max(win_vals)
+        min_pre = min(win_vals)
+        rng2 = max_pre - min_pre
+        cur_pre = float(pre[i])  # type: ignore[arg-type]
+        k2[i] = 100.0 * (cur_pre - min_pre) / rng2 if rng2 != 0.0 else 0.0
+
+    dss = _ema_series(k2, ema_len)
+    trig = _ema_series(dss, trigger_len)
+
+    return dss, trig
+
+
+def bostian_iii(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    sma_len: int = 21,
+) -> tuple[list[float], list[float | None]]:
+    """Bostian Intraday Intensity Index (III) & SMA.
+
+    Formula (David Bostian):
+      rng = high - low
+      iii = ((2*close - high - low) / rng) * volume  (0 if rng == 0)
+      iiiS = sma(iii, smaLen)
+
+    Prefer default: sma_len = 21.
+    Returns:
+      (iii, iii_sma)
+    """
+    n = len(closes)
+    iii: list[float] = [0.0] * n
+    if n == 0:
+        return iii, [None] * n
+
+    for i in range(n):
+        rng = highs[i] - lows[i]
+        if rng == 0.0:
+            iii[i] = 0.0
+        else:
+            iii[i] = ((2.0 * closes[i] - highs[i] - lows[i]) / rng) * volumes[i]
+
+    iii_sma = sma(iii, sma_len) if sma_len > 0 else [None] * n
+    return iii, iii_sma
+
+
+def ehlers_predictive_ma(
+    src: list[float],
+    wma_len: int = 7,
+    trigger_len: int = 4,
+) -> tuple[list[float | None], list[float | None]]:
+    """Ehlers Predictive Moving Average & Trigger.
+
+    Formula (John F. Ehlers, Rocket Science for Traders):
+      w1 = wma(src, 7)
+      w2 = wma(w1, 7)
+      predict = 2*w1 - w2
+      trigger = wma(predict, 4)
+
+    Prefer default: 7/7/4 on close (locked).
+    Returns:
+      (predict, trigger)
+    """
+    n = len(src)
+    predict: list[float | None] = [None] * n
+    trigger: list[float | None] = [None] * n
+    if n == 0 or wma_len <= 0 or trigger_len <= 0:
+        return predict, trigger
+
+    src_opt: list[float | None] = [float(v) for v in src]
+    w1 = wma(src_opt, wma_len)
+    w2 = wma(w1, wma_len)
+
+    for i in range(n):
+        if w1[i] is not None and w2[i] is not None:
+            predict[i] = 2.0 * float(w1[i]) - float(w2[i])
+
+    trigger = wma(predict, trigger_len)
+    return predict, trigger
+
+
+
 
 
 
