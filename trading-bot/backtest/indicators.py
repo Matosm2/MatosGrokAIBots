@@ -2747,6 +2747,201 @@ def mcginley_dynamic(
     return out
 
 
+def ehlers_super_passband(
+    closes: list[float],
+    p1: int = 40,
+    p2: int = 60,
+) -> list[float | None]:
+    """Ehlers Super Passband Filter (S&C Jul 2016).
+
+    Formula:
+      alpha1 = 5.0 / P1
+      alpha2 = 5.0 / P2
+      PB = (alpha1 - alpha2) * Close
+         + (alpha2 * (1 - alpha1) - alpha1 * (1 - alpha2)) * Close[1]
+         + ((1 - alpha1) + (1 - alpha2)) * PB[1]
+         - (1 - alpha1) * (1 - alpha2) * PB[2]
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if p1 <= 0 or p2 <= 0 or n < 3:
+        return out
+
+    a1 = 5.0 / p1
+    a2 = 5.0 / p2
+
+    c0 = a1 - a2
+    c1 = a2 * (1.0 - a1) - a1 * (1.0 - a2)
+    c2 = (1.0 - a1) + (1.0 - a2)
+    c3 = (1.0 - a1) * (1.0 - a2)
+
+    pb1 = 0.0
+    pb2 = 0.0
+
+    for i in range(n):
+        if i == 0:
+            out[i] = 0.0
+            pb1 = 0.0
+            pb2 = 0.0
+            continue
+        c = closes[i]
+        c_prev = closes[i - 1]
+        val = c0 * c + c1 * c_prev + c2 * pb1 - c3 * pb2
+        out[i] = val
+        pb2 = pb1
+        pb1 = val
+
+    return out
+
+
+def rms(values: list[float | None], length: int = 50) -> list[float | None]:
+    """Root Mean Square over `length` bars: sqrt(SMA(x^2, length))."""
+    n = len(values)
+    sq: list[float | None] = [None] * n
+    for i in range(n):
+        v = values[i]
+        sq[i] = (v * v) if v is not None else None
+
+    sma_sq = _sma_nullable(sq, length)
+    out: list[float | None] = [None] * n
+    for i in range(n):
+        s = sma_sq[i]
+        if s is not None and s >= 0.0:
+            out[i] = math.sqrt(s)
+        elif s is not None:
+            out[i] = 0.0
+    return out
+
+
+def rwi_high_low(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    max_lookback: int = 64,
+) -> tuple[list[float | None], list[float | None]]:
+    """Random Walk Index High and Low (Michael Poulos).
+
+    For each bar t and each i in [2, max_lookback]:
+      ATR_i = ATR(highs, lows, closes, i) [or simple TR average over i bars]
+      RWI_High(i) = (High[t] - Low[t - i]) / (ATR_i * sqrt(i))
+      RWI_Low(i) = (High[t - i] - Low[t]) / (ATR_i * sqrt(i))
+    RWI_High = max over i of RWI_High(i)
+    RWI_Low = max over i of RWI_Low(i)
+    """
+    n = len(closes)
+    rwi_h: list[float | None] = [None] * n
+    rwi_l: list[float | None] = [None] * n
+    if n < 3 or max_lookback < 2:
+        return rwi_h, rwi_l
+
+    # Precalculate TR for all bars
+    tr_vals = true_range(highs, lows, closes)
+    # Precalculate cumulative sum of TR for fast SMA calculation: TR_sum(i) = sum(tr[t - i + 1 : t + 1])
+    # Note: tr_vals[0] = highs[0] - lows[0]
+    cum_tr = [0.0] * (n + 1)
+    for i in range(n):
+        cum_tr[i + 1] = cum_tr[i] + tr_vals[i]
+
+    # Precalculate sqrt(i)
+    sqrt_i = [math.sqrt(i) for i in range(max_lookback + 1)]
+
+    for t in range(2, n):
+        max_h = -float("inf")
+        max_l = -float("inf")
+        curr_high = highs[t]
+        curr_low = lows[t]
+
+        limit = min(t, max_lookback)
+        for i in range(2, limit + 1):
+            # SMA of TR over i bars ending at t
+            atr_i = (cum_tr[t + 1] - cum_tr[t + 1 - i]) / i
+            denom = atr_i * sqrt_i[i]
+            if denom > 0.0:
+                h_disp = (curr_high - lows[t - i]) / denom
+                l_disp = (highs[t - i] - curr_low) / denom
+                if h_disp > max_h:
+                    max_h = h_disp
+                if l_disp > max_l:
+                    max_l = l_disp
+
+        if max_h != -float("inf"):
+            rwi_h[t] = max_h
+        if max_l != -float("inf"):
+            rwi_l[t] = max_l
+
+    return rwi_h, rwi_l
+
+
+def ehlers_reverse_ema(
+    closes: list[float],
+    alpha: float = 0.1,
+) -> list[float | None]:
+    """Ehlers Reverse EMA Wave (TASC Sep 2017).
+
+    Formula (Traders' Tips Sep 2017):
+      CC = 1.0 - alpha
+      EMA = alpha * Close + CC * EMA[1]
+      RE1 = CC * EMA + EMA[1]
+      RE2 = (CC^2) * RE1 + RE1[1]
+      RE3 = (CC^4) * RE2 + RE2[1]
+      RE4 = (CC^8) * RE3 + RE3[1]
+      RE5 = (CC^16) * RE4 + RE4[1]
+      RE6 = (CC^32) * RE5 + RE5[1]
+      RE7 = (CC^64) * RE6 + RE6[1]
+      RE8 = (CC^128) * RE7 + RE7[1]
+      Wave = EMA - alpha * RE8
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n == 0 or alpha <= 0.0 or alpha >= 1.0:
+        return out
+
+    cc = 1.0 - alpha
+    cc_pows = [
+        cc,            # for RE1
+        cc ** 2,       # for RE2
+        cc ** 4,       # for RE3
+        cc ** 8,       # for RE4
+        cc ** 16,      # for RE5
+        cc ** 32,      # for RE6
+        cc ** 64,      # for RE7
+        cc ** 128,     # for RE8
+    ]
+
+    ema_val = 0.0
+    ema_prev = 0.0
+    re = [0.0] * 8
+    re_prev = [0.0] * 8
+
+    for i in range(n):
+        c = closes[i]
+        if i == 0:
+            ema_val = c
+            ema_prev = c
+            # Seed RE cascades
+            re[0] = cc * ema_val + ema_prev
+            re_prev[0] = re[0]
+            for k in range(1, 8):
+                re[k] = cc_pows[k] * re[k - 1] + re_prev[k - 1]
+                re_prev[k] = re[k]
+            out[i] = ema_val - alpha * re[7]
+            continue
+
+        ema_val = alpha * c + cc * ema_prev
+        re[0] = cc * ema_val + ema_prev
+        for k in range(1, 8):
+            re[k] = cc_pows[k] * re[k - 1] + re_prev[k - 1]
+
+        out[i] = ema_val - alpha * re[7]
+
+        ema_prev = ema_val
+        for k in range(8):
+            re_prev[k] = re[k]
+
+    return out
+
+
+
 
 
 
