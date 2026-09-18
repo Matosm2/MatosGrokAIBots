@@ -6581,6 +6581,253 @@ def inside_bar(
     return out
 
 
+def percentile_nearest_rank(values: list[float], length: int, percentage: float) -> list[float | None]:
+    """Rolling nearest-rank percentile (Pine Script ta.percentile_nearest_rank).
+
+    Given a sorted window of size N (0-indexed: 0..N-1), rank = ceil(percentage / 100 * N) - 1.
+    Clamped to [0, N-1].
+    != Donchian exact HH/LL (max/min).
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if n == 0 or length <= 0 or percentage < 0.0 or percentage > 100.0:
+        return out
+
+    for i in range(length - 1, n):
+        window = sorted(values[i - length + 1 : i + 1])
+        # Nearest-rank method: rank = ceil(p/100 * N) - 1, 0-indexed
+        rank = math.ceil((percentage / 100.0) * length) - 1
+        rank = max(0, min(rank, length - 1))
+        out[i] = window[rank]
+    return out
+
+
+def percentrank(values: list[float | None], length: int) -> list[float | None]:
+    """Pine Script ta.percentrank: percent of bars in window less than or equal to current bar.
+
+    100.0 * (count of values in window <= current value) / length.
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if n == 0 or length <= 0:
+        return out
+
+    for i in range(length - 1, n):
+        cur = values[i]
+        if cur is None:
+            continue
+        window = values[i - length + 1 : i + 1]
+        if any(x is None for x in window):
+            continue
+        cnt = sum(1 for x in window if x is not None and float(x) <= float(cur))
+        out[i] = 100.0 * cnt / float(length)
+    return out
+
+
+def percentile_channel(
+    highs: list[float],
+    lows: list[float],
+    length: int = 50,
+    p_hi: float = 90.0,
+    p_lo: float = 10.0,
+) -> tuple[list[float | None], list[float | None]]:
+    """Empirical percentile / quantile channel.
+
+    up = percentile_nearest_rank(high, length, p_hi)
+    dn = percentile_nearest_rank(low, length, p_lo)
+
+    != Donchian exact HH/LL / != HHLL.
+    """
+    up = percentile_nearest_rank(highs, length, p_hi)
+    dn = percentile_nearest_rank(lows, length, p_lo)
+    return up, dn
+
+
+def rolling_zscore(
+    closes: list[float],
+    length: int = 20,
+) -> list[float | None]:
+    """Rolling price z-score: z = (close - sma(close, length)) / stdev(close, length).
+
+    != BB-squeeze / != Disparity / != PGO.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n == 0 or length <= 1:
+        return out
+
+    sma_vals = sma(closes, length)
+    for i in range(length - 1, n):
+        mean = sma_vals[i]
+        if mean is None:
+            continue
+        window = closes[i - length + 1 : i + 1]
+        var = sum((x - mean) ** 2 for x in window) / length
+        sd = math.sqrt(max(0.0, var))
+        if sd == 0.0:
+            out[i] = 0.0
+        else:
+            out[i] = (closes[i] - mean) / sd
+    return out
+
+
+def anchored_vwap_pivot_low(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    pivot_left: int = 5,
+    pivot_right: int = 5,
+) -> tuple[list[float | None], list[int]]:
+    """Event-anchored VWAP reset on confirmed pivot low (ta.pivotlow).
+
+    On confirmed pivotlow at bar i (which represents pivot at i - pivot_right),
+    cumTPV and cumV reset from the anchor bar forward.
+    tp = (high + low + close) / 3 (hlc3).
+    Returns (avwap_series, bars_since_anchor_series).
+    != session VWAP+-sigma / != HHLL-state.
+    """
+    n = len(closes)
+    avwap: list[float | None] = [None] * n
+    bars_since_anchor = [0] * n
+    if n == 0:
+        return avwap, bars_since_anchor
+
+    pl = pivotlow(lows, pivot_left, pivot_right)
+
+    cum_tpv = 0.0
+    cum_vol = 0.0
+    anchor_idx: int | None = None
+
+    for i in range(n):
+        if pl[i] is not None:
+            # Re-anchor from the confirmed pivot bar: i - pivot_right
+            new_anchor = max(0, i - pivot_right)
+            anchor_idx = new_anchor
+            # Recompute cumulative sums from anchor_idx up to current bar i
+            cum_tpv = 0.0
+            cum_vol = 0.0
+            for k in range(anchor_idx, i + 1):
+                tp_k = (highs[k] + lows[k] + closes[k]) / 3.0
+                v_k = volumes[k]
+                cum_tpv += tp_k * v_k
+                cum_vol += v_k
+        elif anchor_idx is not None:
+            tp_i = (highs[i] + lows[i] + closes[i]) / 3.0
+            v_i = volumes[i]
+            cum_tpv += tp_i * v_i
+            cum_vol += v_i
+
+        if anchor_idx is not None:
+            bars_since_anchor[i] = i - anchor_idx
+            if cum_vol > 0.0:
+                avwap[i] = cum_tpv / cum_vol
+            else:
+                tp_i = (highs[i] + lows[i] + closes[i]) / 3.0
+                avwap[i] = tp_i
+        else:
+            bars_since_anchor[i] = i
+
+    return avwap, bars_since_anchor
+
+
+def katsanos_vfi(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    period: int = 80,
+    coef: float = 0.1,
+    vcoef: float = 2.5,
+    smooth: int = 3,
+) -> list[float | None]:
+    """Markos Katsanos Volume Flow Indicator (VFI).
+
+    tp = (high + low + close) / 3.0 (hlc3)
+    inter = log(tp) - log(tp[1])
+    vinter = stdev(inter, 30) (sample stdev over 30 bars)
+    cutoff = coef * vinter * close
+    vave = sma(volume, period)[1]  (prior bar SMA of volume)
+    vc = min(volume, vave * vcoef)
+    mf = tp - tp[1]
+    vcp = vc if mf > cutoff else (-vc if mf < -cutoff else 0.0)
+    vfiRaw = sum(vcp, period) / vave (if vave > 0 else 0.0)
+    vfi = ema(vfiRaw, smooth) if smooth > 1 else vfiRaw
+
+    != VPCI / != VZO / != BW-MFI / != Demand Index / != OBV.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n == 0 or period <= 0:
+        return out
+
+    tp: list[float] = [(highs[i] + lows[i] + closes[i]) / 3.0 for i in range(n)]
+
+    # inter = log(tp) - log(tp[1])
+    inter: list[float] = [0.0] * n
+    for i in range(1, n):
+        if tp[i] > 0.0 and tp[i - 1] > 0.0:
+            inter[i] = math.log(tp[i]) - math.log(tp[i - 1])
+        else:
+            inter[i] = 0.0
+
+    # vinter = stdev(inter, 30) (Pine standard deviation is sample/population stdev over 30 bars)
+    vinter: list[float] = [0.0] * n
+    for i in range(n):
+        start = max(0, i - 30 + 1)
+        w = inter[start : i + 1]
+        w_len = len(w)
+        if w_len > 1:
+            mean_w = sum(w) / w_len
+            var_w = sum((x - mean_w) ** 2 for x in w) / w_len
+            vinter[i] = math.sqrt(max(0.0, var_w))
+        else:
+            vinter[i] = 0.0
+
+    # vave = sma(volume, period)[1]
+    sma_vol = sma(volumes, period)
+
+    # vcp = mf > cutoff ? vc : mf < -cutoff ? -vc : 0.0
+    vcp: list[float] = [0.0] * n
+    for i in range(1, n):
+        vave_prev = sma_vol[i - 1] if i >= 1 else None
+        if vave_prev is None or vave_prev <= 0.0:
+            continue
+        cutoff = coef * vinter[i] * closes[i]
+        vc = min(volumes[i], vave_prev * vcoef)
+        mf = tp[i] - tp[i - 1]
+        if mf > cutoff:
+            vcp[i] = vc
+        elif mf < -cutoff:
+            vcp[i] = -vc
+        else:
+            vcp[i] = 0.0
+
+    # vfiRaw = sum(vcp, period) / vave
+    vfi_raw: list[float | None] = [None] * n
+    for i in range(period, n):
+        vave_prev = sma_vol[i - 1]
+        if vave_prev is None or vave_prev <= 0.0:
+            continue
+        sum_vcp = sum(vcp[i - period + 1 : i + 1])
+        vfi_raw[i] = sum_vcp / vave_prev
+
+    if smooth > 1:
+        # Filter None from prefix for EMA computation
+        # Find first non-None index
+        first_valid = 0
+        while first_valid < n and vfi_raw[first_valid] is None:
+            first_valid += 1
+        if first_valid < n:
+            valid_vals = [float(x) for x in vfi_raw[first_valid:]]  # type: ignore[arg-type]
+            ema_sub = ema(valid_vals, smooth)
+            for j, val in enumerate(ema_sub):
+                out[first_valid + j] = val
+        return out
+    else:
+        return vfi_raw
+
+
 
 
 
