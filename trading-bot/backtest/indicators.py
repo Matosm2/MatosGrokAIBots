@@ -7373,3 +7373,176 @@ def williams_ad(
 
     return wad_series, sig_series
 
+
+def ehlers_dsp(
+    highs: list[float],
+    lows: list[float],
+    length: int = 7,
+) -> list[float | None]:
+    """Ehlers Detrended Synthetic Price (DSP).
+
+    Formula (John Ehlers, MESA and Trading Market Cycles pp. 64-70):
+      Price = (high + low) / 2
+      alpha = 2.0 / (length + 1.0)
+      alpha2 = alpha / 2.0
+      EMA1 = alpha * Price + (1.0 - alpha) * EMA1[1]
+      EMA2 = alpha2 * Price + (1.0 - alpha2) * EMA2[1]
+      DSP = EMA1 - EMA2
+
+    Returns dsp series.
+    != DPO (close - displaced SMA) / != Decycler (HP residual dual) /
+    != BandPass (IIR bandpass zero) / != CyberCycle / != EBSW.
+    """
+    n = len(highs)
+    res: list[float | None] = [None] * n
+    if n == 0 or length <= 0 or len(lows) != n:
+        return res
+
+    alpha = 2.0 / (length + 1.0)
+    alpha2 = alpha / 2.0
+
+    ema1 = (highs[0] + lows[0]) / 2.0
+    ema2 = ema1
+
+    for i in range(n):
+        price = (highs[i] + lows[i]) / 2.0
+        if i == 0:
+            ema1 = price
+            ema2 = price
+        else:
+            ema1 = alpha * price + (1.0 - alpha) * ema1
+            ema2 = alpha2 * price + (1.0 - alpha2) * ema2
+
+        res[i] = ema1 - ema2
+
+    return res
+
+
+def nhnl_osc(
+    highs: list[float],
+    lows: list[float],
+    l: int = 20,
+    w: int = 10,
+) -> list[float | None]:
+    """Single-asset New High / New Low (NH-NL) rolling rate oscillator.
+
+    Formula:
+      Over lookback L:
+        isNH = high >= highest(high, L)[1]
+        isNL = low <= lowest(low, L)[1]
+      Over window W:
+        nhRate = sum(isNH, W)
+        nlRate = sum(isNL, W)
+        osc = nhRate - nlRate
+
+    Single-asset only — not breadth.
+    != HHLL (confirmed pivot BOS) / != Donchian (channel break) / != Aroon / != percentile.
+    """
+    n = len(highs)
+    res: list[float | None] = [None] * n
+    if n == 0 or l <= 0 or w <= 0 or len(lows) != n:
+        return res
+
+    # Rolling highest(high, L) and lowest(low, L) shifted by 1 bar
+    # isNH[i] = high[i] >= max(high[i-l : i])
+    # isNL[i] = low[i] <= min(low[i-l : i])
+    is_nh: list[float] = [0.0] * n
+    is_nl: list[float] = [0.0] * n
+
+    for i in range(l, n):
+        prior_high_window = highs[i - l : i]
+        prior_low_window = lows[i - l : i]
+        max_h = max(prior_high_window)
+        min_l = min(prior_low_window)
+
+        if highs[i] >= max_h:
+            is_nh[i] = 1.0
+        if lows[i] <= min_l:
+            is_nl[i] = 1.0
+
+    # Rolling sum over W
+    sum_nh = 0.0
+    sum_nl = 0.0
+    for i in range(n):
+        sum_nh += is_nh[i]
+        sum_nl += is_nl[i]
+        if i >= w:
+            sum_nh -= is_nh[i - w]
+            sum_nl -= is_nl[i - w]
+
+        # Valid once we have at least l + w bars of history
+        if i >= l + w - 1:
+            res[i] = sum_nh - sum_nl
+
+    return res
+
+
+def volume_roc(
+    volumes: list[float],
+    n: int = 14,
+) -> list[float | None]:
+    """Volume Rate of Change (VROC).
+
+    Formula:
+      vroc = 100.0 * (volume - volume[n]) / volume[n]
+      guard: volume[n] == 0 -> 0.0
+
+    Returns vroc series.
+    != PVO (EMA volume % osc) / != price ROC / != vol-expansion*dir / != VFI.
+    """
+    count = len(volumes)
+    res: list[float | None] = [None] * count
+    if count == 0 or n <= 0:
+        return res
+
+    for i in range(n, count):
+        denom = volumes[i - n]
+        if denom == 0.0:
+            res[i] = 0.0
+        else:
+            res[i] = 100.0 * (volumes[i] - denom) / denom
+
+    return res
+
+
+def elder_thermometer(
+    highs: list[float],
+    lows: list[float],
+    ema_len: int = 22,
+) -> tuple[list[float | None], list[float | None]]:
+    """Elder Market Thermometer and EMA(thermometer, ema_len).
+
+    Formula (Alexander Elder, Come Into My Trading Room):
+      thermo = max(abs(high - high[1]), abs(low[1] - low))
+      for bar 0: thermo = high[0] - low[0]
+      tma = ema(thermo, ema_len)
+
+    Returns (thermo_series, tma_series).
+    cool = thermo < tma
+    hot = thermo > k * tma
+    != Chaikin / Parkinson rising*dir / != Mass / != ATR-SAR.
+    """
+    n = len(highs)
+    thermo_series: list[float | None] = [None] * n
+    tma_series: list[float | None] = [None] * n
+    if n == 0 or ema_len <= 0 or len(lows) != n:
+        return thermo_series, tma_series
+
+    thermo_vals: list[float] = [0.0] * n
+    thermo_vals[0] = max(0.0, highs[0] - lows[0])
+    thermo_series[0] = thermo_vals[0]
+
+    for i in range(1, n):
+        ext_h = abs(highs[i] - highs[i - 1])
+        ext_l = abs(lows[i - 1] - lows[i])
+        val = max(ext_h, ext_l)
+        thermo_vals[i] = val
+        thermo_series[i] = val
+
+    tma = ema(thermo_vals, ema_len)
+    for i in range(n):
+        tma_series[i] = tma[i]
+
+    return thermo_series, tma_series
+
+
