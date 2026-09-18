@@ -2941,8 +2941,60 @@ def ehlers_reverse_ema(
     return out
 
 
+def awesome_oscillator(
+    highs: list[float],
+    lows: list[float],
+    fast_length: int = 5,
+    slow_length: int = 34,
+) -> list[float | None]:
+    """Awesome Oscillator (Bill Williams).
+    
+    Median price = (high + low) / 2
+    AO = SMA(median, fast_length) - SMA(median, slow_length)
+    Explicitly uses median price (HL2), not close-SMA.
+    """
+    n = len(highs)
+    out: list[float | None] = [None] * n
+    if n == 0 or fast_length <= 0 or slow_length <= 0 or fast_length >= slow_length:
+        return out
+
+    medians = [(highs[i] + lows[i]) / 2.0 for i in range(n)]
+    fast_sma = sma(medians, fast_length)
+    slow_sma = sma(medians, slow_length)
+
+    for i in range(n):
+        f = fast_sma[i]
+        s = slow_sma[i]
+        if f is not None and s is not None:
+            out[i] = f - s
+    return out
 
 
+def pretty_good_oscillator(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 14,
+) -> list[float | None]:
+    """Pretty Good Oscillator (Mark Johnson).
+    
+    PGO = (close - SMA(close, length)) / EMA(TR, length)
+    Guard: denominator > 0.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n == 0 or length <= 0:
+        return out
 
+    tr_vals = true_range(highs, lows, closes)
+    # EMA requires non-None floats; true_range produces floats for all indices >= 0
+    tr_clean = [float(v) if v is not None else 0.0 for v in tr_vals]
+    den_ema = ema(tr_clean, length)
+    sma_close = sma(closes, length)
 
-
+    for i in range(n):
+        s = sma_close[i]
+        d = den_ema[i]
+        if s is not None and d is not None and d > 0.0:
+            out[i] = (closes[i] - s) / d
+    return out
