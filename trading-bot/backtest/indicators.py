@@ -3197,3 +3197,303 @@ def acceleration_bands(
     mid_out = sma(closes, length)
 
     return upper_out, lower_out, mid_out
+
+
+def trend_intensity_index(
+    closes: list[float],
+    major: int = 60,
+    minor: int = 30,
+) -> list[float | None]:
+    """Trend Intensity Index (M.H. Pee, TASC Jun 2002).
+
+    Formula:
+      ma = ta.sma(close, major)
+      for minor bars:
+        dev = close - ma
+        pos = max(dev, 0)
+        neg = max(-dev, 0)
+      sdPos = sum(pos, minor)
+      sdNeg = sum(neg, minor)
+      tii = 100 * sdPos / (sdPos + sdNeg)  guard (sdPos + sdNeg) > 0
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if major <= 0 or minor <= 0 or n < major:
+        return out
+
+    ma_vals = sma(closes, major)
+    pos_dev: list[float] = [0.0] * n
+    neg_dev: list[float] = [0.0] * n
+
+    for i in range(n):
+        m = ma_vals[i]
+        if m is not None:
+            c = closes[i]
+            dev = c - m
+            pos_dev[i] = max(dev, 0.0)
+            neg_dev[i] = max(-dev, 0.0)
+
+    # Rolling sum over minor bars
+    pos_sum = 0.0
+    neg_sum = 0.0
+    for i in range(n):
+        if ma_vals[i] is None:
+            continue
+        pos_sum += pos_dev[i]
+        neg_sum += neg_dev[i]
+        # We need at least minor bars of valid ma
+        # First valid ma is at major - 1
+        if i >= (major - 1) + (minor - 1):
+            if i > (major - 1) + (minor - 1):
+                pos_sum -= pos_dev[i - minor]
+                neg_sum -= neg_dev[i - minor]
+            tot = pos_sum + neg_sum
+            if tot > 0.0:
+                out[i] = 100.0 * pos_sum / tot
+            else:
+                out[i] = 50.0
+
+    return out
+
+
+def rainbow_oscillator(
+    closes: list[float],
+    p: int = 2,
+    depth: int = 10,
+) -> tuple[list[float | None], list[float | None]]:
+    """Rainbow Oscillator and Rainbow Bandwidth (Mel Widner, TASC Jul 1997).
+
+    Formula:
+      ave1 = SMA(close, p)
+      ave2 = SMA(ave1, p)
+      ...
+      ave10 = SMA(ave9, p)
+      aveA = mean(ave1 .. ave10)
+      rangeC = highest(close, depth + 1) - lowest(close, depth + 1)
+      ro = 100 * (close - aveA) / rangeC
+      rb = 100 * (max(ave1..ave10) - min(ave1..ave10)) / rangeC
+    """
+    n = len(closes)
+    ro_out: list[float | None] = [None] * n
+    rb_out: list[float | None] = [None] * n
+    if p <= 0 or depth <= 0 or n < p:
+        return ro_out, rb_out
+
+    # Recursive SMAs
+    aves: list[list[float | None]] = []
+    curr_series = closes
+    for d in range(depth):
+        # Filter None values for SMA calculation
+        curr_sma: list[float | None] = [None] * n
+        # Compute SMA manually or via helper
+        window_sum = 0.0
+        valid_cnt = 0
+        for i in range(n):
+            v = curr_series[i]
+            if v is None:
+                continue
+            window_sum += v
+            valid_cnt += 1
+            if valid_cnt >= p:
+                if valid_cnt > p:
+                    old_v = curr_series[i - p]
+                    assert old_v is not None
+                    window_sum -= old_v
+                    valid_cnt -= 1
+                curr_sma[i] = window_sum / p
+        aves.append(curr_sma)
+        curr_series = curr_sma  # recursive input
+
+    # For each bar, compute aveA, rangeC, ro, rb
+    lookback = depth + 1
+    for i in range(n):
+        # Check if all depth averages have valid values at bar i
+        bar_aves = [aves[d][i] for d in range(depth)]
+        if any(a is None for a in bar_aves):
+            continue
+        valid_aves = [float(a) for a in bar_aves]
+        ave_a = sum(valid_aves) / depth
+        max_ave = max(valid_aves)
+        min_ave = min(valid_aves)
+
+        if i + 1 < lookback:
+            continue
+        c_window = closes[i - lookback + 1 : i + 1]
+        hh = max(c_window)
+        ll = min(c_window)
+        range_c = hh - ll
+        if range_c > 0.0:
+            ro_out[i] = 100.0 * (closes[i] - ave_a) / range_c
+            rb_out[i] = 100.0 * (max_ave - min_ave) / range_c
+        else:
+            ro_out[i] = 0.0
+            rb_out[i] = 0.0
+
+    return ro_out, rb_out
+
+
+def dorsey_relative_volatility_index(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    stdev_len: int = 10,
+    avg_len: int = 14,
+) -> list[float | None]:
+    """Dorsey Relative Volatility Index (Donald Dorsey, TASC 1993/1995 refined).
+
+    Refined version uses High and Low stdev:
+      sH = stdev(high, stdevLen)
+      sL = stdev(low, stdevLen)
+      uH = high > high[1] ? sH : 0
+      dH = high < high[1] ? sH : 0 (or uH vs sH in Wilder RMA)
+      rviH = 100 * rma(uH, avgLen) / rma(sH, avgLen)
+      Similarly for Low:
+      uL = low > low[1] ? sL : 0
+      rviL = 100 * rma(uL, avgLen) / rma(sL, avgLen)
+      rvi = (rviH + rviL) / 2.0
+    Never label as Relative Vigor Index.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if stdev_len <= 1 or avg_len <= 0 or n < max(stdev_len, avg_len) + 1:
+        return out
+
+    # Rolling population stdev
+    def _rolling_stdev(vals: list[float], length: int) -> list[float | None]:
+        res: list[float | None] = [None] * n
+        if n < length:
+            return res
+        for i in range(length - 1, n):
+            win = vals[i - length + 1 : i + 1]
+            mean_v = sum(win) / length
+            var_v = sum((x - mean_v) ** 2 for x in win) / length
+            res[i] = math.sqrt(var_v)
+        return res
+
+    s_h = _rolling_stdev(highs, stdev_len)
+    s_l = _rolling_stdev(lows, stdev_len)
+
+    u_h: list[float | None] = [None] * n
+    u_l: list[float | None] = [None] * n
+
+    for i in range(1, n):
+        sh_val = s_h[i]
+        sl_val = s_l[i]
+        if sh_val is not None:
+            u_h[i] = sh_val if highs[i] > highs[i - 1] else 0.0
+        if sl_val is not None:
+            u_l[i] = sl_val if lows[i] > lows[i - 1] else 0.0
+
+    # RMA of uH, sH, uL, sL
+    rma_uh = rma(u_h, avg_len)
+    rma_sh = rma(s_h, avg_len)
+    rma_ul = rma(u_l, avg_len)
+    rma_sl = rma(s_l, avg_len)
+
+    for i in range(n):
+        ruh = rma_uh[i]
+        rsh = rma_sh[i]
+        rul = rma_ul[i]
+        rsl = rma_sl[i]
+
+        if ruh is not None and rsh is not None and rul is not None and rsl is not None:
+            rvi_h = min(100.0, max(0.0, (100.0 * ruh / rsh))) if rsh > 0.0 else 50.0
+            rvi_l = min(100.0, max(0.0, (100.0 * rul / rsl))) if rsl > 0.0 else 50.0
+            out[i] = (rvi_h + rvi_l) / 2.0
+
+    return out
+
+
+def trend_continuation_factor(
+    closes: list[float],
+    length: int = 35,
+) -> tuple[list[float | None], list[float | None]]:
+    """Trend Continuation Factor (M.H. Pee, TASC Mar 2002).
+
+    Formula:
+      Change = close - close[1]
+      plusChange = max(Change, 0)
+      minusChange = max(-Change, 0)
+      plusCF = plusChange == 0 ? 0 : plusChange + plusCF[1]
+      minusCF = minusChange == 0 ? 0 : minusChange + minusCF[1]
+      plusTCF = sum(plusChange - minusCF, length)
+      minusTCF = sum(minusChange - plusCF, length)
+    """
+    n = len(closes)
+    plus_tcf_out: list[float | None] = [None] * n
+    minus_tcf_out: list[float | None] = [None] * n
+    if length <= 0 or n < 2:
+        return plus_tcf_out, minus_tcf_out
+
+    plus_diff: list[float] = [0.0] * n
+    minus_diff: list[float] = [0.0] * n
+
+    plus_cf = 0.0
+    minus_cf = 0.0
+
+    for i in range(1, n):
+        chg = closes[i] - closes[i - 1]
+        pos_chg = max(chg, 0.0)
+        neg_chg = max(-chg, 0.0)
+
+        plus_cf = 0.0 if pos_chg == 0.0 else pos_chg + plus_cf
+        minus_cf = 0.0 if neg_chg == 0.0 else neg_chg + minus_cf
+
+        plus_diff[i] = pos_chg - minus_cf
+        minus_diff[i] = neg_chg - plus_cf
+
+    # Rolling sum of plus_diff and minus_diff over length
+    plus_sum = 0.0
+    minus_sum = 0.0
+    for i in range(1, n):
+        plus_sum += plus_diff[i]
+        minus_sum += minus_diff[i]
+        if i >= length:
+            if i > length:
+                plus_sum -= plus_diff[i - length]
+                minus_sum -= minus_diff[i - length]
+            plus_tcf_out[i] = plus_sum
+            minus_tcf_out[i] = minus_sum
+
+    return plus_tcf_out, minus_tcf_out
+
+
+def dema(
+    values: list[float],
+    length: int,
+) -> list[float | None]:
+    """Double Exponential Moving Average (Patrick Mulloy, TASC Jan 1994).
+
+    Formula:
+      DEMA = 2 * EMA(values, length) - EMA(EMA(values, length), length)
+    """
+    n = len(values)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+
+    e1 = ema(values, length)
+    # Filter None for e2 calculation
+    # _ema_skip_none starts when e1 is valid
+    e2: list[float | None] = [None] * n
+    first_valid = -1
+    for i in range(n):
+        if e1[i] is not None:
+            first_valid = i
+            break
+    if first_valid == -1 or n - first_valid < length:
+        return out
+
+    valid_vals = [float(e1[i]) for i in range(first_valid, n)]
+    inner_e2 = ema(valid_vals, length)
+    for i, val in enumerate(inner_e2):
+        e2[first_valid + i] = val
+
+    for i in range(n):
+        v1 = e1[i]
+        v2 = e2[i]
+        if v1 is not None and v2 is not None:
+            out[i] = 2.0 * v1 - v2
+
+    return out
+
