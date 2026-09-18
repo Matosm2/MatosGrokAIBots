@@ -6123,6 +6123,293 @@ def fdi(
     return out
 
 
+# ===========================================================================
+# Stage 20 Indicators: vpci, bw_mfi, demand_index, kalman_1d, ravi
+# ===========================================================================
+
+
+def vpci(
+    closes: list[float],
+    volumes: list[float],
+    short_len: int = 5,
+    long_len: int = 20,
+) -> list[float | None]:
+    """Buff Dormeier Volume Price Confirmation Indicator (VPCI).
+
+    vpc = vwma(close, long_len) - sma(close, long_len)
+    vpr = vwma(close, short_len) / sma(close, short_len)
+    vm = sma(volume, short_len) / sma(volume, long_len)
+    vpci = vpc * vpr * vm
+
+    != VZO / != III / != CMF / != OBV / != NVI.
+    != VWMA x SMA dual-cross primary.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n < max(short_len, long_len) or short_len <= 0 or long_len <= 0:
+        return out
+
+    vwma_l = vwma(closes, volumes, long_len)
+    sma_l = sma(closes, long_len)
+    vwma_s = vwma(closes, volumes, short_len)
+    sma_s = sma(closes, short_len)
+    vol_s = sma(volumes, short_len)
+    vol_l = sma(volumes, long_len)
+
+    for i in range(n):
+        vl = vwma_l[i]
+        sl = sma_l[i]
+        vs = vwma_s[i]
+        ss = sma_s[i]
+        vols = vol_s[i]
+        voll = vol_l[i]
+
+        if (
+            vl is not None
+            and sl is not None
+            and vs is not None
+            and ss is not None
+            and vols is not None
+            and voll is not None
+        ):
+            vpc = vl - sl
+            vpr = vs / ss if ss != 0.0 else 0.0
+            vm = vols / voll if voll != 0.0 else 0.0
+            out[i] = vpc * vpr * vm
+
+    return out
+
+
+def bw_mfi(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+) -> tuple[list[float | None], list[bool], list[bool], list[bool], list[bool]]:
+    """Bill Williams Market Facilitation Index (BW MFI) and 4-state classification.
+
+    mfi = volume == 0 ? 0.0 : (high - low) / volume
+    green = mfi > mfi[1] and volume > volume[1]
+    fade = mfi < mfi[1] and volume < volume[1]
+    fake = mfi > mfi[1] and volume < volume[1]
+    squat = mfi < mfi[1] and volume > volume[1]
+
+    != AO (Awesome Oscillator) / != Accelerator / != Alligator.
+    != Money Flow Index (Chaikin / TV MFI).
+    Returns (mfi, green, fade, fake, squat).
+    """
+    n = len(highs)
+    mfi: list[float | None] = [None] * n
+    green = [False] * n
+    fade = [False] * n
+    fake = [False] * n
+    squat = [False] * n
+
+    if n == 0:
+        return mfi, green, fade, fake, squat
+
+    for i in range(n):
+        v = volumes[i]
+        hl = highs[i] - lows[i]
+        mfi[i] = hl / v if v > 0.0 else 0.0
+
+    for i in range(1, n):
+        m = mfi[i]
+        mp = mfi[i - 1]
+        v = volumes[i]
+        vp = volumes[i - 1]
+
+        if m is not None and mp is not None:
+            mfi_up = m > mp
+            vol_up = v > vp
+            mfi_dn = m < mp
+            vol_dn = v < vp
+
+            green[i] = mfi_up and vol_up
+            fade[i] = mfi_dn and vol_dn
+            fake[i] = mfi_up and vol_dn
+            squat[i] = mfi_dn and vol_up
+
+    return mfi, green, fade, fake, squat
+
+
+def demand_index(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    n_bs: int = 10,
+    n_smooth: int = 10,
+) -> list[float | None]:
+    """James Sibbet Demand Index (Sierra Chart locked form).
+
+    p = high + low + 2.0 * close
+    rng2 = highest(high, 2) - lowest(low, 2)
+    avgRng = ema(rng2, n_bs)
+    avgV = ema(volume, n_bs)
+    vr = avgV == 0 ? 0 : volume / avgV
+
+    rising/falling on p vs p[1]:
+      pChange = p - p[1]
+      k = 0.375 * (p + p[1]) / avgRng (guarded)
+      factor = exp(k * pChange / p) clamped for numerical stability
+      if pChange > 0:
+        bp = vr
+        sp = vr / factor if factor > 0 else 0
+      elif pChange < 0:
+        bp = vr / factor if factor > 0 else 0 (factor uses abs(pChange))
+        sp = vr
+      else:
+        bp = vr
+        sp = vr
+
+    bpS = ema(bp, n_smooth)
+    spS = ema(sp, n_smooth)
+    di = 100 * (1 - spS / bpS) if bpS >= spS else 100 * (bpS / spS - 1)
+
+    != VZO / != Bostian III / != CMF / != OBV / != PZO.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n < max(n_bs, n_smooth) or n_bs <= 0 or n_smooth <= 0:
+        return out
+
+    p = [highs[i] + lows[i] + 2.0 * closes[i] for i in range(n)]
+
+    rng2: list[float] = [0.0] * n
+    rng2[0] = highs[0] - lows[0]
+    for i in range(1, n):
+        hh = max(highs[i], highs[i - 1])
+        ll = min(lows[i], lows[i - 1])
+        rng2[i] = hh - ll
+
+    avg_rng = ema(rng2, n_bs)
+    avg_v = ema(volumes, n_bs)
+
+    bp = [0.0] * n
+    sp = [0.0] * n
+
+    for i in range(1, n):
+        av_rng = avg_rng[i]
+        av_v = avg_v[i]
+        vol = volumes[i]
+
+        if av_v is not None and av_v > 0.0:
+            vr = vol / av_v
+        else:
+            vr = 0.0
+
+        p_curr = p[i]
+        p_prev = p[i - 1]
+        p_diff = p_curr - p_prev
+
+        if av_rng is not None and av_rng > 0.0 and p_curr > 0.0:
+            k = 0.375 * (p_curr + p_prev) / av_rng
+            exponent = k * abs(p_diff) / p_curr
+            # Clamp exponent to avoid overflow in exp()
+            if exponent > 50.0:
+                exponent = 50.0
+            factor = math.exp(exponent)
+        else:
+            factor = 1.0
+
+        if p_diff > 0.0:
+            bp[i] = vr
+            sp[i] = vr / factor if factor > 0.0 else 0.0
+        elif p_diff < 0.0:
+            bp[i] = vr / factor if factor > 0.0 else 0.0
+            sp[i] = vr
+        else:
+            bp[i] = vr
+            sp[i] = vr
+
+    bp_s = ema(bp, n_smooth)
+    sp_s = ema(sp, n_smooth)
+
+    for i in range(n):
+        b = bp_s[i]
+        s = sp_s[i]
+        if b is not None and s is not None:
+            if b >= s:
+                out[i] = 100.0 * (1.0 - s / b) if b > 0.0 else 0.0
+            else:
+                out[i] = 100.0 * (b / s - 1.0) if s > 0.0 else 0.0
+
+    return out
+
+
+def kalman_1d(
+    closes: list[float],
+    length: int = 20,
+    r: float = 0.01,
+    q: float = 0.1,
+) -> list[float | None]:
+    """1D Kalman filter on price series.
+
+    prediction = estimate
+    gain = error_est / (error_est + error_meas)
+    estimate = prediction + gain * (close - prediction)
+    error_est = (1 - gain) * error_est + q / length
+    error_meas = r * length
+
+    != Nadaraya-RQ / != Ehlers PMA / != SuperSmoother.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n == 0 or length <= 0:
+        return out
+
+    error_meas = r * length
+    error_est = 1.0
+    estimate: float | None = None
+
+    for i in range(n):
+        c = closes[i]
+        if estimate is None:
+            estimate = c
+            out[i] = estimate
+            continue
+
+        prediction = estimate
+        gain = error_est / (error_est + error_meas) if (error_est + error_meas) > 0.0 else 0.0
+        estimate = prediction + gain * (c - prediction)
+        error_est = (1.0 - gain) * error_est + q / length
+        out[i] = estimate
+
+    return out
+
+
+def ravi(
+    closes: list[float],
+    short_len: int = 7,
+    long_len: int = 65,
+) -> list[float | None]:
+    """Chande Range Action Verification Index (RAVI).
+
+    s = sma(close, short_len)
+    l = sma(close, long_len)
+    ravi = abs(100 * (s - l) / l)
+
+    != dual-MA-cross / != VHF / != FDI / != ADX.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n < max(short_len, long_len) or short_len <= 0 or long_len <= 0:
+        return out
+
+    s = sma(closes, short_len)
+    l = sma(closes, long_len)
+
+    for i in range(n):
+        si = s[i]
+        li = l[i]
+        if si is not None and li is not None and li != 0.0:
+            out[i] = abs(100.0 * (si - li) / li)
+
+    return out
+
+
+
 
 
 
