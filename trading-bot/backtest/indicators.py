@@ -5656,6 +5656,254 @@ def ehlers_predictive_ma(
     return predict, trigger
 
 
+# =============================================================================
+# Stage 18 indicators: DPO, PPO, VHF, Forecast Oscillator, Projection Oscillator
+# =============================================================================
+
+
+def detrended_price_oscillator(
+    closes: list[float],
+    length: int = 20,
+) -> list[float | None]:
+    """Detrended Price Oscillator (DPO).
+
+    Formula (StockCharts / Investopedia):
+      displace = floor(length / 2) + 1
+      smaX = sma(close, length)
+      dpo = close[displace] - smaX
+
+    Oscillates about zero when displaced mid-window price is above/below SMA.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length:
+        return out
+
+    displace = (length // 2) + 1
+    sma_vals = sma(closes, length)
+
+    for i in range(displace, n):
+        s = sma_vals[i]
+        if s is not None:
+            out[i] = closes[i - displace] - s
+
+    return out
+
+
+def percentage_price_oscillator(
+    closes: list[float],
+    fast_length: int = 12,
+    slow_length: int = 26,
+    signal_length: int = 9,
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    """Percentage Price Oscillator (PPO) & EMA signal cross.
+
+    Formula (StockCharts / Investopedia):
+      fastE = ema(close, fast_length)
+      slowE = ema(close, slow_length)
+      ppo = 100.0 * (fastE - slowE) / slowE
+      sig = ema(ppo, signal_length)
+      hist = ppo - sig
+
+    Returns:
+      (ppo, sig, hist)
+    """
+    n = len(closes)
+    ppo: list[float | None] = [None] * n
+    sig: list[float | None] = [None] * n
+    hist: list[float | None] = [None] * n
+
+    if fast_length <= 0 or slow_length <= 0 or signal_length <= 0 or n < slow_length:
+        return ppo, sig, hist
+
+    fast_e = ema(closes, fast_length)
+    slow_e = ema(closes, slow_length)
+
+    for i in range(n):
+        fe = fast_e[i]
+        se = slow_e[i]
+        if fe is not None and se is not None and se != 0.0:
+            ppo[i] = 100.0 * (fe - se) / se
+
+    # EMA of ppo
+    # Find first valid ppo index
+    valid_ppo_indices = [i for i, v in enumerate(ppo) if v is not None]
+    if len(valid_ppo_indices) >= signal_length:
+        first_idx = valid_ppo_indices[0]
+        ppo_clean = [ppo[i] for i in range(first_idx, n)]
+        # Filter None just in case (should all be float)
+        ppo_vals = [float(v) for v in ppo_clean]
+        sig_vals = ema(ppo_vals, signal_length)
+        for j, s in enumerate(sig_vals):
+            orig_i = first_idx + j
+            sig[orig_i] = s
+            if ppo[orig_i] is not None and s is not None:
+                hist[orig_i] = ppo[orig_i] - s
+
+    return ppo, sig, hist
+
+
+def vertical_horizontal_filter(
+    closes: list[float],
+    length: int = 28,
+) -> list[float | None]:
+    """Vertical Horizontal Filter (VHF) by Adam White.
+
+    Formula:
+      num = highest(close, length) - lowest(close, length)
+      den = sum(abs(close - close[1]), length)
+      vhf = num / den (guard den == 0)
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if length <= 0 or n < length + 1:
+        return out
+
+    # compute bar-by-bar diffs
+    diffs = [0.0] * n
+    for i in range(1, n):
+        diffs[i] = abs(closes[i] - closes[i - 1])
+
+    for i in range(length, n):
+        window_closes = closes[i - length + 1 : i + 1]
+        num = max(window_closes) - min(window_closes)
+        den = sum(diffs[i - length + 1 : i + 1])
+        if den == 0.0:
+            out[i] = 0.0
+        else:
+            out[i] = num / den
+
+    return out
+
+
+def forecast_oscillator(
+    closes: list[float],
+    length: int = 14,
+) -> tuple[list[float | None], list[float | None]]:
+    """Forecast Oscillator (FOSC) and Time Series Forecast (TSF).
+
+    Formula (Thinkorswim / Tulip / Amibroker / TradingView):
+      For window length:
+        OLS regression of close over 0..length-1:
+        y = a + b * x where x = 0..length-1 (bar length-1 is latest close)
+        lrc = a + b * (length - 1) (linreg at offset 0)
+        lrs = b (slope)
+        tsf = lrc + lrs (1 bar ahead forecast: a + b * length)
+      fosc = 100.0 * (close - tsf[1]) / close
+
+    Returns:
+      (fosc, tsf)
+    """
+    n = len(closes)
+    fosc: list[float | None] = [None] * n
+    tsf: list[float | None] = [None] * n
+
+    if length <= 1 or n < length:
+        return fosc, tsf
+
+    xs = list(range(length))
+    x_mean = (length - 1) / 2.0
+    ss_xx = sum((x - x_mean) ** 2 for x in xs)
+
+    for i in range(length - 1, n):
+        window = closes[i - length + 1 : i + 1]
+        y_mean = sum(window) / length
+        ss_xy = sum((xs[j] - x_mean) * (window[j] - y_mean) for j in range(length))
+        b = ss_xy / ss_xx if ss_xx != 0.0 else 0.0
+        a = y_mean - b * x_mean
+        lrc = a + b * (length - 1)
+        lrs = b
+        tsf_val = lrc + lrs
+        tsf[i] = tsf_val
+
+        # fosc = 100 * (close - tsf[1]) / close
+        if i >= length and tsf[i - 1] is not None:
+            c = closes[i]
+            if c != 0.0:
+                fosc[i] = 100.0 * (c - tsf[i - 1]) / c
+
+    return fosc, tsf
+
+
+def projection_oscillator(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    length: int = 14,
+    trigger_length: int = 3,
+) -> tuple[list[float | None], list[float | None]]:
+    """Projection Oscillator (PO) by Mel Widner (TASC 1995) & EMA trigger.
+
+    Formula:
+      Over window length (indices j in 0..length-1):
+        slopeHigh = OLS slope of high over 0..length-1
+        slopeLow = OLS slope of low over 0..length-1
+        upperProj = max(high[i-k] + k * slopeHigh) for k in 0..length-1
+        lowerProj = min(low[i-k] - k * slopeLow) for k in 0..length-1
+        (where k is distance back from current bar i: k = 0 is bar i, k = length-1 is oldest)
+        po = 100.0 * (close - lowerProj) / (upperProj - lowerProj) (guard upper != lower)
+      trig = ema(po, trigger_length)
+
+    Returns:
+      (po, trig)
+    """
+    n = len(closes)
+    po: list[float | None] = [None] * n
+    trig: list[float | None] = [None] * n
+
+    if length <= 1 or trigger_length <= 0 or n < length:
+        return po, trig
+
+    xs = list(range(length))
+    x_mean = (length - 1) / 2.0
+    ss_xx = sum((x - x_mean) ** 2 for x in xs)
+
+    for i in range(length - 1, n):
+        win_high = highs[i - length + 1 : i + 1]
+        win_low = lows[i - length + 1 : i + 1]
+
+        y_mean_h = sum(win_high) / length
+        y_mean_l = sum(win_low) / length
+
+        ss_xy_h = sum((xs[j] - x_mean) * (win_high[j] - y_mean_h) for j in range(length))
+        ss_xy_l = sum((xs[j] - x_mean) * (win_low[j] - y_mean_l) for j in range(length))
+
+        slope_h = ss_xy_h / ss_xx if ss_xx != 0.0 else 0.0
+        slope_l = ss_xy_l / ss_xx if ss_xx != 0.0 else 0.0
+
+        # Widner Projection Bands:
+        # Over the lookback window, for bar at index i - j (where j = 0 is current bar, j = length - 1 is oldest):
+        # The formula in CODING_KICK / Brief is:
+        # upper = max(high[i-j] + j * slope_h)
+        # lower = min(low[i-j] + j * slope_l)
+        cand_upper = [highs[i - j] + j * slope_h for j in range(length)]
+        cand_lower = [lows[i - j] + j * slope_l for j in range(length)]
+
+        upper_proj = max(cand_upper)
+        lower_proj = min(cand_lower)
+
+        denom = upper_proj - lower_proj
+        c = closes[i]
+        if denom > 1e-12:
+            val = 100.0 * (c - lower_proj) / denom
+            po[i] = max(0.0, min(100.0, val))
+        else:
+            po[i] = 50.0
+
+    # EMA of po
+    valid_po_indices = [i for i, v in enumerate(po) if v is not None]
+    if len(valid_po_indices) >= trigger_length:
+        first_idx = valid_po_indices[0]
+        po_clean = [po[i] for i in range(first_idx, n)]
+        po_vals = [float(v) for v in po_clean]
+        trig_vals = ema(po_vals, trigger_length)
+        for j, t in enumerate(trig_vals):
+            trig[first_idx + j] = t
+
+    return po, trig
+
+
+
 
 
 
