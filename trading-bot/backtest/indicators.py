@@ -5903,6 +5903,227 @@ def projection_oscillator(
     return po, trig
 
 
+# ===========================================================================
+# Stage 19 Indicators: hhll_structure, starc_bands, vzo, nvi, fdi
+# ===========================================================================
+
+
+def hhll_structure(
+    highs: list[float],
+    lows: list[float],
+    lb: int = 3,
+) -> tuple[list[bool], list[bool], list[float | None], list[float | None]]:
+    """Confirmed HH/HL (bullish) and LH/LL (bearish) market structure.
+
+    ph = pivothigh(highs, lb, lb)
+    pl = pivotlow(lows, lb, lb)
+    Maintains last two confirmed swing highs (sh0 = prior, sh1 = most recent)
+    and last two confirmed swing lows (sl0 = prior, sl1 = most recent).
+
+    bullStruct = (sh1 > sh0) and (sl1 > sl0) when >= 2 of each confirmed
+    bearStruct = (sh1 < sh0) and (sl1 < sl0) when >= 2 of each confirmed
+
+    Closed-bar only after right-confirm — strictly NO ZigZag look-ahead.
+    Returns (bull_struct, bear_struct, sh1_series, sl1_series).
+    """
+    n = len(highs)
+    bull_struct = [False] * n
+    bear_struct = [False] * n
+    sh_series: list[float | None] = [None] * n
+    sl_series: list[float | None] = [None] * n
+
+    if n == 0 or lb < 1:
+        return bull_struct, bear_struct, sh_series, sl_series
+
+    ph = pivothigh(highs, lb, lb)
+    pl = pivotlow(lows, lb, lb)
+
+    sh0: float | None = None
+    sh1: float | None = None
+    sl0: float | None = None
+    sl1: float | None = None
+
+    for i in range(n):
+        if ph[i] is not None:
+            sh0 = sh1
+            sh1 = ph[i]
+        if pl[i] is not None:
+            sl0 = sl1
+            sl1 = pl[i]
+
+        sh_series[i] = sh1
+        sl_series[i] = sl1
+
+        if sh0 is not None and sh1 is not None and sl0 is not None and sl1 is not None:
+            bull_struct[i] = (sh1 > sh0) and (sl1 > sl0)
+            bear_struct[i] = (sh1 < sh0) and (sl1 < sl0)
+
+    return bull_struct, bear_struct, sh_series, sl_series
+
+
+def starc_bands(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    sma_len: int = 6,
+    atr_len: int = 15,
+    k: float = 2.0,
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    """Stoller Average Range Channel (STARC) Bands.
+
+    mid = sma(close, sma_len)   (Center is strictly SMA, != Keltner EMA)
+    atr = atr(atr_len)
+    upper = mid + k * atr
+    lower = mid - k * atr
+
+    Returns (upper, mid, lower).
+    """
+    n = len(closes)
+    upper: list[float | None] = [None] * n
+    lower: list[float | None] = [None] * n
+
+    mid = sma(closes, sma_len)
+    atr_vals = atr(highs, lows, closes, atr_len)
+
+    for i in range(n):
+        m = mid[i]
+        a = atr_vals[i]
+        if m is not None and a is not None:
+            upper[i] = m + k * a
+            lower[i] = m - k * a
+
+    return upper, mid, lower
+
+
+def vzo(
+    closes: list[float],
+    volumes: list[float],
+    length: int = 14,
+) -> list[float | None]:
+    """Volume Zone Oscillator (Walid Khalil).
+
+    signedVol = close > close[1] ? volume : (close < close[1] ? -volume : 0)
+    vp = ema(signedVol, length)
+    tv = ema(volume, length)
+    vzo = 100 * vp / tv (0 if tv == 0)
+
+    != PZO (signs price change, not volume).
+    != Bostian III / Intraday Intensity.
+    != CMF / OBV.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n < length or length <= 0:
+        return out
+
+    signed_vols = [0.0] * n
+    for i in range(1, n):
+        if closes[i] > closes[i - 1]:
+            signed_vols[i] = volumes[i]
+        elif closes[i] < closes[i - 1]:
+            signed_vols[i] = -volumes[i]
+        else:
+            signed_vols[i] = 0.0
+
+    vp = ema(signed_vols, length)
+    tv = ema(volumes, length)
+
+    for i in range(n):
+        vp_val = vp[i]
+        tv_val = tv[i]
+        if vp_val is not None and tv_val is not None:
+            if tv_val == 0.0:
+                out[i] = 0.0
+            else:
+                out[i] = 100.0 * vp_val / tv_val
+
+    return out
+
+
+def nvi(
+    closes: list[float],
+    volumes: list[float],
+    sig_len: int = 50,
+) -> tuple[list[float], list[float | None]]:
+    """Negative Volume Index (Paul Dysart / Norman Fosback).
+
+    var nvi = 1000.0
+    nvi := volume < volume[1] ? nvi * (close / close[1]) : nvi (multiplicative Fosback/TV form)
+    sig = ema(nvi, sig_len)
+
+    != OBV (accumulates on all volume bars).
+    != PVI (positive volume index).
+    Returns (nvi_values, signal_values).
+    """
+    n = len(closes)
+    nvi_vals = [1000.0] * n
+    if n == 0:
+        return nvi_vals, [None] * n
+
+    for i in range(1, n):
+        if volumes[i] < volumes[i - 1] and closes[i - 1] > 0.0:
+            nvi_vals[i] = nvi_vals[i - 1] * (closes[i] / closes[i - 1])
+        else:
+            nvi_vals[i] = nvi_vals[i - 1]
+
+    sig_vals = ema(nvi_vals, sig_len)
+    return nvi_vals, sig_vals
+
+
+def fdi(
+    closes: list[float],
+    n: int = 30,
+) -> list[float | None]:
+    """Fractal Dimension Index (Matulich-corrected Carlos Sevcik FDI).
+
+    Over window `n` on close, normalizes price to [0, 1] and time to [0, 1].
+    Length = sum(sqrt((diff - prior_diff)^2 + (1 / n)^2))
+    fdi = 1 + (ln(Length) + ln(2)) / ln(2 * n)
+
+    fdi in [~1, 2]:
+      fdi < 1.5 -> trending (persistent / Hurst > 0.5)
+      fdi > 1.5 -> ranging (mean-reverting / planar)
+
+    != FRAMA (Ehlers adaptive MA).
+    != CHOP / VHF / RWI.
+    """
+    length_closes = len(closes)
+    out: list[float | None] = [None] * length_closes
+    if n < 2 or length_closes < n:
+        return out
+
+    dx = 1.0 / n
+    dx_sq = dx * dx
+    ln_2n = math.log(2.0 * n)
+    ln_2 = math.log(2.0)
+
+    for i in range(n - 1, length_closes):
+        window = closes[i - n + 1 : i + 1]
+        p_max = max(window)
+        p_min = min(window)
+        p_range = p_max - p_min
+
+        if p_range <= 1e-14:
+            out[i] = 1.0
+            continue
+
+        # Normalized price path length
+        diffs = [(c - p_min) / p_range for c in window]
+        path_length = 0.0
+        for k in range(1, n):
+            dy = diffs[k] - diffs[k - 1]
+            path_length += math.sqrt(dy * dy + dx_sq)
+
+        if path_length > 0.0:
+            val = 1.0 + (math.log(path_length) + ln_2) / ln_2n
+            out[i] = val
+        else:
+            out[i] = 1.0
+
+    return out
+
+
+
 
 
 
