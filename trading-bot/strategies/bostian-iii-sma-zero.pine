@@ -9,13 +9,25 @@
 //
 // Formula:
 //   rng = high - low
-//   iii = rng == 0 ? 0 : ((2 * close - high - low) / rng) * volume
+//   iii = rng == 0 ? 0.0 : ((2 * close - high - low) / rng) * volume
 //   iiiS = ta.sma(iii, smaLen)
 // Long entry:  ta.crossover(iiiS, 0)
 // Long exit:   ta.crossunder(iiiS, 0) + optional ATR stop/trail strategy.exit
 //
 // Bar close only (process_orders_on_close = true).
 // Exits use strategy() position / price — does NOT read bot open-state or exchange positions.
+//
+// Sizing (PAPER_PARAMS locked):
+//   Buys: OMIT qty / qty_pct in webhook JSON -> bot Balanced default 2.5% risk.
+//   Sells: qty_pct = 12 (clears max position; sells not capped by 2.5%).
+//
+// alert_id shape (PAPER_PARAMS locked):
+//   {strategy_id}-{SYMBOL}-{{time}}-{buy|sell}
+//   e.g. bostian-iii-sma-zero-BTCUSDT-{{time}}-buy
+//
+// Secret:
+//   Auth via header X-Webhook-Secret (preferred) or body secret.
+//   Do NOT embed secrets in committed Pine; Trading wires secret at runtime.
 //
 // cooldown_bars
 // -------------
@@ -26,12 +38,8 @@
 // Stops
 // -----
 // Base census exit is signal-only (zero crossunder).
-// Optional ATR strategy.exit included (disabled by default, mult=0.0 disables).
+// Optional ATR strategy.exit included (disabled by default).
 // Real LIVE execution remains strictly OFF; a hard stop brief is required before live.
-//
-// Paper universe for this strategy: BTCUSDT ONLY @ 4h (PAPER ONLY / LIVE OFF).
-// Webhook alert_id uses {{time}} (not {{timenow}}).
-// Symbol in webhook JSON is normalized (BINANCE: stripped → BTCUSDT-style).
 
 //@version=5
 strategy(
@@ -61,7 +69,6 @@ atrLen        = input.int(14, "ATR Length", minval=1)
 atrStopMult   = input.float(3.0, "ATR Stop Multiple", minval=0.1, step=0.1,
      tooltip="Stop loss placed at entry price minus mult * ATR.")
 
-buyQtyPct     = input.float(2.5, "Buy qty_pct (webhook)", minval=0.1, maxval=100, step=0.1)
 sellQtyPct    = input.float(12.0, "Sell qty_pct (webhook)", minval=0.1, maxval=100, step=0.1,
      tooltip="Full exit within Balanced max-pos framing (12%). Used in alert() JSON.")
 strategyId    = input.string("bostian-iii-sma-zero", "strategy_id for webhook")
@@ -119,8 +126,11 @@ if exitCondition
     strategy.close("Long")
 
 // Dynamic webhook JSON (normalized symbol). Used by alert() once per bar close.
-buyJson = '{"symbol":"' + normSym + '","side":"buy","qty_pct":' + str.tostring(buyQtyPct) + ',"strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + normSym + '-{{time}}-bostian-iii-sma21-buy","secret":"YOUR_WEBHOOK_SECRET"}'
-sellJson = '{"symbol":"' + normSym + '","side":"sell","qty_pct":' + str.tostring(sellQtyPct) + ',"strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + normSym + '-{{time}}-bostian-iii-sma21-sell","secret":"YOUR_WEBHOOK_SECRET"}'
+// Per PAPER_PARAMS: Buys OMIT qty/qty_pct (bot defaults to RISK_PER_TRADE_PCT 2.5). Sells use qty_pct 12.
+// Exact alert_id shape: {strategy_id}-{SYMBOL}-{{time}}-{buy|sell}
+// Header auth (X-Webhook-Secret) is preferred; no secret embedded in Pine.
+buyJson = '{"symbol":"' + normSym + '","side":"buy","strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + strategyId + '-' + normSym + '-{{time}}-buy"}'
+sellJson = '{"symbol":"' + normSym + '","side":"sell","qty_pct":' + str.tostring(sellQtyPct) + ',"strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + strategyId + '-' + normSym + '-{{time}}-sell"}'
 
 if longCondition
     alert(buyJson, alert.freq_once_per_bar_close)
@@ -129,22 +139,20 @@ if exitCondition
     alert(sellJson, alert.freq_once_per_bar_close)
 
 // ——— alertconditions (create TWO TradingView alerts on these) ———
-// Buy webhook JSON template:
+// Buy webhook JSON template (omits qty/qty_pct -> bot uses RISK_PER_TRADE_PCT 2.5%):
 // {
-//   "symbol": "{{ticker}}",
+//   "symbol": "BTCUSDT",
 //   "side": "buy",
-//   "qty_pct": 2.5,
 //   "strategy_id": "bostian-iii-sma-zero",
-//   "price": {{close}},
-//   "alert_id": "{{ticker}}-{{time}}-bostian-iii-sma21-buy",
-//   "secret": "YOUR_WEBHOOK_SECRET"
+//   "price": "{{close}}",
+//   "alert_id": "bostian-iii-sma-zero-BTCUSDT-{{time}}-buy"
 // }
 alertcondition(longCondition, title="Bostian III SMA21 Buy",
-     message='{"symbol":"{{ticker}}","side":"buy","qty_pct":2.5,"strategy_id":"bostian-iii-sma-zero","price":{{close}},"alert_id":"{{ticker}}-{{time}}-bostian-iii-sma21-buy","secret":"YOUR_WEBHOOK_SECRET"}')
+     message='{"symbol":"BTCUSDT","side":"buy","strategy_id":"bostian-iii-sma-zero","price":"{{close}}","alert_id":"bostian-iii-sma-zero-BTCUSDT-{{time}}-buy"}')
 
-// Sell: only when strategy is long (avoid flat reject noise). qty_pct 12 = full exit within Balanced max-pos.
+// Sell webhook JSON template (qty_pct 12 clears max position):
 alertcondition(exitCondition and strategy.position_size > 0, title="Bostian III SMA21 Sell",
-     message='{"symbol":"{{ticker}}","side":"sell","qty_pct":12,"strategy_id":"bostian-iii-sma-zero","price":{{close}},"alert_id":"{{ticker}}-{{time}}-bostian-iii-sma21-sell","secret":"YOUR_WEBHOOK_SECRET"}')
+     message='{"symbol":"BTCUSDT","side":"sell","qty_pct":12,"strategy_id":"bostian-iii-sma-zero","price":"{{close}}","alert_id":"bostian-iii-sma-zero-BTCUSDT-{{time}}-sell"}')
 
 // Visual markers
 plotshape(longCondition, title="Buy", style=shape.triangleup, location=location.belowbar, size=size.tiny, color=color.lime)

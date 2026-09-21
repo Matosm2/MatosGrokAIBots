@@ -1,6 +1,6 @@
 # AccDist SMA Cross v1 (Pine) — PAPER ONLY (LIVE OFF)
 
-Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by CoS/Nuno based on the 2026-09-22 Path B Mode-A per-coin census and `uploads/PAPER_KICK.md`.
+Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by CoS/Nuno based on the 2026-09-22 Path B Mode-A per-coin census and locked in `uploads/PAPER_PARAMS.md`.
 
 **Script:** [`accdist-sma-cross-v1.pine`](./accdist-sma-cross-v1.pine)  
 **strategy_id:** `accdist-sma-cross-v1`  
@@ -24,12 +24,12 @@ Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by 
 
 ---
 
-## Rules
+## Rules & Sizing (Locked PAPER_PARAMS)
 
-| Side | Logic | `qty_pct` |
-|------|-------|-----------|
-| **Buy** | `ta.crossover(adl, adlSma)` AND `cooldownOk` | `2.5` |
-| **Sell** | `ta.crossunder(adl, adlSma)` AND `strategy.position_size > 0` | `12` |
+| Side | Logic | Webhook Sizing Rule |
+|------|-------|---------------------|
+| **Buy** | `ta.crossover(adl, adlSma)` AND `cooldownOk` | **OMIT `qty` / `qty_pct`** (bot defaults to `RISK_PER_TRADE_PCT` 2.5%) |
+| **Sell** | `ta.crossunder(adl, adlSma)` AND `strategy.position_size > 0` | **`qty_pct: 12`** (clears max position; sells not capped by 2.5%) |
 
 ### Raw Accumulation/Distribution (ADL) Formula
 ```pinescript
@@ -42,10 +42,10 @@ adlSma = ta.sma(adl, 50)
 - Bar close only (`process_orders_on_close = true`).
 - Initial Capital in script: **1,000 USDT** per seat.
 - Exits use **strategy() position / price** — does NOT read bot open-state.
-- Sell **`qty_pct: 12`** is intentional (full exit within Balanced max-position framing). Do **not** omit qty on sell (bot would only size to `RISK_PER_TRADE_PCT` = 2.5%).
 - Webhook JSON from `alert()` **strips exchange prefix** (e.g. `BINANCE:`) so `symbol` is `ETHUSDT`-style.
 - **Universe:** `ETHUSDT` ONLY at `4h` (no multi-coin fan-out).
-- **`alert_id`:** Uses **`{{time}}`**, NOT `{{timenow}}`.
+- **`alert_id` exact shape:** `accdist-sma-cross-v1-ETHUSDT-{{time}}-buy` and `accdist-sma-cross-v1-ETHUSDT-{{time}}-sell`. Uses **`{{time}}`**, NOT `{{timenow}}`.
+- **Secret:** No embedded secret in committed Pine. Header `X-Webhook-Secret` preferred; Trading wires secret at runtime.
 
 ---
 
@@ -68,7 +68,7 @@ adlSma = ta.sma(adl, 50)
 ## TradingView setup (two alerts)
 
 1. Add the script to an **ETHUSDT** chart on the **4h** timeframe.
-2. Verify inputs: `ADL SMA Length = 50` (do not change to 65), `Cooldown bars after exit = 6`, `Buy qty_pct = 2.5`, `Sell qty_pct = 12.0`, `strategy_id = accdist-sma-cross-v1`.
+2. Verify inputs: `ADL SMA Length = 50` (do not change to 65), `Cooldown bars after exit = 6`, `Sell qty_pct = 12.0`, `strategy_id = accdist-sma-cross-v1`.
 3. Create **two** alerts (Once Per Bar Close):
 
 ### Option A — alertconditions (recommended for two named alerts)
@@ -77,16 +77,15 @@ adlSma = ta.sma(adl, 50)
 - Condition: **AccDist SMA50 Buy**
 - Trigger: **Once Per Bar Close**
 - Webhook URL: `https://YOUR_RAILWAY_APP.up.railway.app/webhook/tradingview`
-- Message:
+- Headers: `X-Webhook-Secret: YOUR_WEBHOOK_SECRET`
+- Message (omits `qty`/`qty_pct` so bot sizes to 2.5% Balanced risk):
 ```json
 {
-  "symbol": "{{ticker}}",
+  "symbol": "ETHUSDT",
   "side": "buy",
-  "qty_pct": 2.5,
   "strategy_id": "accdist-sma-cross-v1",
-  "price": {{close}},
-  "alert_id": "{{ticker}}-{{time}}-accdist-sma50-buy",
-  "secret": "YOUR_WEBHOOK_SECRET"
+  "price": "{{close}}",
+  "alert_id": "accdist-sma-cross-v1-ETHUSDT-{{time}}-buy"
 }
 ```
 
@@ -94,20 +93,20 @@ adlSma = ta.sma(adl, 50)
 - Condition: **AccDist SMA50 Sell**
 - Trigger: **Once Per Bar Close**
 - Webhook URL: `https://YOUR_RAILWAY_APP.up.railway.app/webhook/tradingview`
+- Headers: `X-Webhook-Secret: YOUR_WEBHOOK_SECRET`
 - Message:
 ```json
 {
-  "symbol": "{{ticker}}",
+  "symbol": "ETHUSDT",
   "side": "sell",
   "qty_pct": 12,
   "strategy_id": "accdist-sma-cross-v1",
-  "price": {{close}},
-  "alert_id": "{{ticker}}-{{time}}-accdist-sma50-sell",
-  "secret": "YOUR_WEBHOOK_SECRET"
+  "price": "{{close}}",
+  "alert_id": "accdist-sma-cross-v1-ETHUSDT-{{time}}-sell"
 }
 ```
 
 ### Option B — single “Any alert() function call”
 Uses Pine-built dynamic JSON with normalized symbol. Use **Once Per Bar Close**.
-Replace `YOUR_WEBHOOK_SECRET` in script settings or webhook headers.
+Authenticate via `X-Webhook-Secret` header or configure webhook secret in bot environment.
 Keep bot `TRADING_MODE=paper`.
