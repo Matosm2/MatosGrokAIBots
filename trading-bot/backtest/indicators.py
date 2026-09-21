@@ -8728,6 +8728,312 @@ def historical_volatility_ratio(
     return hvr_series, hvs_series, hvl_series
 
 
+def blau_dti(
+    highs: list[float],
+    lows: list[float],
+    q: int = 2,
+    r: int = 20,
+    s: int = 5,
+    u: int = 3,
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    """Blau Directional Trend Index (DTI).
+
+    Reference:
+      William Blau, "Momentum, Direction, and Divergence" (1995).
+      HMU = max(H - H[q-1], 0)
+      LMD = max(L[q-1] - L, 0)
+      HLM = HMU - LMD
+      num = EMA(EMA(EMA(HLM, r), s), u)
+      den = EMA(EMA(EMA(|HLM|, r), s), u)
+      DTI = 100 * num / den (if den != 0 else 0)
+
+    Returns:
+      (dti_series, num_series, den_series)
+    != ADX / != TSI / != Blau CSI / != Blau MDI / != RAVI.
+    """
+    count = min(len(highs), len(lows))
+    dti_series: list[float | None] = [None] * count
+    num_series: list[float | None] = [None] * count
+    den_series: list[float | None] = [None] * count
+
+    if count == 0 or q < 1 or r <= 0 or s <= 0 or u <= 0:
+        return dti_series, num_series, den_series
+
+    hlm = [0.0] * count
+    abs_hlm = [0.0] * count
+
+    shift = q - 1
+    for i in range(count):
+        if i >= shift and (i - shift) >= 0:
+            h_prev = highs[i - shift]
+            l_prev = lows[i - shift]
+            hmu = max(highs[i] - h_prev, 0.0)
+            lmd = max(l_prev - lows[i], 0.0)
+        else:
+            hmu = 0.0
+            lmd = 0.0
+        hlm_val = hmu - lmd
+        hlm[i] = hlm_val
+        abs_hlm[i] = abs(hlm_val)
+
+    # Triple EMA of hlm
+    num1 = ema_of_optional(hlm, r)
+    num2 = ema_of_optional(num1, s)
+    num3 = ema_of_optional(num2, u)
+
+    # Triple EMA of abs(hlm)
+    den1 = ema_of_optional(abs_hlm, r)
+    den2 = ema_of_optional(den1, s)
+    den3 = ema_of_optional(den2, u)
+
+    for i in range(count):
+        n_val = num3[i]
+        d_val = den3[i]
+        num_series[i] = n_val
+        den_series[i] = d_val
+        if n_val is not None and d_val is not None:
+            if abs(d_val) > 1e-12:
+                dti_series[i] = 100.0 * (n_val / d_val)
+            else:
+                dti_series[i] = 0.0
+
+    return dti_series, num_series, den_series
+
+
+def arms_vama(
+    closes: list[float],
+    volumes: list[float],
+    fast_len: int = 8,
+    slow_len: int = 55,
+    sample_n: int = 100,
+    factor: float = 0.67,
+) -> tuple[list[float | None], list[float | None]]:
+    """Richard Arms Volume Adjusted Moving Average (VAMA) dual calculation.
+
+    Reference:
+      Richard W. Arms, Jr. (Equivolume / Volume Adjusted Moving Average).
+      Fidelity / NeuroShell VAMA definition:
+      AvgVol = rolling SMA(volume, sample_n) (causal)
+      VolInc = AvgVol * factor (default factor=0.67)
+      At each bar i, walk backward j = i, i-1, ...:
+        VolRatio = volume[j] / VolInc[i]
+        Accumulate price[j] * min(VolRatio, remaining_units)
+        until cumulative units reach Length (fast_len or slow_len).
+        VAMA = cum_price_units / Length.
+
+    Returns:
+      (vama_fast, vama_slow)
+    != VWMA / != Vervoort / != EC.
+    """
+    count = min(len(closes), len(volumes))
+    vama_fast: list[float | None] = [None] * count
+    vama_slow: list[float | None] = [None] * count
+
+    if count == 0 or fast_len <= 0 or slow_len <= 0 or sample_n <= 0:
+        return vama_fast, vama_slow
+
+    avg_vol = sma(volumes, sample_n)
+
+    for i in range(sample_n - 1, count):
+        av = avg_vol[i]
+        if av is None or av <= 1e-12:
+            continue
+        vol_inc = av * factor
+        if vol_inc <= 1e-12:
+            continue
+
+        # Walk backward from i to accumulate fast_len and slow_len
+        # We can compute fast and slow in a single backward pass
+        max_target = max(fast_len, slow_len)
+        cum_units = 0.0
+        cum_pv_fast = 0.0
+        fast_done = False
+        cum_pv_slow = 0.0
+        slow_done = False
+
+        j = i
+        while j >= 0 and not (fast_done and slow_done):
+            bar_units = volumes[j] / vol_inc
+            if bar_units <= 0:
+                j -= 1
+                continue
+
+            # For fast
+            if not fast_done:
+                rem_fast = fast_len - cum_units
+                if bar_units >= rem_fast:
+                    cum_pv_fast += closes[j] * rem_fast
+                    fast_done = True
+                else:
+                    cum_pv_fast += closes[j] * bar_units
+
+            # For slow
+            if not slow_done:
+                rem_slow = slow_len - cum_units
+                if bar_units >= rem_slow:
+                    cum_pv_slow += closes[j] * rem_slow
+                    slow_done = True
+                else:
+                    cum_pv_slow += closes[j] * bar_units
+
+            cum_units += bar_units
+            j -= 1
+
+        if fast_done:
+            vama_fast[i] = cum_pv_fast / fast_len
+        if slow_done:
+            vama_slow[i] = cum_pv_slow / slow_len
+
+    return vama_fast, vama_slow
+
+
+def apirine_ma_bands(
+    closes: list[float],
+    p1: int = 50,
+    p2: int = 10,
+    mltp: float = 1.0,
+) -> tuple[list[float | None], list[float | None], list[float | None], list[float | None]]:
+    """Vitali Apirine Moving Average Bands (MAB).
+
+    Reference:
+      Vitali Apirine, "Moving Average Bands", TASC Aug 2021.
+      MA1 = EMA(Close, P1)
+      MA2 = EMA(Close, P2)
+      Dst = MA1 - MA2
+      Dv = SMA(Dst^2, P2)
+      Dev = Mltp * sqrt(Dv)
+      Upper = MA1 + Dev
+      Lower = MA1 - Dev
+
+    Returns:
+      (ma2, upper, lower, ma1)
+    != BB (stdev of price) / != Keltner (ATR) / != Kirshenbaum (LinReg stderr) /
+    != %Envelopes / != CPR / != STARC.
+    """
+    count = len(closes)
+    ma2_series: list[float | None] = [None] * count
+    upper_series: list[float | None] = [None] * count
+    lower_series: list[float | None] = [None] * count
+    ma1_series: list[float | None] = [None] * count
+
+    if count == 0 or p1 <= 0 or p2 <= 0:
+        return ma2_series, upper_series, lower_series, ma1_series
+
+    ma1 = ema(closes, p1)
+    ma2 = ema(closes, p2)
+
+    dst_sq = [0.0] * count
+    dst_valid = [False] * count
+    for i in range(count):
+        m1 = ma1[i]
+        m2 = ma2[i]
+        if m1 is not None and m2 is not None:
+            diff = m1 - m2
+            dst_sq[i] = diff * diff
+            dst_valid[i] = True
+
+    # SMA of dst_sq over p2
+    dv = sma(dst_sq, p2)
+
+    for i in range(count):
+        m1 = ma1[i]
+        m2 = ma2[i]
+        d = dv[i]
+        ma2_series[i] = m2
+        ma1_series[i] = m1
+        if m1 is not None and m2 is not None and d is not None and dst_valid[i]:
+            dev = mltp * math.sqrt(max(d, 0.0))
+            upper_series[i] = m1 + dev
+            lower_series[i] = m1 - dev
+
+    return ma2_series, upper_series, lower_series, ma1_series
+
+
+def ehlers_rmo(
+    closes: list[float],
+    lp: int = 12,
+    hp: int = 30,
+    med_len: int = 5,
+) -> tuple[list[float | None], list[float | None]]:
+    """John Ehlers Recursive Median Oscillator (RMO).
+
+    Reference:
+      John Ehlers, "Recursive Median Filters", TASC Mar 2018.
+      med = Median(Close, med_len)
+      alpha1 = (cos(2*pi/LP) + sin(2*pi/LP) - 1.0) / cos(2*pi/LP)
+      RM = alpha1 * med + (1 - alpha1) * RM[1]
+      alpha2 = (cos(0.707*2*pi/HP) + sin(0.707*2*pi/HP) - 1.0) / cos(0.707*2*pi/HP)
+      RMO = (1 - alpha2/2)^2 * (RM - 2*RM[1] + RM[2]) + 2*(1 - alpha2)*RMO[1] - (1 - alpha2)^2 * RMO[2]
+
+    Returns:
+      (rmo_series, rm_series)
+    != BandPass / != naked-HP-of-price / != DSP / != CorrCycle.
+    """
+    count = len(closes)
+    rmo_series: list[float | None] = [None] * count
+    rm_series: list[float | None] = [None] * count
+
+    if count == 0 or lp <= 0 or hp <= 0 or med_len <= 0:
+        return rmo_series, rm_series
+
+    # Rolling median of closes over med_len
+    med: list[float] = [0.0] * count
+    for i in range(count):
+        if i + 1 < med_len:
+            window = sorted(closes[: i + 1])
+        else:
+            window = sorted(closes[i - med_len + 1 : i + 1])
+        w_len = len(window)
+        if w_len % 2 == 1:
+            med[i] = window[w_len // 2]
+        else:
+            med[i] = 0.5 * (window[w_len // 2 - 1] + window[w_len // 2])
+
+    # alpha1 calculation
+    rad_lp = 2.0 * math.pi / lp
+    cos_lp = math.cos(rad_lp)
+    if abs(cos_lp) < 1e-12:
+        alpha1 = 0.0
+    else:
+        alpha1 = (cos_lp + math.sin(rad_lp) - 1.0) / cos_lp
+
+    # Recursive median RM
+    rm = [0.0] * count
+    for i in range(count):
+        prev_rm = rm[i - 1] if i > 0 else med[i]
+        rm[i] = alpha1 * med[i] + (1.0 - alpha1) * prev_rm
+        if i >= med_len - 1:
+            rm_series[i] = rm[i]
+
+    # alpha2 calculation: 0.707 * 2 * pi / HP
+    rad_hp = 0.707 * 2.0 * math.pi / hp
+    cos_hp = math.cos(rad_hp)
+    if abs(cos_hp) < 1e-12:
+        alpha2 = 0.0
+    else:
+        alpha2 = (cos_hp + math.sin(rad_hp) - 1.0) / cos_hp
+
+    # Second-order HighPass filter of RM
+    c1 = (1.0 - alpha2 / 2.0) ** 2
+    c2 = 2.0 * (1.0 - alpha2)
+    c3 = (1.0 - alpha2) ** 2
+
+    rmo = [0.0] * count
+    for i in range(count):
+        rm0 = rm[i]
+        rm1 = rm[i - 1] if i > 0 else rm0
+        rm2 = rm[i - 2] if i > 1 else rm1
+        rmo1 = rmo[i - 1] if i > 0 else 0.0
+        rmo2 = rmo[i - 2] if i > 1 else 0.0
+
+        rmo[i] = c1 * (rm0 - 2.0 * rm1 + rm2) + c2 * rmo1 - c3 * rmo2
+        if i >= med_len + 2:
+            rmo_series[i] = rmo[i]
+
+    return rmo_series, rm_series
+
+
+
 
 
 
