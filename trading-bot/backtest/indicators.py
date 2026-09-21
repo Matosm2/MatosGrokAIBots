@@ -8194,6 +8194,275 @@ def lowest(
     return res
 
 
+def ehlers_ec(
+    closes: list[float],
+    length: int = 20,
+    gain_limit: int = 50,
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    """Ehlers-Way Error-Correcting Zero-Lag filter (EC) and reference EMA.
+
+    Reference:
+      John Ehlers & Ric Way, "Zero Lag (Well, Almost)", Stocks & Commodities Nov 2010.
+      MESA ZeroLag.pdf; Wealth-Lab TASC Nov 2010.
+
+    Formulation:
+      alpha = 2.0 / (length + 1.0)
+      ema = alpha * close + (1.0 - alpha) * ema[1]
+      Gain search:
+        Loop Gain from -gain_limit to +gain_limit step 1:
+          g = Gain / 10.0
+          trial_ec = alpha * (ema + g * (close - ec[1])) + (1.0 - alpha) * ec[1]
+          find BestGain minimizing |close - trial_ec|
+      ec = alpha * (ema + BestGain * (close - ec[1])) + (1.0 - alpha) * ec[1]
+      least_error_pct = 100.0 * min_error / close
+
+    Returns:
+      (ec_series, ema_series, least_error_pct_series)
+    != ZLEMA / != EDCF filt*lag / != Ultimate Smoother / != PMA.
+    """
+    count = len(closes)
+    ec_series: list[float | None] = [None] * count
+    ema_series: list[float | None] = [None] * count
+    error_pct_series: list[float | None] = [None] * count
+
+    if count == 0 or length <= 0 or gain_limit < 0:
+        return ec_series, ema_series, error_pct_series
+
+    alpha = 2.0 / (length + 1.0)
+
+    # Initialize recursive state
+    ema_val = closes[0]
+    ec_val = closes[0]
+    ema_series[0] = ema_val
+    ec_series[0] = ec_val
+    error_pct_series[0] = 0.0
+
+    for i in range(1, count):
+        c = closes[i]
+        prev_ec = ec_val
+        ema_val = alpha * c + (1.0 - alpha) * ema_val
+        ema_series[i] = ema_val
+
+        best_gain = 0.0
+        min_err = float("inf")
+
+        # Search Gain in [-gain_limit .. +gain_limit]
+        for g_int in range(-gain_limit, gain_limit + 1):
+            g = g_int / 10.0
+            trial_ec = alpha * (ema_val + g * (c - prev_ec)) + (1.0 - alpha) * prev_ec
+            err = abs(c - trial_ec)
+            if err < min_err:
+                min_err = err
+                best_gain = g
+
+        ec_val = alpha * (ema_val + best_gain * (c - prev_ec)) + (1.0 - alpha) * prev_ec
+        ec_series[i] = ec_val
+        error_pct_series[i] = (100.0 * min_err / c) if c != 0.0 else 0.0
+
+    return ec_series, ema_series, error_pct_series
+
+
+def vervoort_zlha_typ(
+    opens: list[float],
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    n: int = 34,
+) -> tuple[list[float | None], list[float | None]]:
+    """Vervoort Zero-Lag TEMA(haC) and Zero-Lag TEMA(Typ) dual indicator.
+
+    Reference:
+      Sylvain Vervoort, "The Quest For Reliable Crossovers", S&C May 2008.
+      STOCATA / Traders' Tips May 2008.
+
+    Formulation:
+      haOpen = (haOpen[1] + haClose[1]) / 2  (with seed (open[0] + close[0]) / 2)
+      haClose = ((O + H + L + C) / 4 + haOpen + max(H, haOpen) + min(L, haOpen)) / 4
+      Typ = (H + L + C) / 3
+      ZL(x, N) = TEMA(x, N) + (TEMA(x, N) - TEMA(TEMA(x, N), N))
+        where TEMA(x, N) = 3*EMA1 - 3*EMA2 + EMA3
+      zlHa = ZL(haClose, N)
+      zlTyp = ZL(Typ, N)
+
+    Returns:
+      (zl_typ_series, zl_ha_series)
+    != Heikin-Ashi color-flip / != TEMA-close-dual / != ZLEMA / != DEMA dual.
+    """
+    count = len(closes)
+    zl_typ: list[float | None] = [None] * count
+    zl_ha: list[float | None] = [None] * count
+
+    if count == 0 or n <= 0 or len(opens) != count or len(highs) != count or len(lows) != count:
+        return zl_typ, zl_ha
+
+    # Compute Heikin-Ashi series as published by Vervoort
+    ha_close = [0.0] * count
+    ha_open = 0.0
+
+    for i in range(count):
+        o = opens[i]
+        h = highs[i]
+        l = lows[i]
+        c = closes[i]
+        bar_mid = (o + h + l + c) / 4.0
+
+        if i == 0:
+            ha_open = (o + c) / 2.0
+        else:
+            ha_open = (ha_open + ha_close[i - 1]) / 2.0
+
+        ha_c = (bar_mid + ha_open + max(h, ha_open) + min(l, ha_open)) / 4.0
+        ha_close[i] = ha_c
+
+    typ = [(highs[i] + lows[i] + closes[i]) / 3.0 for i in range(count)]
+
+    def _ema_recursive(series: list[float], length: int) -> list[float]:
+        """EMA with first value as seed."""
+        res = [0.0] * len(series)
+        if not series:
+            return res
+        a = 2.0 / (length + 1.0)
+        curr = series[0]
+        res[0] = curr
+        for idx in range(1, len(series)):
+            curr = a * series[idx] + (1.0 - a) * curr
+            res[idx] = curr
+        return res
+
+    def _tema(series: list[float], length: int) -> list[float]:
+        """TEMA = 3*EMA1 - 3*EMA2 + EMA3."""
+        ema1 = _ema_recursive(series, length)
+        ema2 = _ema_recursive(ema1, length)
+        ema3 = _ema_recursive(ema2, length)
+        return [3.0 * ema1[j] - 3.0 * ema2[j] + ema3[j] for j in range(len(series))]
+
+    def _zl_tema(series: list[float], length: int) -> list[float]:
+        """ZL = TEMA + (TEMA - TEMA(TEMA))."""
+        t1 = _tema(series, length)
+        t2 = _tema(t1, length)
+        return [t1[j] + (t1[j] - t2[j]) for j in range(len(series))]
+
+    zl_typ_raw = _zl_tema(typ, n)
+    zl_ha_raw = _zl_tema(ha_close, n)
+
+    # Return valid series starting after initial warmup
+    warmup = min(n, count)
+    for i in range(count):
+        if i >= warmup - 1:
+            zl_typ[i] = zl_typ_raw[i]
+            zl_ha[i] = zl_ha_raw[i]
+
+    return zl_typ, zl_ha
+
+
+def ehlers_fir_zl(
+    src_prices: list[float],
+    denom_mode: str = "9.5",
+) -> list[float | None]:
+    """Ehlers Zero-Lag FIR filter.
+
+    Reference:
+      John Ehlers, "Zero-Lag Data Smoothers", Stocks & Commodities V.20:7 (July 2002).
+      TradingView everget FIR; MesaSoftware.
+
+    Formulation:
+      Mode A (9.5 locked):
+        zlFir = (P + 4.5*P[1] + 5.5*P[2] + 3.0*P[3] - 0.5*P[4] - 1.5*P[5] - 2.5*P[6]) / 9.5
+      Mode B (12 favorite FIR):
+        fir12 = (P + 2.0*P[1] + 3.0*P[2] + 3.0*P[3] + 2.0*P[4] + P[5]) / 12.0
+
+    Returns:
+      zl_fir_series
+    != EDCF filt*lag / != ZLEMA / != SuperSmoother.
+    """
+    count = len(src_prices)
+    res: list[float | None] = [None] * count
+
+    if count == 0:
+        return res
+
+    if denom_mode == "12":
+        # 6-tap favorite FIR: 1, 2, 3, 3, 2, 1 / 12.0
+        for i in range(5, count):
+            v = (
+                src_prices[i]
+                + 2.0 * src_prices[i - 1]
+                + 3.0 * src_prices[i - 2]
+                + 3.0 * src_prices[i - 3]
+                + 2.0 * src_prices[i - 4]
+                + src_prices[i - 5]
+            ) / 12.0
+            res[i] = v
+    else:
+        # 7-tap Zero-Lag FIR: 1, 4.5, 5.5, 3.0, -0.5, -1.5, -2.5 / 9.5
+        for i in range(6, count):
+            v = (
+                src_prices[i]
+                + 4.5 * src_prices[i - 1]
+                + 5.5 * src_prices[i - 2]
+                + 3.0 * src_prices[i - 3]
+                - 0.5 * src_prices[i - 4]
+                - 1.5 * src_prices[i - 5]
+                - 2.5 * src_prices[i - 6]
+            ) / 9.5
+            res[i] = v
+
+    return res
+
+
+def dv2_varadi(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    rank_len: int = 100,
+) -> tuple[list[float | None], list[float]]:
+    """Varadi DV2 oscillator (percent-rank of 2-period average Close/(High+Low)).
+
+    Reference:
+      David Varadi, CSS Analytics (2009), "Differential DV2 Calculation".
+      Quantitativo "A Different Indicator".
+
+    Formulation:
+      r = close / (high + low) (guarded against high + low == 0)
+      dv_raw = (r + r[1]) / 2.0
+      dv2 = 100.0 * percentrank(dv_raw, rank_len)
+        where percentrank counts fraction of window values <= current value:
+        percentrank = count(val in window <= current) / window_size
+
+    Returns:
+      (dv2_series, dv_raw_series)
+    != DVI (magnitude + stretch) / != RSI2 / != PSY / != IMI.
+    """
+    count = len(closes)
+    dv2_series: list[float | None] = [None] * count
+    dv_raw_series: list[float] = [0.0] * count
+
+    if count == 0 or rank_len <= 0 or len(highs) != count or len(lows) != count:
+        return dv2_series, dv_raw_series
+
+    # Compute ratio r = close / (high + low)
+    r = [0.0] * count
+    for i in range(count):
+        hl = highs[i] + lows[i]
+        r[i] = (closes[i] / hl) if hl > 1e-9 else 0.5
+
+    # dv_raw = (r + r[1]) / 2.0
+    dv_raw_series[0] = r[0]
+    for i in range(1, count):
+        dv_raw_series[i] = (r[i] + r[i - 1]) / 2.0
+
+    # Percent-rank over rank_len bars
+    for i in range(rank_len - 1, count):
+        window = dv_raw_series[i - rank_len + 1 : i + 1]
+        curr = dv_raw_series[i]
+        # Number of values strictly less than or equal to current value
+        c_le = sum(1 for w in window if w <= curr)
+        dv2_series[i] = 100.0 * (c_le / rank_len)
+
+    return dv2_series, dv_raw_series
+
+
+
 
 
 
