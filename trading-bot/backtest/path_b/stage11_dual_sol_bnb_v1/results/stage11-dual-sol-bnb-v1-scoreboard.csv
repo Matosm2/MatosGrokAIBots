@@ -1,0 +1,161 @@
+symbol,strategy_id,tf,mode_params,sol_smoke,bnb_smoke,sol_retention_note,n_6m,wr_6m_pct,mode_a_ret_6m_pct,bh_ret_6m_pct,ratio_bh_6m,pass_6m,n_full,wr_full_pct,mode_a_ret_full_pct,bh_ret_full_pct,ratio_bh_full,pass_full,ops_ret_6m_pct,ops_ret_full_pct,notes
+BTCUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(11,10)",Y,Y,—,171,22.22,-40.2183,10.7573,-3.7387,FAIL,699,21.75,-85.0717,25.5310,-3.3321,FAIL,-1.2131,-4.4162,—
+BTCUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(8,8)",Y,Y,—,216,19.91,-48.8025,10.7573,-4.5367,FAIL,858,21.10,-91.6179,25.5310,-3.5885,FAIL,-1.5929,-5.7675,—
+BTCUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(15,7)",Y,Y,—,196,16.84,-47.3200,10.7573,-4.3989,FAIL,782,18.54,-88.8693,25.5310,-3.4808,FAIL,-1.5221,-5.1067,—
+BTCUSDT,chande-trendscore-zero-cross-v1,1h,"mode_b|(11,10,ema5)",Y,Y,—,121,24.79,-25.9766,10.7573,-2.4148,FAIL,472,27.12,-68.3304,25.5310,-2.6764,FAIL,-0.6870,-2.5985,—
+BTCUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(11,10)",Y,Y,—,34,23.53,-0.6002,10.0911,-0.0595,FAIL,155,28.39,-18.1299,27.4297,-0.6610,FAIL,0.0592,-0.2507,—
+BTCUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(8,8)",Y,Y,—,49,20.41,-4.2451,10.0911,-0.4207,FAIL,191,23.04,-21.8249,27.4297,-0.7957,FAIL,-0.0452,-0.3730,—
+BTCUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(15,7)",Y,Y,—,44,18.18,-14.3727,10.0911,-1.4243,FAIL,172,26.16,-34.8386,27.4297,-1.2701,FAIL,-0.3117,-0.8464,—
+BTCUSDT,chande-trendscore-zero-cross-v1,4h,"mode_b|(11,10,ema5)",Y,Y,—,28,21.43,-10.6978,10.0911,-1.0601,FAIL,110,30.00,-11.6381,27.4297,-0.4243,FAIL,-0.2144,0.0038,—
+BTCUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N20),Y,Y,—,59,38.98,-6.5581,10.7573,-0.6096,FAIL,248,31.05,-59.0640,25.5310,-2.3134,FAIL,-0.0959,-1.9515,—
+BTCUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N14),Y,Y,—,86,37.21,-18.5709,10.7573,-1.7264,FAIL,353,32.29,-63.9831,25.5310,-2.5061,FAIL,-0.4674,-2.2896,—
+BTCUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N25),Y,Y,—,50,34.00,-6.0037,10.7573,-0.5581,FAIL,203,31.03,-20.5432,25.5310,-0.8046,FAIL,-0.0891,-0.3318,—
+BTCUSDT,pee-tdi-direction-zero-v1,1h,mode_b|(N20),Y,Y,—,0,0.00,0.0000,10.7573,0.0000,FAIL,0,0.00,0.0000,25.5310,0.0000,FAIL,0.0000,0.0000,TINY-N KILL (BTC 6m n=0 <= 5 despite 0.00x B&H)
+BTCUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N20),Y,Y,—,15,40.00,9.2339,10.0911,0.9151,FAIL,71,30.99,-12.3067,27.4297,-0.4487,FAIL,0.2958,-0.1146,Near-miss 6m (0.92x B&H)
+BTCUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N14),Y,Y,—,26,30.77,-14.0546,10.0911,-1.3928,FAIL,96,29.17,-38.7260,27.4297,-1.4118,FAIL,-0.3164,-0.9389,—
+BTCUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N25),Y,Y,—,9,55.56,24.6768,10.0911,2.4454,PASS,48,43.75,24.2400,27.4297,0.8837,FAIL,0.6177,0.7484,THIN-N FLAG (BTC 6m n=9 in thin band [6..10])
+BTCUSDT,pee-tdi-direction-zero-v1,4h,mode_b|(N20),Y,Y,—,0,0.00,0.0000,10.0911,0.0000,FAIL,0,0.00,0.0000,27.4297,0.0000,FAIL,0.0000,0.0000,TINY-N KILL (BTC 6m n=0 <= 5 despite 0.00x B&H)
+BTCUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.25,a2_0.50)",Y,Y,—,281,20.28,-59.5039,10.7573,-5.5315,FAIL,1058,23.82,-93.5111,25.5310,-3.6626,FAIL,-2.1631,-6.3789,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.20,a2_0.50)",Y,Y,—,249,19.68,-56.7994,10.7573,-5.2801,FAIL,938,22.81,-91.8759,25.5310,-3.5986,FAIL,-2.0031,-5.8543,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.25,a2_0.33)",Y,Y,—,185,22.70,-41.8683,10.7573,-3.8921,FAIL,722,24.24,-85.6117,25.5310,-3.3532,FAIL,-1.2740,-4.4901,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.33,a2_0.50)",Y,Y,—,342,18.42,-69.5278,10.7573,-6.4633,FAIL,1262,22.50,-97.4409,25.5310,-3.8166,FAIL,-2.8555,-8.5197,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_b|(a1_0.25,a2_0.50)",Y,Y,—,166,22.29,-32.1453,10.7573,-2.9882,FAIL,639,24.88,-79.3107,25.5310,-3.1064,FAIL,-0.9340,-3.7336,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.25,a2_0.50)",Y,Y,—,68,25.00,-15.3197,10.0911,-1.5181,FAIL,255,27.84,-51.3611,27.4297,-1.8725,FAIL,-0.3558,-1.5082,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.20,a2_0.50)",Y,Y,—,59,22.03,-14.5450,10.0911,-1.4414,FAIL,224,27.23,-45.4799,27.4297,-1.6581,FAIL,-0.3295,-1.2474,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.25,a2_0.33)",Y,Y,—,46,26.09,-4.8573,10.0911,-0.4813,FAIL,168,26.79,-37.5545,27.4297,-1.3691,FAIL,-0.0444,-0.9124,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.33,a2_0.50)",Y,Y,—,77,24.68,-22.0271,10.0911,-2.1828,FAIL,304,27.63,-54.2222,27.4297,-1.9768,FAIL,-0.5827,-1.7321,—
+BTCUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_b|(a1_0.25,a2_0.50)",Y,Y,—,41,24.39,-6.1100,10.0911,-0.6055,FAIL,153,28.10,-19.9409,27.4297,-0.7270,FAIL,-0.1085,-0.3774,—
+BTCUSDT,gmma-osc-zero-cross-v1,1h,mode_a|(classic12),Y,Y,—,69,26.09,-10.0263,10.7573,-0.9320,FAIL,286,22.73,-57.2527,25.5310,-2.2425,FAIL,-0.1883,-1.8293,—
+BTCUSDT,gmma-osc-zero-cross-v1,1h,"mode_b|(classic12,sig15)",Y,Y,—,71,21.13,-16.6786,10.7573,-1.5504,FAIL,286,23.78,-52.3943,25.5310,-2.0522,FAIL,-0.4312,-1.7492,—
+BTCUSDT,gmma-osc-zero-cross-v1,1h,"mode_b|(classic12,sig10)",Y,Y,—,83,20.48,-20.9092,10.7573,-1.9437,FAIL,336,23.81,-58.3214,25.5310,-2.2843,FAIL,-0.5705,-2.0852,—
+BTCUSDT,gmma-osc-zero-cross-v1,4h,mode_a|(classic12),Y,Y,—,18,33.33,4.4801,10.0911,0.4440,FAIL,77,27.27,-13.3746,27.4297,-0.4876,FAIL,0.1753,-0.1313,—
+BTCUSDT,gmma-osc-zero-cross-v1,4h,"mode_b|(classic12,sig15)",Y,Y,—,17,5.88,-17.0225,10.0911,-1.6869,FAIL,67,23.88,-5.0694,27.4297,-0.1848,FAIL,-0.4612,-0.0660,—
+BTCUSDT,gmma-osc-zero-cross-v1,4h,"mode_b|(classic12,sig10)",Y,Y,—,22,22.73,-12.3617,10.0911,-1.2250,FAIL,87,22.99,-19.0348,27.4297,-0.6940,FAIL,-0.3258,-0.4630,—
+BTCUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast9),Y,Y,—,379,20.05,-66.4489,10.7573,-6.1771,FAIL,1534,21.06,-99.0880,25.5310,-3.8811,FAIL,-2.6442,-10.8779,—
+BTCUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast5),Y,Y,—,558,19.35,-81.2740,10.7573,-7.5553,FAIL,2218,20.69,-99.8727,25.5310,-3.9118,FAIL,-4.0575,-15.1516,—
+BTCUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast14),Y,Y,—,283,20.14,-49.7681,10.7573,-4.6265,FAIL,1148,20.47,-96.0378,25.5310,-3.7616,FAIL,-1.6391,-7.5168,—
+BTCUSDT,vqi-sum-sma-cross-v1,1h,"mode_b|(fast9,slow200)",Y,Y,—,183,19.13,-39.0130,10.7573,-3.6267,FAIL,771,20.62,-89.8729,25.5310,-3.5201,FAIL,-1.1951,-5.4483,—
+BTCUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast9),Y,Y,—,101,21.78,-29.4944,10.0911,-2.9228,FAIL,371,27.22,-53.5031,27.4297,-1.9506,FAIL,-0.8324,-1.6978,—
+BTCUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast5),Y,Y,—,144,26.39,-37.7491,10.0911,-3.7408,FAIL,562,27.40,-81.0059,27.4297,-2.9532,FAIL,-1.1111,-3.8260,—
+BTCUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast14),Y,Y,—,78,19.23,-22.2068,10.0911,-2.2006,FAIL,281,24.20,-45.5161,27.4297,-1.6594,FAIL,-0.5934,-1.3079,—
+BTCUSDT,vqi-sum-sma-cross-v1,4h,"mode_b|(fast9,slow200)",Y,Y,—,64,18.75,-22.3587,10.0911,-2.2157,FAIL,203,25.12,-27.1462,27.4297,-0.9897,FAIL,-0.6045,-0.6505,—
+ETHUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(11,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(8,8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(15,7)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-trendscore-zero-cross-v1,1h,"mode_b|(11,10,ema5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(11,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(8,8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(15,7)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-trendscore-zero-cross-v1,4h,"mode_b|(11,10,ema5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-tdi-direction-zero-v1,1h,mode_b|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N25),Y,Y,—,12,50.00,42.9779,15.5026,2.7723,PASS,51,39.22,-7.6511,4.0028,-1.9114,FAIL,1.0133,0.4566,—
+ETHUSDT,pee-tdi-direction-zero-v1,4h,mode_b|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.20,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.25,a2_0.33)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.33,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_b|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.20,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.25,a2_0.33)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.33,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_b|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,gmma-osc-zero-cross-v1,1h,mode_a|(classic12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,gmma-osc-zero-cross-v1,1h,"mode_b|(classic12,sig15)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,gmma-osc-zero-cross-v1,1h,"mode_b|(classic12,sig10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,gmma-osc-zero-cross-v1,4h,mode_a|(classic12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,gmma-osc-zero-cross-v1,4h,"mode_b|(classic12,sig15)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,gmma-osc-zero-cross-v1,4h,"mode_b|(classic12,sig10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast5),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vqi-sum-sma-cross-v1,1h,"mode_b|(fast9,slow200)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast5),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vqi-sum-sma-cross-v1,4h,"mode_b|(fast9,slow200)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+SOLUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(11,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(8,8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(15,7)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-trendscore-zero-cross-v1,1h,"mode_b|(11,10,ema5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(11,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(8,8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(15,7)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-trendscore-zero-cross-v1,4h,"mode_b|(11,10,ema5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-tdi-direction-zero-v1,1h,mode_b|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N25),Y,Y,RETENTION OK: 13 trades (ETH=12),13,53.85,26.2961,15.9877,1.6448,PASS,47,55.32,56.8124,-23.1339,3.4558,PASS,0.7116,1.5984,SOL hard filter
+SOLUSDT,pee-tdi-direction-zero-v1,4h,mode_b|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.20,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.25,a2_0.33)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.33,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_b|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.20,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.25,a2_0.33)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.33,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_b|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,gmma-osc-zero-cross-v1,1h,mode_a|(classic12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,gmma-osc-zero-cross-v1,1h,"mode_b|(classic12,sig15)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,gmma-osc-zero-cross-v1,1h,"mode_b|(classic12,sig10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,gmma-osc-zero-cross-v1,4h,mode_a|(classic12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,gmma-osc-zero-cross-v1,4h,"mode_b|(classic12,sig15)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,gmma-osc-zero-cross-v1,4h,"mode_b|(classic12,sig10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast5),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vqi-sum-sma-cross-v1,1h,"mode_b|(fast9,slow200)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast5),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vqi-sum-sma-cross-v1,4h,"mode_b|(fast9,slow200)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+BNBUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(11,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(8,8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-trendscore-zero-cross-v1,1h,"mode_a|(15,7)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-trendscore-zero-cross-v1,1h,"mode_b|(11,10,ema5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(11,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(8,8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-trendscore-zero-cross-v1,4h,"mode_a|(15,7)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-trendscore-zero-cross-v1,4h,"mode_b|(11,10,ema5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-tdi-direction-zero-v1,1h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-tdi-direction-zero-v1,1h,mode_b|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-tdi-direction-zero-v1,4h,mode_a|(N25),Y,Y,—,12,33.33,-19.8987,15.7540,-1.2631,FAIL,48,35.42,-15.7924,35.4292,-0.4457,FAIL,-0.4935,-0.1791,BNB hard filter
+BNBUSDT,pee-tdi-direction-zero-v1,4h,mode_b|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.20,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.25,a2_0.33)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_a|(a1_0.33,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,1h,"mode_b|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.20,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.25,a2_0.33)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_a|(a1_0.33,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-leading-netlead-ema-v1,4h,"mode_b|(a1_0.25,a2_0.50)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,gmma-osc-zero-cross-v1,1h,mode_a|(classic12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,gmma-osc-zero-cross-v1,1h,"mode_b|(classic12,sig15)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,gmma-osc-zero-cross-v1,1h,"mode_b|(classic12,sig10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,gmma-osc-zero-cross-v1,4h,mode_a|(classic12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,gmma-osc-zero-cross-v1,4h,"mode_b|(classic12,sig15)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,gmma-osc-zero-cross-v1,4h,"mode_b|(classic12,sig10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast5),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vqi-sum-sma-cross-v1,1h,mode_a|(fast14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vqi-sum-sma-cross-v1,1h,"mode_b|(fast9,slow200)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast5),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vqi-sum-sma-cross-v1,4h,mode_a|(fast14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vqi-sum-sma-cross-v1,4h,"mode_b|(fast9,slow200)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
