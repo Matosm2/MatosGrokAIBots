@@ -1,10 +1,12 @@
 # AccDist SMA Cross v1 (Pine) — PAPER ONLY (LIVE OFF)
 
-Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by CoS/Nuno based on the 2026-09-22 Path B Mode-A per-coin census.
+Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by CoS/Nuno based on the 2026-09-22 Path B Mode-A per-coin census and `uploads/PAPER_KICK.md`.
 
 **Script:** [`accdist-sma-cross-v1.pine`](./accdist-sma-cross-v1.pine)  
 **strategy_id:** `accdist-sma-cross-v1`  
-**Status:** **PAPER ONLY / LIVE OFF** (never enable live API keys or LIVE trading)
+**Status:** **PAPER ONLY / LIVE OFF** (never enable live API keys or LIVE trading)  
+**Seat Allocation:** ETHUSDT only, **1,000 USDT paper equity allocation**.  
+**Architecture:** Separate named paper strategy (do NOT combine with BTC seat).
 
 ---
 
@@ -12,7 +14,7 @@ Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by 
 
 - **Pair:** ETHUSDT only
 - **Timeframe:** 4h (Mode A)
-- **Parameters:** `smaLen = 50` (`mode_a|sma50`)
+- **Parameters:** `smaLen = 50` (`mode_a|sma50`) — **STRICT: 50 only (not sma65)**
 - **Stage / PR:** Stage 1 (PR#29)
 - **Trade count (n):** 46 (dense, passes `n >= 40` gate)
 - **Win Rate:** 21.7%
@@ -32,15 +34,17 @@ Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by 
 ### Raw Accumulation/Distribution (ADL) Formula
 ```pinescript
 // NOTE: Raw ADL vs SMA, NOT Chaikin Oscillator!
+// Forbidden: CMF/OBV/Chaikin Osc EMA3-EMA10(ADL) labeled ADL
 adl    = ta.accdist
 adlSma = ta.sma(adl, 50)
 ```
 
 - Bar close only (`process_orders_on_close = true`).
+- Initial Capital in script: **1,000 USDT** per seat.
 - Exits use **strategy() position / price** — does NOT read bot open-state.
 - Sell **`qty_pct: 12`** is intentional (full exit within Balanced max-position framing). Do **not** omit qty on sell (bot would only size to `RISK_PER_TRADE_PCT` = 2.5%).
 - Webhook JSON from `alert()` **strips exchange prefix** (e.g. `BINANCE:`) so `symbol` is `ETHUSDT`-style.
-- **Universe:** `ETHUSDT` ONLY at `4h`.
+- **Universe:** `ETHUSDT` ONLY at `4h` (no multi-coin fan-out).
 - **`alert_id`:** Uses **`{{time}}`**, NOT `{{timenow}}`.
 
 ---
@@ -53,9 +57,10 @@ adlSma = ta.sma(adl, 50)
 
 ---
 
-## Stops
+## Stops & Optional ATR Exit
 
-- **No hard stop in this version** — exits are signal-only (`ta.crossunder(adl, adlSma)`).
+- **Base census exit is signal-only:** `ta.crossunder(adl, adlSma)`.
+- **Optional ATR `strategy.exit` included:** Script includes an optional ATR-based stop loss input (`useAtrExit = false` by default, length 14, multiple 3.0× ATR). Can be enabled in TradingView Strategy Tester.
 - **A hard stop brief is required in a later brief before any real live trading.**
 
 ---
@@ -63,7 +68,7 @@ adlSma = ta.sma(adl, 50)
 ## TradingView setup (two alerts)
 
 1. Add the script to an **ETHUSDT** chart on the **4h** timeframe.
-2. Verify inputs: `ADL SMA Length = 50`, `Cooldown bars after exit = 6`, `Buy qty_pct = 2.5`, `Sell qty_pct = 12.0`, `strategy_id = accdist-sma-cross-v1`.
+2. Verify inputs: `ADL SMA Length = 50` (do not change to 65), `Cooldown bars after exit = 6`, `Buy qty_pct = 2.5`, `Sell qty_pct = 12.0`, `strategy_id = accdist-sma-cross-v1`.
 3. Create **two** alerts (Once Per Bar Close):
 
 ### Option A — alertconditions (recommended for two named alerts)

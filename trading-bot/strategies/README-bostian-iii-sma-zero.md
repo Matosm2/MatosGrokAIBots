@@ -1,10 +1,12 @@
 # Bostian III SMA Zero (Pine) — PAPER ONLY (LIVE OFF)
 
-Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by CoS/Nuno based on the 2026-09-22 Path B Mode-A per-coin census.
+Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by CoS/Nuno based on the 2026-09-22 Path B Mode-A per-coin census and `uploads/PAPER_KICK.md`.
 
 **Script:** [`bostian-iii-sma-zero.pine`](./bostian-iii-sma-zero.pine)  
 **strategy_id:** `bostian-iii-sma-zero`  
-**Status:** **PAPER ONLY / LIVE OFF** (never enable live API keys or LIVE trading)
+**Status:** **PAPER ONLY / LIVE OFF** (never enable live API keys or LIVE trading)  
+**Seat Allocation:** BTCUSDT only, **1,000 USDT paper equity allocation**.  
+**Architecture:** Separate named paper strategy (do NOT combine with ETH seat).
 
 ---
 
@@ -12,7 +14,7 @@ Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by 
 
 - **Pair:** BTCUSDT only
 - **Timeframe:** 4h (Mode A)
-- **Parameters:** `smaLen = 21` (`mode_a|(sma21)`)
+- **Parameters:** `smaLen = 21` (`mode_a|(sma21)`) — **STRICT: 21 only (not sma34)**
 - **Stage / PR:** Stage 17 (PR#45)
 - **Trade count (n):** 40 (dense, passes `n >= 40` gate)
 - **Win Rate:** 27.5%
@@ -31,16 +33,18 @@ Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by 
 
 ### Bostian Intraday Intensity Index (III) Formula
 ```pinescript
+// Forbidden: CMF/OBV/CLV/AccDist labeled III
 rng  = high - low
 iii  = rng == 0 ? 0.0 : ((2.0 * close - high - low) / rng) * volume
 iiiS = ta.sma(iii, 21)
 ```
 
 - Bar close only (`process_orders_on_close = true`).
+- Initial Capital in script: **1,000 USDT** per seat.
 - Exits use **strategy() position / price** — does NOT read bot open-state.
 - Sell **`qty_pct: 12`** is intentional (full exit within Balanced max-position framing). Do **not** omit qty on sell (bot would only size to `RISK_PER_TRADE_PCT` = 2.5%).
 - Webhook JSON from `alert()` **strips exchange prefix** (e.g. `BINANCE:`) so `symbol` is `BTCUSDT`-style.
-- **Universe:** `BTCUSDT` ONLY at `4h`.
+- **Universe:** `BTCUSDT` ONLY at `4h` (no multi-coin fan-out).
 - **`alert_id`:** Uses **`{{time}}`**, NOT `{{timenow}}`.
 
 ---
@@ -53,9 +57,10 @@ iiiS = ta.sma(iii, 21)
 
 ---
 
-## Stops
+## Stops & Optional ATR Exit
 
-- **No hard stop in this version** — exits are signal-only (`ta.crossunder(iiiS, 0)`).
+- **Base census exit is signal-only:** `ta.crossunder(iiiS, 0)`.
+- **Optional ATR `strategy.exit` included:** Script includes an optional ATR-based stop loss input (`useAtrExit = false` by default, length 14, multiple 3.0× ATR). Can be enabled in TradingView Strategy Tester.
 - **A hard stop brief is required in a later brief before any real live trading.**
 
 ---
@@ -63,7 +68,7 @@ iiiS = ta.sma(iii, 21)
 ## TradingView setup (two alerts)
 
 1. Add the script to a **BTCUSDT** chart on the **4h** timeframe.
-2. Verify inputs: `III SMA Length = 21`, `Cooldown bars after exit = 6`, `Buy qty_pct = 2.5`, `Sell qty_pct = 12.0`, `strategy_id = bostian-iii-sma-zero`.
+2. Verify inputs: `III SMA Length = 21` (do not change to 34), `Cooldown bars after exit = 6`, `Buy qty_pct = 2.5`, `Sell qty_pct = 12.0`, `strategy_id = bostian-iii-sma-zero`.
 3. Create **two** alerts (Once Per Bar Close):
 
 ### Option A — alertconditions (recommended for two named alerts)

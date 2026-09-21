@@ -4,14 +4,15 @@
 // Strategy overview
 // -----------------
 // Bostian Intraday Intensity Index (III) zero-line SMA crossover strategy.
-// Paper seat authorized for BTCUSDT @ 4h (Stage 17, PR#45: 1.412× B&H, n=40).
+// Authorized paper seat for BTCUSDT @ 4h (Stage 17, PR#45: 1.412× B&H, n=40).
+// STRICT: smaLen=21 ONLY (not sma34). Separate named strategy (do not combine).
 //
 // Formula:
 //   rng = high - low
 //   iii = rng == 0 ? 0 : ((2 * close - high - low) / rng) * volume
 //   iiiS = ta.sma(iii, smaLen)
 // Long entry:  ta.crossover(iiiS, 0)
-// Long exit:   ta.crossunder(iiiS, 0) + strategy.close("Long")
+// Long exit:   ta.crossunder(iiiS, 0) + optional ATR stop/trail strategy.exit
 //
 // Bar close only (process_orders_on_close = true).
 // Exits use strategy() position / price — does NOT read bot open-state or exchange positions.
@@ -24,8 +25,9 @@
 //
 // Stops
 // -----
-// No hard stop in this version — exits are signal-only (zero crossunder).
-// A hard stop brief is required in a later brief before any real live trading.
+// Base census exit is signal-only (zero crossunder).
+// Optional ATR strategy.exit included (disabled by default, mult=0.0 disables).
+// Real LIVE execution remains strictly OFF; a hard stop brief is required before live.
 //
 // Paper universe for this strategy: BTCUSDT ONLY @ 4h (PAPER ONLY / LIVE OFF).
 // Webhook alert_id uses {{time}} (not {{timenow}}).
@@ -36,7 +38,7 @@ strategy(
      title              = "Bostian III SMA Zero [PAPER ONLY - LIVE OFF]",
      shorttitle         = "bostian-iii-sma21",
      overlay            = false,
-     initial_capital    = 10000,
+     initial_capital    = 1000,
      default_qty_type   = strategy.percent_of_equity,
      default_qty_value  = 2.5,
      commission_type    = strategy.commission.percent,
@@ -47,10 +49,18 @@ strategy(
 
 // ——— Inputs ———
 smaLen        = input.int(21, "III SMA Length", minval=1,
-     tooltip="SMA smoothing period applied to Bostian Intraday Intensity Index. Default 21.")
+     tooltip="SMA smoothing period applied to Bostian Intraday Intensity Index. Default 21 only (census authorized).")
 // Bars after exit (SELL) before new BUY/re-entry; 0 disables. NOT after entries.
 cooldownBars  = input.int(6, "Cooldown bars after exit", minval=0,
      tooltip="Bars after an exit (SELL) before a new BUY is allowed. 0 = disabled. Does not apply after entries.")
+
+// Optional ATR exit (stop loss / profit / trail)
+useAtrExit    = input.bool(false, "Enable optional ATR exit",
+     tooltip="Enable strategy.exit with ATR-based stop. Base census Mode-A used signal-only exits.")
+atrLen        = input.int(14, "ATR Length", minval=1)
+atrStopMult   = input.float(3.0, "ATR Stop Multiple", minval=0.1, step=0.1,
+     tooltip="Stop loss placed at entry price minus mult * ATR.")
+
 buyQtyPct     = input.float(2.5, "Buy qty_pct (webhook)", minval=0.1, maxval=100, step=0.1)
 sellQtyPct    = input.float(12.0, "Sell qty_pct (webhook)", minval=0.1, maxval=100, step=0.1,
      tooltip="Full exit within Balanced max-pos framing (12%). Used in alert() JSON.")
@@ -81,6 +91,9 @@ iiiS = ta.sma(iii, smaLen)
 plot(iiiS, "III SMA", color=color.new(color.blue, 0), linewidth=2)
 hline(0.0, "Zero Line", color=color.gray, linestyle=hline.style_dashed)
 
+// ATR for optional stop
+atrVal = ta.atr(atrLen)
+
 // ——— Cooldown: bars since last exit (SELL) ———
 var int lastExitBar = na
 if strategy.position_size[1] > 0 and strategy.position_size <= 0
@@ -97,6 +110,10 @@ exitCondition = iiiCrossDown and strategy.position_size > 0
 
 if longCondition
     strategy.entry("Long", strategy.long)
+
+// Optional ATR exit execution in strategy tester
+if useAtrExit and strategy.position_size > 0
+    strategy.exit("ATR Exit", "Long", stop=strategy.position_avg_price - atrStopMult * atrVal)
 
 if exitCondition
     strategy.close("Long")
