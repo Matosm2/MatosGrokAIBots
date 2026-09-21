@@ -119,6 +119,158 @@ class CellResult:
     error: str | None = None
 
 
+def _window_start_ms(months: float) -> int:
+    now = datetime.now(timezone.utc)
+    target_dt = now.timestamp() - (months * 30.4375 * 86400)
+    return int(target_dt * 1000)
+
+
+def _mask_buys_before(buys: list[bool], bars: list[Bar], start_ms: int) -> list[bool]:
+    masked = list(buys)
+    for i, b in enumerate(bars):
+        if b.open_time_ms < start_ms:
+            masked[i] = False
+    return masked
+
+
+def _ratio(ret: float, bh: float) -> float:
+    if bh > 0:
+        return ret / bh
+    elif bh < 0:
+        return (ret - bh) / abs(bh)
+    return 0.0
+
+
+def _gate_label(symbol: str, trades: int, ret: float, bh: float, window: str) -> tuple[str, bool, bool]:
+    ratio = _ratio(ret, bh)
+    tiny_kill = False
+    thin_flag = False
+
+    if symbol == "BTCUSDT" and window == "6m":
+        if trades <= TINY_N_THRESHOLD:
+            tiny_kill = True
+            return "FAIL", tiny_kill, thin_flag
+        elif THIN_N_LOWER <= trades <= THIN_N_UPPER:
+            thin_flag = True
+
+    if trades == 0:
+        return "FAIL", tiny_kill, thin_flag
+
+    is_pass = ratio >= GATE_MULT
+    return ("PASS" if is_pass else "FAIL"), tiny_kill, thin_flag
+
+
+def _eval_windows(
+    symbol: str,
+    sid: str,
+    bars: list[Bar],
+    buys: list[bool],
+    sells: list[bool],
+    stops: list[float | None],
+) -> tuple[list[WindowModeMetrics], bool, bool]:
+    out: list[WindowModeMetrics] = []
+    cell_tiny_kill = False
+    cell_thin_flag = False
+
+    for win_label, months in WINDOWS:
+        start_ms = _window_start_ms(months)
+        masked_buys = _mask_buys_before(buys, bars, start_ms)
+
+        for mode_name, size_pct in SIZING:
+            raw_res = run_long_only(
+                symbol=symbol,
+                strategy_id=sid,
+                bars=bars,
+                buys=masked_buys,
+                sells=sells,
+                stop_prices=stops,
+                initial_equity=INITIAL,
+                buy_qty_pct=size_pct,
+                fee_rate=FEE,
+                slippage_rate=SLIP,
+                window_label=win_label,
+            )
+            sliced = slice_result_to_window(raw_res, bars, start_ms, window_label=win_label)
+            m = summarize_path_b(sliced)
+
+            ret_pct = float(m["return_pct"])
+            bh_pct = float(m["buy_hold_return_pct"])
+            ratio = _ratio(ret_pct, bh_pct)
+            n_trades = int(m["trades"])
+
+            gate_lbl = "—"
+            if mode_name == "gate":
+                gate_lbl, tiny_k, thin_f = _gate_label(symbol, n_trades, ret_pct, bh_pct, win_label)
+                if win_label == "6m":
+                    cell_tiny_kill = tiny_k
+                    cell_thin_flag = thin_f
+
+            wmm = WindowModeMetrics(
+                window=win_label,
+                mode=mode_name,
+                size_pct=size_pct,
+                return_pct=ret_pct,
+                bh_return_pct=bh_pct,
+                ratio=ratio,
+                win_rate_pct=float(m["win_rate_pct"]),
+                trades=n_trades,
+                wins=int(m["wins"]),
+                losses=int(m["losses"]),
+                max_drawdown_pct=float(m["max_drawdown_pct"]),
+                gate=gate_lbl,
+            )
+            out.append(wmm)
+
+    return out, cell_tiny_kill, cell_thin_flag
+
+
+def _finish(cell: CellResult, prior_cell: CellResult | None = None) -> CellResult:
+    g6 = next((m for m in cell.metrics if m.window == "6m" and m.mode == "gate"), None)
+    gf = next((m for m in cell.metrics if m.window == "full(~2y)" and m.mode == "gate"), None)
+    if not g6:
+        cell.gate_6m = "FAIL"
+        return cell
+
+    cell.gate_6m = g6.gate
+    cell.gate_full = gf.gate if gf else "FAIL"
+
+    if cell.tiny_n_kill:
+        cell.notes.append(f"TINY-N KILL (BTC 6m n={g6.trades} <= {TINY_N_THRESHOLD})")
+    if cell.thin_n_flag:
+        cell.notes.append(f"THIN-N FLAG (BTC 6m n={g6.trades} in thin band [{THIN_N_LOWER}..{THIN_N_UPPER}])")
+
+    if 0.9 <= g6.ratio < 1.2:
+        cell.notes.append(f"Near-miss 6m ({g6.ratio:.2f}x B&H)")
+
+    if cell.symbol == "ETHUSDT":
+        cell.notes.append("ETH hard filter (ETH dense n>>9 secondary)")
+        if prior_cell and prior_cell.metrics:
+            btc_g6 = next(m for m in prior_cell.metrics if m.window == "6m" and m.mode == "gate")
+            if btc_g6.trades > 0 and g6.trades == 0:
+                cell.retention_notes = "ETH RETENTION FAIL: 0 ETH trades vs BTC trades"
+            elif btc_g6.trades > 0 and g6.trades < max(5, btc_g6.trades // 4):
+                cell.retention_notes = f"ETH RETENTION WARN: ETH n={g6.trades} < 25% of BTC n={btc_g6.trades}"
+            else:
+                cell.retention_notes = f"OK (ETH n={g6.trades} vs BTC n={btc_g6.trades})"
+    elif cell.symbol == "SOLUSDT":
+        cell.notes.append("SOL hard filter (sol_smoke)")
+        if prior_cell and prior_cell.metrics:
+            eth_g6 = next(m for m in prior_cell.metrics if m.window == "6m" and m.mode == "gate")
+            if eth_g6.trades > 0 and g6.trades == 0:
+                cell.retention_notes = "SOL RETENTION FAIL: 0 SOL trades vs ETH trades"
+            elif eth_g6.trades > 0 and g6.trades < max(5, eth_g6.trades // 4):
+                cell.retention_notes = f"SOL RETENTION WARN: SOL n={g6.trades} < 25% of ETH n={eth_g6.trades}"
+            else:
+                cell.retention_notes = f"OK (SOL n={g6.trades} vs ETH n={eth_g6.trades})"
+    elif cell.symbol == "BNBUSDT":
+        cell.notes.append("BNB hard filter (BNB-survival CRITICAL)")
+        if prior_cell and prior_cell.metrics:
+            sol_g6 = next(m for m in prior_cell.metrics if m.window == "6m" and m.mode == "gate")
+            cell.retention_notes = f"OK (BNB n={g6.trades} vs SOL n={sol_g6.trades})"
+
+    return cell
+
+
 def _make_pruned_cell(
     symbol: str,
     sid: str,
@@ -145,139 +297,23 @@ def _make_pruned_cell(
     )
 
 
-def _eval_windows(
-    symbol: str,
-    sid: str,
-    bars: list[Bar],
-    buys: list[bool],
-    sells: list[bool],
-    stops: list[float | None],
-) -> tuple[list[WindowModeMetrics], bool, bool]:
-    metrics: list[WindowModeMetrics] = []
-    tiny_n_kill = False
-    thin_n_flag = False
-
-    for size_label, size_pct in SIZING:
-        full_result = run_long_only(
-            bars=bars,
-            buys=buys,
-            sells=sells,
-            stops=stops,
-            initial_capital=INITIAL,
-            fee_rate=FEE,
-            slippage=SLIP,
-            size_pct=size_pct,
-        )
-
-        for win_label, win_months in WINDOWS:
-            win_res = slice_result_to_window(full_result, win_months)
-            summ = summarize_path_b(
-                win_res,
-                symbol=symbol,
-                strategy_name=f"{sid} ({size_label})",
-                window_name=win_label,
-            )
-
-            # Gate condition: return >= 1.2x B&H AND trades > 5
-            passed = False
-            if size_label == "gate":
-                if win_label == "6m":
-                    if summ.trades <= TINY_N_THRESHOLD:
-                        tiny_n_kill = True
-                    if THIN_N_LOWER <= summ.trades <= THIN_N_UPPER:
-                        thin_n_flag = True
-
-                if (
-                    summ.trades > TINY_N_THRESHOLD
-                    and summ.bh_return_pct > 0.0
-                    and summ.return_pct >= GATE_MULT * summ.bh_return_pct
-                ):
-                    passed = True
-                elif (
-                    summ.trades > TINY_N_THRESHOLD
-                    and summ.bh_return_pct <= 0.0
-                    and summ.return_pct > summ.bh_return_pct
-                ):
-                    # Outperformance when B&H is negative
-                    passed = True
-
-            gate_str = "PASS" if passed else "FAIL"
-
-            ratio_val = (
-                summ.return_pct / summ.bh_return_pct
-                if summ.bh_return_pct != 0.0
-                else 0.0
-            )
-
-            metrics.append(
-                WindowModeMetrics(
-                    window=win_label,
-                    mode=size_label,
-                    size_pct=size_pct,
-                    return_pct=summ.return_pct,
-                    bh_return_pct=summ.bh_return_pct,
-                    ratio=ratio_val,
-                    win_rate_pct=summ.win_rate_pct,
-                    trades=summ.trades,
-                    wins=summ.wins,
-                    losses=summ.losses,
-                    max_drawdown_pct=summ.max_drawdown_pct,
-                    gate=gate_str,
-                )
-            )
-
-    return metrics, tiny_n_kill, thin_n_flag
-
-
-def _finish(cell: CellResult, prior_symbol_result: CellResult | None = None) -> None:
-    g6 = next((m for m in cell.metrics if m.window == "6m" and m.mode == "gate"), None)
-    gf = next((m for m in cell.metrics if m.window == "full(~2y)" and m.mode == "gate"), None)
-
-    if g6:
-        cell.gate_6m = g6.gate
-        if cell.tiny_n_kill:
-            cell.gate_6m = "FAIL"
-            cell.notes.append(f"Tiny-n kill (n={g6.trades} <= {TINY_N_THRESHOLD})")
-        elif cell.thin_n_flag:
-            cell.notes.append(f"Thin-n flag (n={g6.trades} in {THIN_N_LOWER}..{THIN_N_UPPER})")
-
-        if g6.ratio >= 1.05 and g6.gate == "FAIL":
-            cell.notes.append(f"Near-miss 6m ({g6.ratio:.2f}x B&H)")
-
-    if gf:
-        cell.gate_full = gf.gate
-
-    # Check retention against prior coin
-    if prior_symbol_result and g6:
-        prior_g6 = next((m for m in prior_symbol_result.metrics if m.window == "6m" and m.mode == "gate"), None)
-        if prior_g6 and prior_g6.trades > 0:
-            retention_pct = (g6.trades / prior_g6.trades) * 100.0
-            cell.retention_notes = f"{retention_pct:.0f}% ({g6.trades}/{prior_g6.trades})"
-            if retention_pct < 25.0:
-                cell.notes.append("Severe trade count drop vs prior coin")
-
-
 def _print_cell(cell: CellResult) -> None:
     if cell.skipped:
-        print(f"  [{cell.symbol}] {cell.strategy_id} {cell.tf} {cell.mode_params} -> SKIPPED ({cell.notes[0]})", flush=True)
+        print(f"[{cell.symbol}] {cell.strategy_id} @ {cell.tf} {cell.mode_params} -> PRUNED ({'; '.join(cell.notes)})", flush=True)
         return
-
+    if cell.error:
+        print(f"[{cell.symbol}] {cell.strategy_id} @ {cell.tf} {cell.mode_params} -> ERROR: {cell.error}", flush=True)
+        return
     g6 = next((m for m in cell.metrics if m.window == "6m" and m.mode == "gate"), None)
     gf = next((m for m in cell.metrics if m.window == "full(~2y)" and m.mode == "gate"), None)
-    ret_6m = f"{g6.return_pct:+.2f}%" if g6 else "—"
-    bh_6m = f"{g6.bh_return_pct:+.2f}%" if g6 else "—"
-    ratio_6m = f"{g6.ratio:.2f}x" if g6 else "—"
-    n_6m = str(g6.trades) if g6 else "—"
-    wr_6m = f"{g6.win_rate_pct:.1f}%" if g6 else "—"
-
-    ret_full = f"{gf.return_pct:+.2f}%" if gf else "—"
-    n_full = str(gf.trades) if gf else "—"
-
-    note_str = f" | {'; '.join(cell.notes)}" if cell.notes else ""
+    if not g6 or not gf:
+        print(f"[{cell.symbol}] {cell.strategy_id} @ {cell.tf} {cell.mode_params} -> NO METRICS", flush=True)
+        return
+    tiny_tag = " [TINY-N KILL]" if cell.tiny_n_kill else (" [THIN-N]" if cell.thin_n_flag else "")
     print(
-        f"  [{cell.symbol}] {cell.strategy_id} {cell.tf} {cell.mode_params} -> "
-        f"6m: {cell.gate_6m} (ret={ret_6m}, bh={bh_6m}, x={ratio_6m}, n={n_6m}, wr={wr_6m}) | "
-        f"Full: {cell.gate_full} (ret={ret_full}, n={n_full}){note_str}",
+        f"[{cell.symbol}] {cell.strategy_id} @ {cell.tf} {cell.mode_params} -> "
+        f"6m={cell.gate_6m}({g6.ratio:.3f}x){tiny_tag} ret={g6.return_pct:.2f}% bh={g6.bh_return_pct:.2f}% n={g6.trades} wr={g6.win_rate_pct:.1f}% [btc_smoke={cell.btc_smoke}, eth_smoke={cell.eth_smoke}, sol_smoke={cell.sol_smoke}, bnb_smoke={cell.bnb_smoke}, retention={cell.retention_notes}] | "
+        f"full={cell.gate_full}({gf.ratio:.3f}x) n={gf.trades}",
         flush=True,
     )
 
