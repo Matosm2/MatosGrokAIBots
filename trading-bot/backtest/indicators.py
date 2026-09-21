@@ -7546,3 +7546,400 @@ def elder_thermometer(
     return thermo_series, tma_series
 
 
+# ---------------------------------------------------------------------------
+# stage26-dual-sol-bnb-v1 Indicators
+# ---------------------------------------------------------------------------
+
+def katsanos_fve(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    samples: int = 22,
+    cintra: float = 0.1,
+    cinter: float = 0.1,
+) -> list[float | None]:
+    """Katsanos Finite Volume Elements (FVE).
+
+    Per Markos Katsanos (S&C Apr 2003 / Sep 2003):
+      TP = (High + Low + Close) / 3
+      intra = log(High) - log(Low) (guard <=0)
+      vintra = stdev(intra, Samples)
+      inter = log(TP) - log(TP[1]) (guard <=0)
+      vinter = stdev(inter, Samples)
+      CutOff = (CINTRA * vintra + CINTER * vinter) * Close
+      MF = (Close - (High + Low) / 2) + (TP - TP[1])
+      FveFactor = +1.0 if MF > CutOff else (-1.0 if MF < -CutOff else 0.0)
+      FVE = 100 * sum(Volume * FveFactor, Samples) / (sma(Volume, Samples) * Samples)
+
+    Returns:
+      fve series (float). None during warmup (first samples-1 bars).
+    != VFI / != VPCI / != VZO / != AccDist / != CLV*vol.
+    """
+    n = len(closes)
+    out: list[float | None] = [None] * n
+    if n == 0 or samples <= 0:
+        return out
+
+    # Typical Price
+    tp: list[float] = [(highs[i] + lows[i] + closes[i]) / 3.0 for i in range(n)]
+
+    # Intra-bar log ratio: log(High) - log(Low)
+    intra: list[float] = [0.0] * n
+    for i in range(n):
+        if highs[i] > 0.0 and lows[i] > 0.0 and highs[i] >= lows[i]:
+            intra[i] = math.log(highs[i]) - math.log(lows[i])
+        else:
+            intra[i] = 0.0
+
+    # Inter-bar log ratio: log(TP) - log(TP[1])
+    inter: list[float] = [0.0] * n
+    for i in range(1, n):
+        if tp[i] > 0.0 and tp[i - 1] > 0.0:
+            inter[i] = math.log(tp[i]) - math.log(tp[i - 1])
+        else:
+            inter[i] = 0.0
+
+    # Rolling population standard deviations over samples
+    vintra: list[float] = [0.0] * n
+    vinter: list[float] = [0.0] * n
+    for i in range(samples - 1, n):
+        w_intra = intra[i - samples + 1 : i + 1]
+        m_intra = sum(w_intra) / samples
+        var_intra = sum((x - m_intra) ** 2 for x in w_intra) / samples
+        vintra[i] = math.sqrt(max(0.0, var_intra))
+
+        w_inter = inter[i - samples + 1 : i + 1]
+        m_inter = sum(w_inter) / samples
+        var_inter = sum((x - m_inter) ** 2 for x in w_inter) / samples
+        vinter[i] = math.sqrt(max(0.0, var_inter))
+
+    # Calculate bar-by-bar signed volume contribution
+    vol_factors: list[float] = [0.0] * n
+    for i in range(1, n):
+        cutoff = (cintra * vintra[i] + cinter * vinter[i]) * closes[i]
+        hl2 = (highs[i] + lows[i]) / 2.0
+        mf = (closes[i] - hl2) + (tp[i] - tp[i - 1])
+        if mf > cutoff:
+            factor = 1.0
+        elif mf < -cutoff:
+            factor = -1.0
+        else:
+            factor = 0.0
+        vol_factors[i] = volumes[i] * factor
+
+    # FVE = 100 * sum(Volume * FveFactor, samples) / (sma(Volume, samples) * samples)
+    # Note: sma(Volume, samples) * samples == sum(Volume, samples)
+    run_vol_factor = sum(vol_factors[: samples - 1])
+    run_vol = sum(volumes[: samples - 1])
+
+    for i in range(samples - 1, n):
+        run_vol_factor += vol_factors[i]
+        run_vol += volumes[i]
+        if i >= samples:
+            run_vol_factor -= vol_factors[i - samples]
+            run_vol -= volumes[i - samples]
+
+        if run_vol > 0.0:
+            out[i] = 100.0 * run_vol_factor / run_vol
+        else:
+            out[i] = 0.0
+
+    return out
+
+
+def ehlers_convolution(
+    prices: list[float],
+    lookback: int = 18,
+    hp_period: int = 48,
+    ss_period: int = 10,
+) -> list[float | None]:
+    """Ehlers Convolution Indicator (Cycle Analytics for Traders ch. 13).
+
+    Prefilter via HighPass (hp_period) and SuperSmoother (ss_period) (Roofing filter).
+    Fold two equal-length segments about midpoint (half = lookback // 2).
+    Compute Pearson correlation between recent forward folded half and past backward half:
+      half = lookback // 2
+      x[d] = filt[t - half + d] for d in 1..half (recent segment forward from turn)
+      y[d] = filt[t - half - d] for d in 1..half (past segment backward from turn)
+      conv = Pearson correlation(x, y)
+
+    Returns:
+      conv series (float in [-1.0, 1.0]).
+    != CorrCycle / != Spearman / != BandPass / != DSP / != CyberCycle / != EBSW.
+    """
+    n = len(prices)
+    out: list[float | None] = [None] * n
+    half = max(2, lookback // 2)
+    roof_warmup = max(hp_period, ss_period) * 2
+    warmup = roof_warmup + 2 * half
+    if n < warmup:
+        return out
+
+    # Prefilter prices via Ehlers Roofing filter
+    filt = ehlers_roofing_filter(prices, hp_period=hp_period, ss_period=ss_period)
+
+    for t in range(warmup, n):
+        # Verify all needed filtered points exist
+        if any(filt[t - k] is None for k in range(2 * half + 1)):
+            continue
+
+        # Segment forward from turning point (d = 1 .. half)
+        x = [filt[t - half + d] for d in range(1, half + 1)]
+        # Segment backward from turning point (d = 1 .. half)
+        y = [filt[t - half - d] for d in range(1, half + 1)]
+
+        mean_x = sum(x) / half
+        mean_y = sum(y) / half
+        var_x = sum((val - mean_x) ** 2 for val in x)
+        var_y = sum((val - mean_y) ** 2 for val in y)
+        cov_xy = sum((x[k] - mean_x) * (y[k] - mean_y) for k in range(half))
+
+        denom = math.sqrt(var_x * var_y)
+        if denom <= 1e-12:
+            out[t] = 0.0
+        else:
+            r = cov_xy / denom
+            out[t] = max(-1.0, min(1.0, r))
+
+    return out
+
+
+class _HilbertVars:
+    def __init__(self) -> None:
+        self.odd = [0.0, 0.0, 0.0]
+        self.even = [0.0, 0.0, 0.0]
+        self.prev_odd = 0.0
+        self.prev_even = 0.0
+        self.prev_input_odd = 0.0
+        self.prev_input_even = 0.0
+
+
+def _do_hilbert_even(vars: _HilbertVars, inp: float, h_idx: int, adj: float) -> float:
+    hilbert_temp_real = 0.0962 * inp
+    res = -vars.even[h_idx]
+    vars.even[h_idx] = hilbert_temp_real
+    res += hilbert_temp_real
+    res -= vars.prev_even
+    vars.prev_even = 0.5769 * vars.prev_input_even
+    res += vars.prev_even
+    vars.prev_input_even = inp
+    return res * adj
+
+
+def _do_hilbert_odd(vars: _HilbertVars, inp: float, h_idx: int, adj: float) -> float:
+    hilbert_temp_real = 0.0962 * inp
+    res = -vars.odd[h_idx]
+    vars.odd[h_idx] = hilbert_temp_real
+    res += hilbert_temp_real
+    res -= vars.prev_odd
+    vars.prev_odd = 0.5769 * vars.prev_input_odd
+    res += vars.prev_odd
+    vars.prev_input_odd = inp
+    return res * adj
+
+
+def hilbert_ht_trendline(
+    prices: list[float],
+) -> list[float | None]:
+    """TA-Lib Hilbert Transform - Instantaneous Trendline (HT_TRENDLINE).
+
+    Dominant cycle period adaptive SMA + 4-period WMA smoothing.
+    Lookback = 63 bars.
+    Returns:
+      ht_trendline series (float). None during warmup (first 63 bars).
+    != itrend-trigger-a007 / != PMA / != MAMA / != SuperTrend.
+    """
+    n = len(prices)
+    out: list[float | None] = [None] * n
+    lookback_total = 63
+    if n <= lookback_total:
+        return out
+
+    # Price smoother: 4-period WMA
+    trailing_wma_idx = 0
+    today = 0
+
+    p0 = prices[today]; today += 1
+    period_wma_sub = p0
+    period_wma_sum = p0
+
+    p1 = prices[today]; today += 1
+    period_wma_sub += p1
+    period_wma_sum += p1 * 2.0
+
+    p2 = prices[today]; today += 1
+    period_wma_sub += p2
+    period_wma_sum += p2 * 3.0
+
+    trailing_wma_val = 0.0
+
+    def do_price_wma(new_p: float) -> float:
+        nonlocal period_wma_sub, period_wma_sum, trailing_wma_val, trailing_wma_idx
+        period_wma_sub += new_p
+        period_wma_sub -= trailing_wma_val
+        period_wma_sum += new_p * 4.0
+        trailing_wma_val = prices[trailing_wma_idx]
+        trailing_wma_idx += 1
+        smoothed = period_wma_sum * 0.1
+        period_wma_sum -= period_wma_sub
+        return smoothed
+
+    for _ in range(34):
+        do_price_wma(prices[today])
+        today += 1
+
+    detrender_vars = _HilbertVars()
+    q1_vars = _HilbertVars()
+    ji_vars = _HilbertVars()
+    jq_vars = _HilbertVars()
+
+    period = 0.0
+    smooth_period = 0.0
+    prev_i2 = 0.0
+    prev_q2 = 0.0
+    re = 0.0
+    im = 0.0
+    i1_for_odd_prev2 = 0.0
+    i1_for_odd_prev3 = 0.0
+    i1_for_even_prev2 = 0.0
+    i1_for_even_prev3 = 0.0
+    i_trend1 = 0.0
+    i_trend2 = 0.0
+    i_trend3 = 0.0
+    hilbert_idx = 0
+    rad2deg = 180.0 / math.pi
+
+    while today < n:
+        adj_prev_period = 0.075 * period + 0.54
+        smoothed_value = do_price_wma(prices[today])
+
+        if today % 2 == 0:
+            detrender = _do_hilbert_even(detrender_vars, smoothed_value, hilbert_idx, adj_prev_period)
+            q1 = _do_hilbert_even(q1_vars, detrender, hilbert_idx, adj_prev_period)
+            ji = _do_hilbert_even(ji_vars, i1_for_even_prev3, hilbert_idx, adj_prev_period)
+            jq = _do_hilbert_even(jq_vars, q1, hilbert_idx, adj_prev_period)
+            hilbert_idx = (hilbert_idx + 1) % 3
+
+            q2 = 0.2 * (q1 + ji) + 0.8 * prev_q2
+            i2 = 0.2 * (i1_for_even_prev3 - jq) + 0.8 * prev_i2
+            i1_for_odd_prev3 = i1_for_odd_prev2
+            i1_for_odd_prev2 = detrender
+        else:
+            detrender = _do_hilbert_odd(detrender_vars, smoothed_value, hilbert_idx, adj_prev_period)
+            q1 = _do_hilbert_odd(q1_vars, detrender, hilbert_idx, adj_prev_period)
+            ji = _do_hilbert_odd(ji_vars, i1_for_odd_prev3, hilbert_idx, adj_prev_period)
+            jq = _do_hilbert_odd(jq_vars, q1, hilbert_idx, adj_prev_period)
+
+            q2 = 0.2 * (q1 + ji) + 0.8 * prev_q2
+            i2 = 0.2 * (i1_for_odd_prev3 - jq) + 0.8 * prev_i2
+            i1_for_even_prev3 = i1_for_even_prev2
+            i1_for_even_prev2 = detrender
+
+        re = 0.2 * (i2 * prev_i2 + q2 * prev_q2) + 0.8 * re
+        im = 0.2 * (i2 * prev_q2 - q2 * prev_i2) + 0.8 * im
+        prev_q2 = q2
+        prev_i2 = i2
+        temp_real = period
+        if im != 0.0 and re != 0.0:
+            period = 360.0 / (math.atan(im / re) * rad2deg)
+        if period > 1.5 * temp_real:
+            period = 1.5 * temp_real
+        if period < 0.67 * temp_real:
+            period = 0.67 * temp_real
+        if period < 6.0:
+            period = 6.0
+        elif period > 50.0:
+            period = 50.0
+        period = 0.2 * period + 0.8 * temp_real
+        smooth_period = 0.33 * period + 0.67 * smooth_period
+
+        dc_period = smooth_period + 0.5
+        dc_period_int = int(dc_period)
+
+        temp_real = 0.0
+        for i in range(dc_period_int):
+            idx = today - i
+            if idx >= 0:
+                temp_real += prices[idx]
+        if dc_period_int > 0:
+            temp_real = temp_real / dc_period_int
+
+        trendline = (4.0 * temp_real + 3.0 * i_trend1 + 2.0 * i_trend2 + i_trend3) / 10.0
+        i_trend3 = i_trend2
+        i_trend2 = i_trend1
+        i_trend1 = temp_real
+
+        if today >= lookback_total:
+            out[today] = trendline
+
+        today += 1
+
+    return out
+
+
+def elder_safezone(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    ema_len: int = 22,
+    n: int = 10,
+    k: float = 2.5,
+) -> tuple[list[float | None], list[bool]]:
+    """Elder SafeZone trailing stop and trend indicator.
+
+    Per Alexander Elder (Come Into My Trading Room pp. 173-180):
+      hl2 = (high + low) / 2
+      ema = ta.ema(hl2, ema_len)
+      up = ema > ema[3] (uptrend context)
+      pen_down = max(low[1] - low, 0)
+      avg_pen = sum(pen_down over n) / count(pen_down > 0 over n) (0 if count == 0)
+      raw_stop = low[1] - k * avg_pen
+      long_stop = max(raw_stop, raw_stop[1], raw_stop[2], raw_stop[3]) (ratchet)
+
+    Returns:
+      (long_stops, up_series)
+    != Wilder VS (ATR SAR) / != Chande-Kroll (2-stage ATR) / != Guppy CBL / != SuperTrend.
+    """
+    count = len(closes)
+    long_stops: list[float | None] = [None] * count
+    up_series: list[bool] = [False] * count
+    if count == 0 or ema_len <= 0 or n <= 0:
+        return long_stops, up_series
+
+    hl2 = [(highs[i] + lows[i]) / 2.0 for i in range(count)]
+    ema_vals = ema(hl2, ema_len)
+
+    # Uptrend context: ema > ema[3]
+    for i in range(3, count):
+        e_cur = ema_vals[i]
+        e_prev3 = ema_vals[i - 3]
+        if e_cur is not None and e_prev3 is not None:
+            up_series[i] = e_cur > e_prev3
+
+    # Downside penetrations: max(low[1] - low, 0)
+    pen_downs: list[float] = [0.0] * count
+    for i in range(1, count):
+        pen = lows[i - 1] - lows[i]
+        pen_downs[i] = max(0.0, pen)
+
+    # Raw stops
+    raw_stops: list[float] = [0.0] * count
+    for i in range(1, count):
+        start = max(1, i - n + 1)
+        window_pens = [p for p in pen_downs[start : i + 1] if p > 0.0]
+        if window_pens:
+            avg_pen = sum(window_pens) / len(window_pens)
+        else:
+            avg_pen = 0.0
+        raw_stops[i] = lows[i - 1] - k * avg_pen
+
+    # Ratchet stop: max of last 4 raw stops
+    for i in range(1, count):
+        window_raw = [raw_stops[max(1, i - j)] for j in range(4)]
+        long_stops[i] = max(window_raw)
+
+    return long_stops, up_series
+
+
+
