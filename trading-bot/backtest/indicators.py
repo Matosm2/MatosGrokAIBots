@@ -7942,4 +7942,258 @@ def elder_safezone(
     return long_stops, up_series
 
 
+def qstick(
+    opens: list[float],
+    closes: list[float],
+    n: int = 8,
+) -> list[float | None]:
+    """Chande Qstick Indicator.
+
+    Formula (Tushar Chande / Stanley Kroll, The New Technical Trader 1994):
+      body = close - open
+      qstick = SMA(body, n)
+
+    Positive = net bullish bodies; zero-line = buying/selling pressure flip.
+    != RVI ((C - O)/(H - L) range-normalized) / != CMO / != ROC / != AO / != TSI.
+    """
+    count = len(closes)
+    res: list[float | None] = [None] * count
+    if count == 0 or n <= 0 or len(opens) != count:
+        return res
+
+    bodies = [closes[i] - opens[i] for i in range(count)]
+    sma_bodies = sma(bodies, n)
+    for i in range(count):
+        res[i] = sma_bodies[i]
+    return res
+
+
+def klinger_oscillator(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    volumes: list[float],
+    fast: int = 34,
+    slow: int = 55,
+    signal_len: int = 13,
+) -> tuple[list[float | None], list[float | None]]:
+    """Stephen Klinger Volume Oscillator (KVO) with Signal Line.
+
+    Full Volume Force (VF) formula (Capital.com / Investopedia / CQG):
+      hlc = high + low + close
+      trend = +1.0 if hlc > hlc[1] else -1.0
+      dm = high - low
+      cm = cm[1] + dm if trend == trend[1] else dm[1] + dm (guarded cm > 0)
+      vf = volume * abs(2.0 * ((dm / cm) - 1.0)) * trend * 100.0
+      kvo = EMA(vf, fast) - EMA(vf, slow)
+      sig = EMA(kvo, signal_len)
+
+    Returns:
+      (kvo_series, sig_series)
+    != FVE / != VFI / != VROC / != VPCI / != Chaikin Osc / != PVO / != OBV.
+    """
+    count = len(closes)
+    kvo_series: list[float | None] = [None] * count
+    sig_series: list[float | None] = [None] * count
+    if count == 0 or fast <= 0 or slow <= 0 or signal_len <= 0:
+        return kvo_series, sig_series
+    if len(highs) != count or len(lows) != count or len(volumes) != count:
+        return kvo_series, sig_series
+
+    vf: list[float] = [0.0] * count
+    cm = 0.0
+    prev_trend = 1.0
+    prev_dm = 0.0
+
+    for i in range(count):
+        if i == 0:
+            trend = 1.0
+            dm = highs[0] - lows[0]
+            cm = dm if dm > 0.0 else 1e-9
+            vf[0] = 0.0
+            prev_trend = trend
+            prev_dm = dm
+            continue
+
+        hlc = highs[i] + lows[i] + closes[i]
+        prev_hlc = highs[i - 1] + lows[i - 1] + closes[i - 1]
+        trend = 1.0 if hlc > prev_hlc else -1.0
+        dm = highs[i] - lows[i]
+
+        if trend == prev_trend:
+            cm = cm + dm
+        else:
+            cm = prev_dm + dm
+
+        if cm <= 0.0:
+            cm = 1e-9
+
+        # VF = volume * abs(2.0 * ((dm / cm) - 1.0)) * trend * 100.0
+        mult = abs(2.0 * ((dm / cm) - 1.0))
+        vf[i] = volumes[i] * mult * trend * 100.0
+
+        prev_trend = trend
+        prev_dm = dm
+
+    ema_fast = ema(vf, fast)
+    ema_slow = ema(vf, slow)
+
+    kvo_vals: list[float] = [0.0] * count
+    valid_mask: list[bool] = [False] * count
+    for i in range(count):
+        f_val = ema_fast[i]
+        s_val = ema_slow[i]
+        if f_val is not None and s_val is not None:
+            val = f_val - s_val
+            kvo_series[i] = val
+            kvo_vals[i] = val
+            valid_mask[i] = True
+
+    # Signal is EMA of KVO
+    # Compute EMA on kvo starting from the first valid index
+    first_valid = -1
+    for i in range(count):
+        if valid_mask[i]:
+            first_valid = i
+            break
+
+    if first_valid != -1 and (count - first_valid) >= signal_len:
+        # EMA over the valid segment
+        valid_sub = kvo_vals[first_valid:]
+        sig_sub = ema(valid_sub, signal_len)
+        for j, s_val in enumerate(sig_sub):
+            idx = first_valid + j
+            sig_series[idx] = s_val
+
+    return kvo_series, sig_series
+
+
+def percent_envelopes(
+    closes: list[float],
+    length: int = 20,
+    pct: float = 0.025,
+) -> tuple[list[float | None], list[float | None], list[float | None]]:
+    """Moving Average Percent Envelopes.
+
+    Formula (StockCharts / Fidelity MAE):
+      mid = SMA(close, length)
+      upper = mid * (1.0 + pct)
+      lower = mid * (1.0 - pct)
+
+    Returns:
+      (mid_series, upper_series, lower_series)
+    != BB (stdev) / != Keltner (ATR) / != Kirshenbaum (stderr) / != STARC / != Disparity.
+    """
+    count = len(closes)
+    mid_series: list[float | None] = [None] * count
+    upper_series: list[float | None] = [None] * count
+    lower_series: list[float | None] = [None] * count
+    if count == 0 or length <= 0 or pct < 0.0:
+        return mid_series, upper_series, lower_series
+
+    sma_mid = sma(closes, length)
+    for i in range(count):
+        m = sma_mid[i]
+        if m is not None:
+            mid_series[i] = m
+            upper_series[i] = m * (1.0 + pct)
+            lower_series[i] = m * (1.0 - pct)
+
+    return mid_series, upper_series, lower_series
+
+
+def schwager_volatility_ratio(
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    n: int = 14,
+) -> tuple[list[float | None], list[float]]:
+    """Jack Schwager Volatility Ratio (VR).
+
+    Formula (Jack Schwager / Incredible Charts / Wickra):
+      tr = max(high - low, abs(high - close[1]), abs(low - close[1]))
+      ema_prior = EMA(tr[1], n) (current bar excluded from denominator)
+      vr = tr / ema_prior
+
+    Returns:
+      (vr_series, tr_list)
+    != Japanese Volume Ratio / != ATR-ratio x dir alone / != naked Donchian / != BB-squeeze.
+    """
+    count = len(closes)
+    vr_series: list[float | None] = [None] * count
+    tr_list: list[float] = [0.0] * count
+    if count == 0 or n <= 0 or len(highs) != count or len(lows) != count:
+        return vr_series, tr_list
+
+    # Compute TR for each bar
+    for i in range(count):
+        if i == 0:
+            tr_list[0] = highs[0] - lows[0]
+        else:
+            tr_list[i] = max(
+                highs[i] - lows[i],
+                abs(highs[i] - closes[i - 1]),
+                abs(lows[i] - closes[i - 1]),
+            )
+
+    # Shifted TR series: tr[1]
+    # shifted_tr[i] = tr_list[i - 1] for i >= 1, 0.0 at 0
+    shifted_tr: list[float] = [0.0] * count
+    for i in range(1, count):
+        shifted_tr[i] = tr_list[i - 1]
+
+    # EMA of prior TRs
+    ema_denom = ema(shifted_tr[1:], n)  # starting from bar 1
+
+    for i in range(1, count):
+        denom_idx = i - 1
+        denom = ema_denom[denom_idx] if denom_idx < len(ema_denom) else None
+        if denom is not None and denom > 1e-9:
+            vr_series[i] = tr_list[i] / denom
+        elif denom is not None and denom <= 1e-9:
+            vr_series[i] = 0.0
+
+    return vr_series, tr_list
+
+
+def highest(
+    values: list[float],
+    length: int,
+) -> list[float | None]:
+    """Rolling highest over length bars (including current bar).
+
+    Returns list of highest values over window [i - length + 1 .. i].
+    """
+    count = len(values)
+    res: list[float | None] = [None] * count
+    if count == 0 or length <= 0:
+        return res
+
+    for i in range(length - 1, count):
+        res[i] = max(values[i - length + 1 : i + 1])
+
+    return res
+
+
+def lowest(
+    values: list[float],
+    length: int,
+) -> list[float | None]:
+    """Rolling lowest over length bars (including current bar).
+
+    Returns list of lowest values over window [i - length + 1 .. i].
+    """
+    count = len(values)
+    res: list[float | None] = [None] * count
+    if count == 0 or length <= 0:
+        return res
+
+    for i in range(length - 1, count):
+        res[i] = min(values[i - length + 1 : i + 1])
+
+    return res
+
+
+
+
 
