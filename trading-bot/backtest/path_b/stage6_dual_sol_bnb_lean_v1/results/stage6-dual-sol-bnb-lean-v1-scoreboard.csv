@@ -1,0 +1,97 @@
+symbol,strategy_id,tf,mode_params,sol_smoke,bnb_smoke,sol_retention_note,n_6m,wr_6m_pct,mode_a_ret_6m_pct,bh_ret_6m_pct,ratio_bh_6m,pass_6m,n_full,wr_full_pct,mode_a_ret_full_pct,bh_ret_full_pct,ratio_bh_full,pass_full,ops_ret_6m_pct,ops_ret_full_pct,notes
+BTCUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(16,32)",Y,Y,—,169,37.9,-30.34,7.10,-4.276,FAIL,645,40.8,-81.42,32.20,-2.528,FAIL,-0.86,-3.91,
+BTCUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(10,20)",Y,Y,—,187,33.7,-46.58,7.10,-6.563,FAIL,735,40.8,-87.69,32.20,-2.723,FAIL,-1.52,-4.90,
+BTCUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(12,24)",Y,Y,—,199,37.2,-42.92,7.10,-6.048,FAIL,764,38.9,-91.36,32.20,-2.837,FAIL,-1.35,-5.72,
+BTCUSDT,frama-fast-slow-cross-v1,1h,mode_b|frama20,Y,Y,—,376,17.3,-67.64,7.10,-9.531,FAIL,1572,17.5,-99.16,32.20,-3.079,FAIL,-2.74,-11.05,
+BTCUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(16,32)",Y,Y,—,39,43.6,-6.01,7.56,-0.796,FAIL,154,48.7,-41.68,31.31,-1.331,FAIL,-0.13,-1.14,
+BTCUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(10,20)",Y,Y,—,46,43.5,-24.84,7.56,-3.288,FAIL,188,50.5,-38.22,31.31,-1.221,FAIL,-0.67,-0.98,
+BTCUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(12,24)",Y,Y,—,51,45.1,-29.43,7.56,-3.896,FAIL,184,49.5,-40.21,31.31,-1.284,FAIL,-0.83,-1.05,
+BTCUSDT,frama-fast-slow-cross-v1,4h,mode_b|frama20,Y,Y,—,95,17.9,-31.77,7.56,-4.205,FAIL,371,23.7,-59.73,31.31,-1.908,FAIL,-0.89,-2.01,
+ETHUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(16,32)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(10,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(12,24)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,frama-fast-slow-cross-v1,1h,mode_b|frama20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(16,32)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(10,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(12,24)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,frama-fast-slow-cross-v1,4h,mode_b|frama20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(16,32)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(10,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(12,24)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,frama-fast-slow-cross-v1,1h,mode_b|frama20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(16,32)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(10,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(12,24)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,frama-fast-slow-cross-v1,4h,mode_b|frama20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(16,32)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(10,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,frama-fast-slow-cross-v1,1h,"mode_a|(12,24)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,frama-fast-slow-cross-v1,1h,mode_b|frama20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(16,32)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(10,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,frama-fast-slow-cross-v1,4h,"mode_a|(12,24)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,frama-fast-slow-cross-v1,4h,mode_b|frama20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BTCUSDT,hma-dual-cross-v1,1h,"mode_a|(9,16)",Y,Y,—,344,23.0,-70.88,7.10,-9.988,FAIL,1357,28.3,-98.28,32.20,-3.052,FAIL,-2.99,-9.44,
+BTCUSDT,hma-dual-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,230,27.4,-51.29,7.10,-7.227,FAIL,889,30.4,-93.19,32.20,-2.894,FAIL,-1.74,-6.27,
+BTCUSDT,hma-dual-cross-v1,1h,"mode_a|(16,36)",Y,Y,—,176,33.5,-41.78,7.10,-5.887,FAIL,688,31.7,-88.65,32.20,-2.753,FAIL,-1.30,-5.07,
+BTCUSDT,hma-dual-cross-v1,1h,mode_b|hma30,Y,Y,—,391,21.0,-73.98,7.10,-10.425,FAIL,1522,22.4,-98.84,32.20,-3.069,FAIL,-3.26,-10.32,
+BTCUSDT,hma-dual-cross-v1,4h,"mode_a|(9,16)",Y,Y,—,81,37.0,-12.63,7.56,-1.672,FAIL,338,37.9,-62.75,31.31,-2.004,FAIL,-0.28,-2.21,
+BTCUSDT,hma-dual-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,57,35.1,-11.67,7.56,-1.545,FAIL,226,37.6,-42.20,31.31,-1.348,FAIL,-0.27,-1.15,
+BTCUSDT,hma-dual-cross-v1,4h,"mode_a|(16,36)",Y,Y,—,41,39.0,-5.17,7.56,-0.684,FAIL,162,40.1,9.35,31.31,0.299,FAIL,-0.06,0.44,
+BTCUSDT,hma-dual-cross-v1,4h,mode_b|hma30,Y,Y,—,88,33.0,-25.15,7.56,-3.329,FAIL,347,32.0,-56.36,31.31,-1.800,FAIL,-0.68,-1.82,
+ETHUSDT,hma-dual-cross-v1,1h,"mode_a|(9,16)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,hma-dual-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,hma-dual-cross-v1,1h,"mode_a|(16,36)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,hma-dual-cross-v1,1h,mode_b|hma30,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,hma-dual-cross-v1,4h,"mode_a|(9,16)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,hma-dual-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,hma-dual-cross-v1,4h,"mode_a|(16,36)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,hma-dual-cross-v1,4h,mode_b|hma30,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,hma-dual-cross-v1,1h,"mode_a|(9,16)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,hma-dual-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,hma-dual-cross-v1,1h,"mode_a|(16,36)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,hma-dual-cross-v1,1h,mode_b|hma30,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,hma-dual-cross-v1,4h,"mode_a|(9,16)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,hma-dual-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,hma-dual-cross-v1,4h,"mode_a|(16,36)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,hma-dual-cross-v1,4h,mode_b|hma30,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,hma-dual-cross-v1,1h,"mode_a|(9,16)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,hma-dual-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,hma-dual-cross-v1,1h,"mode_a|(16,36)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,hma-dual-cross-v1,1h,mode_b|hma30,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,hma-dual-cross-v1,4h,"mode_a|(9,16)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,hma-dual-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,hma-dual-cross-v1,4h,"mode_a|(16,36)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,hma-dual-cross-v1,4h,mode_b|hma30,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BTCUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N14,Y,Y,—,251,15.1,-53.53,7.10,-7.543,FAIL,1005,14.7,-94.43,32.20,-2.932,FAIL,-1.84,-6.74,
+BTCUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N10,Y,Y,—,294,15.3,-59.95,7.10,-8.447,FAIL,1197,15.4,-97.58,32.20,-3.030,FAIL,-2.19,-8.66,
+BTCUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N20,Y,Y,—,201,16.4,-44.37,7.10,-6.252,FAIL,804,15.3,-89.41,32.20,-2.777,FAIL,-1.40,-5.24,
+BTCUSDT,mcginley-close-slope-cross-v1,1h,mode_b|N14,Y,Y,—,251,15.1,-53.53,7.10,-7.543,FAIL,1005,14.7,-94.43,32.20,-2.932,FAIL,-1.84,-6.74,
+BTCUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N14,Y,Y,—,50,22.0,-1.16,7.56,-0.153,FAIL,223,20.6,-34.20,31.31,-1.092,FAIL,0.04,-0.72,
+BTCUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N10,Y,Y,—,61,21.3,-8.43,7.56,-1.115,FAIL,270,22.2,-35.84,31.31,-1.144,FAIL,-0.15,-0.75,
+BTCUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N20,Y,Y,—,43,23.3,5.09,7.56,0.674,FAIL,177,20.3,-8.59,31.31,-0.274,FAIL,0.19,0.07,
+BTCUSDT,mcginley-close-slope-cross-v1,4h,mode_b|N14,Y,Y,—,50,22.0,-1.16,7.56,-0.153,FAIL,223,20.6,-34.20,31.31,-1.092,FAIL,0.04,-0.72,
+ETHUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N10,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,mcginley-close-slope-cross-v1,1h,mode_b|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N10,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,mcginley-close-slope-cross-v1,4h,mode_b|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N10,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,mcginley-close-slope-cross-v1,1h,mode_b|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N10,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,mcginley-close-slope-cross-v1,4h,mode_b|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N10,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,mcginley-close-slope-cross-v1,1h,mode_a|N20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,mcginley-close-slope-cross-v1,1h,mode_b|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N10,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,mcginley-close-slope-cross-v1,4h,mode_a|N20,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,mcginley-close-slope-cross-v1,4h,mode_b|N14,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
