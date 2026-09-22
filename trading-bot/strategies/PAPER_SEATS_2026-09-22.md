@@ -1,6 +1,6 @@
 # Paper Seats Handoff — 2026-09-22
 
-**Status:** PAPER SEATS ONLY (LIVE OFF). Authorized by Nuno via CoS 2026-09-22 (`uploads/PAPER_KICK.md`, `uploads/PAPER_PARAMS.md`).  
+**Status:** PAPER SEATS ONLY (LIVE OFF). Authorized by Nuno via CoS 2026-09-22 (`uploads/PAPER_KICK.md`, `uploads/PAPER_PARAMS.md`, `uploads/007-paper-seats-tv-cutover-result.md`).  
 **Path B Research Status:** HARD STOP stays — do not resume Stage-32 / Stage-33 / Track B CK. HOLD research PRs (#60 etc.).  
 **Architecture:** Two **separate named paper strategies** (do NOT combine into one bot).
 
@@ -25,7 +25,27 @@ The 2026-09-22 Mode-A per-coin census (`uploads/per-coin-census-2026-09-22.md`),
 
 ---
 
-## 2. Seat Matrix & Parameters
+## 2. TradingView Cutover Fixes (Claude TV Packet 007)
+
+During the on-chart TradingView cutover (Packet 007), Claude identified two critical runtime constraints in TradingView that were fixed on-chart and are now ported into the codebase:
+
+1. **Webhook Secret via JSON Body (TV Header Limitation):**
+   - TradingView alert webhooks **cannot send custom HTTP headers** (no support for `X-Webhook-Secret`).
+   - The bot server (`trading-bot/app/main.py`) validates secrets via header (`x_webhook_secret`) OR body (`alert.secret`).
+   - Fix: Added script input `webhookSecret = input.string("", "Webhook secret (runtime only - never publish)")`.
+   - Default is empty string `""` in git (NEVER commit secrets).
+   - When filled on-chart by the operator (Nuno), the script dynamically appends `,"secret":"<WEBHOOK_SECRET>"` to the `alert()` JSON payload.
+2. **Bar Time ISO-8601 Formatted in Pine (`{{time}}` Placeholder Limitation):**
+   - TradingView `{{time}}` and `{{close}}` placeholders are **NOT interpolated** inside Pine-constructed strings passed to `alert()`; they only work in manual alert dialog message boxes.
+   - If unhandled, `alert_id` would literally contain `"{{time}}"`, causing all alerts to collide after the first bar under the 24h idempotency store.
+   - Fix: Built bar-open time in Pine using `barTimeIso = str.format_time(time, "yyyy-MM-dd'T'HH:mm:ss'Z'", "UTC")`.
+   - This generates clean idempotency keys like `bostian-iii-sma-zero-BTCUSDT-2026-09-22T00:00:00Z-buy`.
+3. **Price Formatting as JSON Number:**
+   - In dynamic `alert()` payloads, price is output as a numeric JSON value via `str.tostring(close)` rather than a quoted placeholder string.
+
+---
+
+## 3. Seat Matrix & Parameters
 
 | Parameter | Seat 1: BTCUSDT | Seat 2: ETHUSDT |
 | :--- | :--- | :--- |
@@ -48,49 +68,71 @@ The 2026-09-22 Mode-A per-coin census (`uploads/per-coin-census-2026-09-22.md`),
 | **Order Execution** | `process_orders_on_close = true` | `process_orders_on_close = true` |
 | **Commission Model** | 0.1% | 0.1% |
 | **Hard Stop** | Signal exit (crossunder); optional ATR exit in Pine; live needs later stop brief | Signal exit (crossunder); optional ATR exit in Pine; live needs later stop brief |
-| **Alert ID Shape** | `bostian-iii-sma-zero-BTCUSDT-{{time}}-buy`<br>`bostian-iii-sma-zero-BTCUSDT-{{time}}-sell` | `accdist-sma-cross-v1-ETHUSDT-{{time}}-buy`<br>`accdist-sma-cross-v1-ETHUSDT-{{time}}-sell` |
+| **Alert ID Shape** | `bostian-iii-sma-zero-BTCUSDT-{ISO_TIME}-buy`<br>`bostian-iii-sma-zero-BTCUSDT-{ISO_TIME}-sell` | `accdist-sma-cross-v1-ETHUSDT-{ISO_TIME}-buy`<br>`accdist-sma-cross-v1-ETHUSDT-{ISO_TIME}-sell` |
 
 ---
 
-## 3. Webhook Endpoint & Common Settings
+## 4. Webhook Endpoint & Deployment Configuration
 
-- **Railway Webhook URL:** `https://YOUR_RAILWAY_HOST.up.railway.app/webhook/tradingview`
+- **Railway Webhook URL:** `https://trading-bot-production-700a.up.railway.app/webhook/tradingview`
 - **Path:** `/webhook/tradingview`
 - **Method:** `POST`
-- **Headers:**
-  - `Content-Type: application/json`
-  - `X-Webhook-Secret: YOUR_WEBHOOK_SECRET` (preferred over body secret; Trading wires secret at runtime)
+- **Auth:** Body `"secret":"..."` (via Pine chart input) or header `X-Webhook-Secret`
 - **Bar Trigger:** **Once Per Bar Close**
-- **Idempotency Key:** `alert_id` with `{{time}}` (NOT `{{timenow}}`)
 
 ---
 
-## 4. TradingView Alert JSON Templates (PAPER_PARAMS Locked)
+## 5. TradingView Alert Setup
 
-### Seat 1: BTCUSDT — `bostian-iii-sma-zero` @ 4h
+### Option B: Single Strategy `alert()` Call (Recommended & On-Chart Setup)
+Only **1 alert per coin** (2 alerts total across the paper universe):
+1. In TradingView layout, open Strategy **Settings -> Inputs**.
+2. Paste Railway `WEBHOOK_SECRET` into **Webhook secret (runtime only - never publish)**.
+3. Click **Create Alert**:
+   - **Condition:** Select strategy (`bostian-iii-sma21` or `accdist-sma50`)
+   - **Option:** `alert() function calls only`
+   - **Webhook URL:** `https://trading-bot-production-700a.up.railway.app/webhook/tradingview`
+   - **Message:** Default (Pine script builds dynamic JSON)
+   - **Name:** `bostian-iii-sma21 BTCUSDT 4h paper (buy+sell)` / `accdist-sma50 ETHUSDT 4h paper (buy+sell)`
 
-#### Buy Alert
-- **Condition:** Bostian III SMA21 Buy (`longCondition`)
-- **Trigger:** Once Per Bar Close
-- **Webhook URL:** `https://YOUR_RAILWAY_HOST.up.railway.app/webhook/tradingview`
-- **Headers:** `X-Webhook-Secret: YOUR_WEBHOOK_SECRET`
-- **Payload:**
+#### Dynamic Payload Generated by Script (Seat 1: BTCUSDT):
+- **Buy:**
+  ```json
+  {"symbol":"BTCUSDT","side":"buy","strategy_id":"bostian-iii-sma-zero","price":64500.12,"alert_id":"bostian-iii-sma-zero-BTCUSDT-2026-09-22T00:00:00Z-buy","secret":"YOUR_SECRET"}
+  ```
+- **Sell:**
+  ```json
+  {"symbol":"BTCUSDT","side":"sell","qty_pct":12,"strategy_id":"bostian-iii-sma-zero","price":65100.50,"alert_id":"bostian-iii-sma-zero-BTCUSDT-2026-09-22T04:00:00Z-sell","secret":"YOUR_SECRET"}
+  ```
+
+#### Dynamic Payload Generated by Script (Seat 2: ETHUSDT):
+- **Buy:**
+  ```json
+  {"symbol":"ETHUSDT","side":"buy","strategy_id":"accdist-sma-cross-v1","price":3450.25,"alert_id":"accdist-sma-cross-v1-ETHUSDT-2026-09-22T00:00:00Z-buy","secret":"YOUR_SECRET"}
+  ```
+- **Sell:**
+  ```json
+  {"symbol":"ETHUSDT","side":"sell","qty_pct":12,"strategy_id":"accdist-sma-cross-v1","price":3500.80,"alert_id":"accdist-sma-cross-v1-ETHUSDT-2026-09-22T04:00:00Z-sell","secret":"YOUR_SECRET"}
+  ```
+
+---
+
+### Option A: Manual alertcondition Templates (Alternative)
+If using separate manual alerts via `alertcondition()`:
+
+#### Seat 1: BTCUSDT — `bostian-iii-sma-zero`
+- **Buy:**
 ```json
 {
   "symbol": "BTCUSDT",
   "side": "buy",
   "strategy_id": "bostian-iii-sma-zero",
   "price": "{{close}}",
-  "alert_id": "bostian-iii-sma-zero-BTCUSDT-{{time}}-buy"
+  "alert_id": "bostian-iii-sma-zero-BTCUSDT-{{time}}-buy",
+  "secret": "YOUR_WEBHOOK_SECRET"
 }
 ```
-
-#### Sell Alert
-- **Condition:** Bostian III SMA21 Sell (`exitCondition and strategy.position_size > 0`)
-- **Trigger:** Once Per Bar Close
-- **Webhook URL:** `https://YOUR_RAILWAY_HOST.up.railway.app/webhook/tradingview`
-- **Headers:** `X-Webhook-Secret: YOUR_WEBHOOK_SECRET`
-- **Payload:**
+- **Sell:**
 ```json
 {
   "symbol": "BTCUSDT",
@@ -98,36 +140,24 @@ The 2026-09-22 Mode-A per-coin census (`uploads/per-coin-census-2026-09-22.md`),
   "qty_pct": 12,
   "strategy_id": "bostian-iii-sma-zero",
   "price": "{{close}}",
-  "alert_id": "bostian-iii-sma-zero-BTCUSDT-{{time}}-sell"
+  "alert_id": "bostian-iii-sma-zero-BTCUSDT-{{time}}-sell",
+  "secret": "YOUR_WEBHOOK_SECRET"
 }
 ```
 
----
-
-### Seat 2: ETHUSDT — `accdist-sma-cross-v1` @ 4h
-
-#### Buy Alert
-- **Condition:** AccDist SMA50 Buy (`longCondition`)
-- **Trigger:** Once Per Bar Close
-- **Webhook URL:** `https://YOUR_RAILWAY_HOST.up.railway.app/webhook/tradingview`
-- **Headers:** `X-Webhook-Secret: YOUR_WEBHOOK_SECRET`
-- **Payload:**
+#### Seat 2: ETHUSDT — `accdist-sma-cross-v1`
+- **Buy:**
 ```json
 {
   "symbol": "ETHUSDT",
   "side": "buy",
   "strategy_id": "accdist-sma-cross-v1",
   "price": "{{close}}",
-  "alert_id": "accdist-sma-cross-v1-ETHUSDT-{{time}}-buy"
+  "alert_id": "accdist-sma-cross-v1-ETHUSDT-{{time}}-buy",
+  "secret": "YOUR_WEBHOOK_SECRET"
 }
 ```
-
-#### Sell Alert
-- **Condition:** AccDist SMA50 Sell (`exitCondition and strategy.position_size > 0`)
-- **Trigger:** Once Per Bar Close
-- **Webhook URL:** `https://YOUR_RAILWAY_HOST.up.railway.app/webhook/tradingview`
-- **Headers:** `X-Webhook-Secret: YOUR_WEBHOOK_SECRET`
-- **Payload:**
+- **Sell:**
 ```json
 {
   "symbol": "ETHUSDT",
@@ -135,19 +165,20 @@ The 2026-09-22 Mode-A per-coin census (`uploads/per-coin-census-2026-09-22.md`),
   "qty_pct": 12,
   "strategy_id": "accdist-sma-cross-v1",
   "price": "{{close}}",
-  "alert_id": "accdist-sma-cross-v1-ETHUSDT-{{time}}-sell"
+  "alert_id": "accdist-sma-cross-v1-ETHUSDT-{{time}}-sell",
+  "secret": "YOUR_WEBHOOK_SECRET"
 }
 ```
 
 ---
 
-## 5. LIVE OFF Safety Verification Checklist & Rules
+## 6. LIVE OFF Safety Verification Checklist & Rules
 
 Before attaching TradingView webhooks or booting trading bot instances:
 
 - [ ] **TRADING_MODE Verification:** Confirm `TRADING_MODE=paper` is set in the bot environment / Railway environment variables.
 - [ ] **No Live API Keys:** Confirm `BINANCE_API_KEY` and `BINANCE_API_SECRET` are empty or omitted.
-- [ ] **Webhook Secret Configured:** Authenticate via `X-Webhook-Secret` header or runtime environment. No secrets embedded in committed Pine files.
+- [ ] **Webhook Secret Configured On-Chart:** Paste `WEBHOOK_SECRET` in chart inputs only. Never commit secret into git.
 - [ ] **Separate Named Strategies:** Ensure BTC and ETH strategies run as distinct, decoupled paper seats (do NOT combine).
 - [ ] **Single Symbol Lock:**
   - BTCUSDT chart is connected ONLY to `bostian-iii-sma-zero` alerts.
@@ -161,7 +192,7 @@ Before attaching TradingView webhooks or booting trading bot instances:
   - Buy alert JSON omits `qty`/`qty_pct` → verified bot allocates 2.5% risk.
   - Sell alert JSON specifies `qty_pct: 12` → verified bot clears entire position.
 - [ ] **Bar Close Trigger:** All alerts set strictly to **Once Per Bar Close**.
-- [ ] **Alert ID Pattern:** Verified pattern `{strategy_id}-{SYMBOL}-{{time}}-{buy|sell}` with `{{time}}` (not `{{timenow}}`).
+- [ ] **Alert ID Pattern:** Verified pattern `{strategy_id}-{SYMBOL}-{time}-{buy|sell}` with ISO-8601 bar-open time.
 - [ ] **Stop Brief Gate:** Real LIVE execution is strictly gated pending a future stop brief.
 - [ ] **Path B Freeze / HOLD Research PRs:** Research freeze in effect. Research PRs (#60 etc.) remain on hold while paper seats run.
 - [ ] **Reporting Channel:** On live heartbeat, report seat name, symbol, paper equity start, and deploy URL/ID directly to **Strategy + CoS only** (no Nuno DM).

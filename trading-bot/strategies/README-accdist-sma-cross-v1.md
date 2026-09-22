@@ -1,6 +1,6 @@
 # AccDist SMA Cross v1 (Pine) — PAPER ONLY (LIVE OFF)
 
-Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by CoS/Nuno based on the 2026-09-22 Path B Mode-A per-coin census and locked in `uploads/PAPER_PARAMS.md`.
+Pine Script strategy for paper-seat TradingView → bot webhooks. Authorized by CoS/Nuno based on the 2026-09-22 Path B Mode-A per-coin census and locked in `uploads/PAPER_PARAMS.md` and `uploads/007-paper-seats-tv-cutover-result.md`.
 
 **Script:** [`accdist-sma-cross-v1.pine`](./accdist-sma-cross-v1.pine)  
 **strategy_id:** `accdist-sma-cross-v1`  
@@ -44,8 +44,22 @@ adlSma = ta.sma(adl, 50)
 - Exits use **strategy() position / price** — does NOT read bot open-state.
 - Webhook JSON from `alert()` **strips exchange prefix** (e.g. `BINANCE:`) so `symbol` is `ETHUSDT`-style.
 - **Universe:** `ETHUSDT` ONLY at `4h` (no multi-coin fan-out).
-- **`alert_id` exact shape:** `accdist-sma-cross-v1-ETHUSDT-{{time}}-buy` and `accdist-sma-cross-v1-ETHUSDT-{{time}}-sell`. Uses **`{{time}}`**, NOT `{{timenow}}`.
-- **Secret:** No embedded secret in committed Pine. Header `X-Webhook-Secret` preferred; Trading wires secret at runtime.
+
+---
+
+## TradingView Cutover Fixes (Claude TV Packet 007)
+
+1. **Webhook Secret input (`webhookSecret`):**
+   - TradingView webhooks cannot send custom HTTP headers (`X-Webhook-Secret`).
+   - Added input `Webhook secret (runtime only - never publish)` (default empty).
+   - When filled on-chart, script includes `,"secret":"<SECRET>"` in `alert()` JSON.
+   - **Do NOT commit any real webhook secret in git.**
+2. **Bar Time ISO-8601 formatting in Pine:**
+   - `{{time}}` is NOT expanded inside Pine-built `alert()` strings.
+   - Built via `barTimeIso = str.format_time(time, "yyyy-MM-dd'T'HH:mm:ss'Z'", "UTC")`.
+   - Results in exact idempotency key: `accdist-sma-cross-v1-ETHUSDT-YYYY-MM-DDTHH:MM:SSZ-buy`.
+3. **Price formatted as JSON number:**
+   - In dynamic `alert()`, `price` is passed as a number via `str.tostring(close)`.
 
 ---
 
@@ -65,48 +79,15 @@ adlSma = ta.sma(adl, 50)
 
 ---
 
-## TradingView setup (two alerts)
+## TradingView Setup (Option B: Single alert() Call — Recommended)
 
 1. Add the script to an **ETHUSDT** chart on the **4h** timeframe.
-2. Verify inputs: `ADL SMA Length = 50` (do not change to 65), `Cooldown bars after exit = 6`, `Sell qty_pct = 12.0`, `strategy_id = accdist-sma-cross-v1`.
-3. Create **two** alerts (Once Per Bar Close):
-
-### Option A — alertconditions (recommended for two named alerts)
-
-#### Alert 1 — Buy
-- Condition: **AccDist SMA50 Buy**
-- Trigger: **Once Per Bar Close**
-- Webhook URL: `https://YOUR_RAILWAY_APP.up.railway.app/webhook/tradingview`
-- Headers: `X-Webhook-Secret: YOUR_WEBHOOK_SECRET`
-- Message (omits `qty`/`qty_pct` so bot sizes to 2.5% Balanced risk):
-```json
-{
-  "symbol": "ETHUSDT",
-  "side": "buy",
-  "strategy_id": "accdist-sma-cross-v1",
-  "price": "{{close}}",
-  "alert_id": "accdist-sma-cross-v1-ETHUSDT-{{time}}-buy"
-}
-```
-
-#### Alert 2 — Sell
-- Condition: **AccDist SMA50 Sell**
-- Trigger: **Once Per Bar Close**
-- Webhook URL: `https://YOUR_RAILWAY_APP.up.railway.app/webhook/tradingview`
-- Headers: `X-Webhook-Secret: YOUR_WEBHOOK_SECRET`
-- Message:
-```json
-{
-  "symbol": "ETHUSDT",
-  "side": "sell",
-  "qty_pct": 12,
-  "strategy_id": "accdist-sma-cross-v1",
-  "price": "{{close}}",
-  "alert_id": "accdist-sma-cross-v1-ETHUSDT-{{time}}-sell"
-}
-```
-
-### Option B — single “Any alert() function call”
-Uses Pine-built dynamic JSON with normalized symbol. Use **Once Per Bar Close**.
-Authenticate via `X-Webhook-Secret` header or configure webhook secret in bot environment.
-Keep bot `TRADING_MODE=paper`.
+2. In Strategy Inputs:
+   - Verify `ADL SMA Length = 50` (do not change to 65).
+   - Paste Railway `WEBHOOK_SECRET` into **Webhook secret (runtime only - never publish)**.
+3. Create **ONE** alert:
+   - Condition: `AccDist SMA Cross v1 [PAPER ONLY - LIVE OFF]`
+   - Selection: **alert() function calls only**
+   - Webhook URL: `https://trading-bot-production-700a.up.railway.app/webhook/tradingview`
+   - Name: `accdist-sma50 ETHUSDT 4h paper (buy+sell)`
+   - Message: Default (script generates dynamic JSON)
