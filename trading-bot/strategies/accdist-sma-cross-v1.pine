@@ -72,6 +72,8 @@ atrStopMult   = input.float(3.0, "ATR Stop Multiple", minval=0.1, step=0.1,
 sellQtyPct    = input.float(12.0, "Sell qty_pct (webhook)", minval=0.1, maxval=100, step=0.1,
      tooltip="Full exit within Balanced max-pos framing (12%). Used in alert() JSON.")
 strategyId    = input.string("accdist-sma-cross-v1", "strategy_id for webhook")
+webhookSecret = input.string("", "Webhook secret (runtime only - never publish)",
+     tooltip="TradingView webhooks cannot send custom headers, so the bot reads the secret from the JSON body. Paste the Railway WEBHOOK_SECRET here on the chart only.")
 
 // ——— Normalize ticker: strip exchange prefix → ETHUSDT-style ———
 normalizeSymbol() =>
@@ -128,8 +130,12 @@ if exitCondition
 // Per PAPER_PARAMS: Buys OMIT qty/qty_pct (bot defaults to RISK_PER_TRADE_PCT 2.5). Sells use qty_pct 12.
 // Exact alert_id shape: {strategy_id}-{SYMBOL}-{{time}}-{buy|sell}
 // Header auth (X-Webhook-Secret) is preferred; no secret embedded in Pine.
-buyJson = '{"symbol":"' + normSym + '","side":"buy","strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + strategyId + '-' + normSym + '-{{time}}-buy"}'
-sellJson = '{"symbol":"' + normSym + '","side":"sell","qty_pct":' + str.tostring(sellQtyPct) + ',"strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + strategyId + '-' + normSym + '-{{time}}-sell"}'
+// Bar-open time in UTC ISO-8601 (same value {{time}} gives). Placeholders are NOT expanded inside alert() messages,
+// so the alert_id time is built in Pine; otherwise every alert_id would contain the literal text {{time}}.
+barTimeIso = str.format_time(time, "yyyy-MM-dd'T'HH:mm:ss'Z'", "UTC")
+secretPart = webhookSecret == "" ? "" : ',"secret":"' + webhookSecret + '"'
+buyJson = '{"symbol":"' + normSym + '","side":"buy","strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + strategyId + '-' + normSym + '-' + barTimeIso + '-buy"' + secretPart + '}'
+sellJson = '{"symbol":"' + normSym + '","side":"sell","qty_pct":' + str.tostring(sellQtyPct) + ',"strategy_id":"' + strategyId + '","price":' + str.tostring(close) + ',"alert_id":"' + strategyId + '-' + normSym + '-' + barTimeIso + '-sell"' + secretPart + '}'
 
 if longCondition
     alert(buyJson, alert.freq_once_per_bar_close)
