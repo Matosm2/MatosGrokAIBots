@@ -18,6 +18,7 @@ from app.config import Settings, get_settings
 from app.deps import get_executor, get_portfolio, secrets_equal
 from app.executor import TradeExecutor
 from app.risk import PortfolioState
+from app.strategy_registry import StrategyInfo, get_active_strategies
 
 logger = logging.getLogger(__name__)
 
@@ -179,6 +180,26 @@ def _layout(title: str, body: str, authed: bool = False) -> str:
       background: var(--card); border: 1px solid var(--border); border-radius: 10px;
       padding: 0.9rem 1rem; font-size: 0.9rem;
     }}
+    .badge.tag {{ background: #222d3d; color: #a4b8d1; font-weight: 500; text-transform: none; }}
+    .strategy-cards {{ display: flex; flex-direction: column; gap: 0.85rem; }}
+    .strategy-card {{
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1rem 1.15rem;
+    }}
+    .strategy-header {{
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.4rem;
+    }}
+    .strategy-title {{ font-size: 1.05rem; font-weight: 700; color: #fff; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }}
+    .strategy-subtitle {{ color: var(--muted); font-size: 0.85rem; margin-left: 0.4rem; }}
+    .strategy-badges {{ display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center; }}
+    .strategy-desc {{ margin: 0.2rem 0 0.65rem; color: #c4d1e2; font-size: 0.9rem; line-height: 1.4; }}
+    .rule-table {{ width: 100%; border-collapse: collapse; background: #121820; border-radius: 8px; border: 1px solid var(--border); }}
+    .rule-table td {{ padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; vertical-align: top; }}
+    .rule-table tr:last-child td {{ border-bottom: none; }}
+    .rule-label {{ width: 65px; font-weight: 700; color: var(--muted); text-transform: uppercase; font-size: 0.72rem; letter-spacing: .04em; }}
+    .rule-plain {{ color: var(--text); font-size: 0.88rem; line-height: 1.4; }}
+    .rule-code {{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; color: #8ec8ff; font-size: 0.8rem; display: block; margin-top: 0.2rem; word-break: break-all; }}
   </style>
 </head>
 <body>
@@ -219,6 +240,80 @@ def _fmt_pct(v: float) -> str:
 
 def _fmt_money(v: float) -> str:
     return f"{v:,.2f}"
+
+
+def _render_strategies(strategies: list[StrategyInfo]) -> str:
+    cards = []
+    for s in strategies:
+        entry_sig_html = (
+            f'<code class="rule-code">Signal: {escape(s.entry_signal)}</code>'
+            if s.entry_signal and s.entry_signal != "—"
+            else ""
+        )
+        exit_sig_html = (
+            f'<code class="rule-code">Signal: {escape(s.exit_signal)}</code>'
+            if s.exit_signal and s.exit_signal != "—"
+            else ""
+        )
+        build_row = (
+            f'<tr><td class="rule-label">Build</td><td><code class="rule-code">{escape(s.build)}</code></td></tr>'
+            if s.build and s.build != "—"
+            else ""
+        )
+        subtitle_html = (
+            f'<span class="strategy-subtitle">{escape(s.name)}</span>'
+            if s.name and s.name != s.strategy_id
+            else ""
+        )
+        cards.append(
+            f"""<div class="strategy-card">
+      <div class="strategy-header">
+        <div>
+          <span class="strategy-title">{escape(s.strategy_id)}</span>
+          {subtitle_html}
+        </div>
+        <div class="strategy-badges">
+          <span class="badge paper">{escape(s.status)}</span>
+          <span class="badge tag">{escape(s.symbol)}</span>
+          <span class="badge tag">{escape(s.timeframe)}</span>
+          <span class="badge tag">{escape(s.direction)}</span>
+        </div>
+      </div>
+      <div class="strategy-desc">{escape(s.description)}</div>
+      <table class="rule-table">
+        <tbody>
+          <tr>
+            <td class="rule-label">Entry</td>
+            <td>
+              <div class="rule-plain">{escape(s.entry_rule)}</div>
+              {entry_sig_html}
+            </td>
+          </tr>
+          <tr>
+            <td class="rule-label">Exit</td>
+            <td>
+              <div class="rule-plain">{escape(s.exit_rule)}</div>
+              {exit_sig_html}
+            </td>
+          </tr>
+          {build_row}
+          <tr>
+            <td class="rule-label">Config</td>
+            <td class="muted">
+              Symbol: <strong style="color:var(--text)">{escape(s.symbol)}</strong> &bull;
+              TF: <strong style="color:var(--text)">{escape(s.timeframe)}</strong> &bull;
+              Mode: <strong style="color:var(--text)">{escape(s.mode)}</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>"""
+        )
+    return (
+        f'<div class="strategy-cards">{"".join(cards)}</div>'
+        if cards
+        else '<p class="muted">No active strategies configured.</p>'
+    )
 
 
 def _dashboard_page(
@@ -309,6 +404,9 @@ def _dashboard_page(
         + "</tbody></table>"
     )
 
+    strategies = get_active_strategies(executor.recent)
+    strategies_html = _render_strategies(strategies)
+
     body = f"""
     <div class="cards">
       <div class="card"><div class="label">Mode</div><div class="value">{badge}</div></div>
@@ -323,6 +421,9 @@ def _dashboard_page(
 
     <h2>Open positions</h2>
     {positions_html}
+
+    <h2>Strategies</h2>
+    {strategies_html}
 
     <h2>Trade log</h2>
     {trades_html}

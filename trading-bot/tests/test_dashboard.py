@@ -63,7 +63,44 @@ def test_dashboard_login_sets_cookie_and_shows_data(client: TestClient):
     assert "paper" in dash.text.lower()
     assert "Trade log" in dash.text
     assert "Open positions" in dash.text
+    assert "Strategies" in dash.text
+    assert "bostian-iii-sma-zero" in dash.text
+    assert "accdist-sma-cross-v1" in dash.text
     assert "Last alert" in dash.text
+    assert "unit-test-secret-not-default" not in dash.text
+
+
+def test_dashboard_strategies_section_details(client: TestClient):
+    client.post("/dashboard/login", data={"secret": "unit-test-secret-not-default"})
+    dash = client.get("/dashboard")
+    assert dash.status_code == 200
+    assert "<h2>Strategies</h2>" in dash.text
+
+    # Both strategy IDs
+    assert "bostian-iii-sma-zero" in dash.text
+    assert "accdist-sma-cross-v1" in dash.text
+
+    # Symbols
+    assert "BTCUSDT" in dash.text
+    assert "ETHUSDT" in dash.text
+
+    # Entry and Exit labeled rows
+    assert "Entry" in dash.text
+    assert "Exit" in dash.text
+    assert 'class="rule-label">Entry</td>' in dash.text
+    assert 'class="rule-label">Exit</td>' in dash.text
+
+    # Signals
+    assert "ta.crossover(iiiS, 0)" in dash.text
+    assert "ta.crossunder(iiiS, 0)" in dash.text
+    assert "ta.crossover(adl, sig)" in dash.text
+    assert "ta.crossunder(adl, sig)" in dash.text
+
+    # Formula builds
+    assert "iiiS = ta.sma(iii, 21)" in dash.text
+    assert "sig = ta.sma(adl, 50)" in dash.text
+
+    # No secrets leaked
     assert "unit-test-secret-not-default" not in dash.text
 
 
