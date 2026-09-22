@@ -1,0 +1,161 @@
+Symbol,Strategy ID,TF,Params,BTC Smoke,ETH Smoke,SOL Smoke,BNB Smoke,Retention,n (6m),WR (6m),Ret (6m),B&H (6m),Ratio (6m),PASS_6m,n (full),WR (full),Ret (full),B&H (full),Ratio (full),Gate Full,Ops (6m),Ops (full),Notes
+BTCUSDT,dpo-zero-cross,1h,mode_a|(len20),Y,Y,Y,Y,—,481,27.44,-71.73,11.76,-6.0995,FAIL,1998,29.48,-99.66,28.14,-3.5415,FAIL,-3.06,-13.00,—
+BTCUSDT,dpo-zero-cross,1h,mode_a|(len14),Y,Y,Y,Y,—,585,26.15,-81.42,11.76,-6.9227,FAIL,2386,27.41,-99.91,28.14,-3.5506,FAIL,-4.08,-15.93,—
+BTCUSDT,dpo-zero-cross,1h,mode_a|(len28),Y,Y,Y,Y,—,405,29.38,-63.65,11.76,-5.4118,FAIL,1697,28.99,-99.38,28.14,-3.5318,FAIL,-2.45,-11.72,—
+BTCUSDT,dpo-zero-cross,1h,"mode_b|(len20,hold1)",Y,Y,Y,Y,—,361,27.70,-64.08,11.76,-5.4484,FAIL,1410,29.86,-97.94,28.14,-3.4805,FAIL,-2.49,-9.06,—
+BTCUSDT,dpo-zero-cross,4h,mode_a|(len20),Y,Y,Y,Y,—,110,37.27,-26.64,10.12,-2.6326,FAIL,475,37.68,-84.47,28.30,-2.9847,FAIL,-0.71,-4.30,—
+BTCUSDT,dpo-zero-cross,4h,mode_a|(len14),Y,Y,Y,Y,—,148,37.16,-41.12,10.12,-4.0635,FAIL,592,39.36,-81.07,28.30,-2.8645,FAIL,-1.26,-3.86,—
+BTCUSDT,dpo-zero-cross,4h,mode_a|(len28),Y,Y,Y,Y,—,104,42.31,-12.48,10.12,-1.2337,FAIL,413,40.92,-70.17,28.30,-2.4794,FAIL,-0.28,-2.81,—
+BTCUSDT,dpo-zero-cross,4h,"mode_b|(len20,hold1)",Y,Y,Y,Y,—,80,38.75,-22.48,10.12,-2.2218,FAIL,337,37.98,-76.07,28.30,-2.6879,FAIL,-0.59,-3.31,—
+BTCUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast12,slow26,sig9)",Y,Y,Y,Y,—,161,31.06,-30.28,11.76,-2.5745,FAIL,675,29.48,-85.14,28.14,-3.0256,FAIL,-0.86,-4.44,—
+BTCUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast8,slow21,sig5)",Y,Y,Y,Y,—,278,24.10,-61.32,11.76,-5.2138,FAIL,1065,26.01,-95.93,28.14,-3.4089,FAIL,-2.31,-7.48,—
+BTCUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast12,slow21,sig9)",Y,Y,Y,Y,—,177,32.20,-37.81,11.76,-3.2153,FAIL,718,29.67,-86.64,28.14,-3.0788,FAIL,-1.14,-4.69,—
+BTCUSDT,ppo-ema-signal-cross,1h,"mode_b|(fast12,slow26,sig9,pos)",Y,Y,Y,Y,—,63,28.57,-10.31,11.76,-0.8768,FAIL,265,28.30,-38.41,28.14,-1.3652,FAIL,-0.26,-1.14,—
+BTCUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast12,slow26,sig9)",Y,Y,Y,Y,—,41,31.71,-0.08,10.12,-0.0079,FAIL,160,31.87,-15.87,28.30,-0.5606,FAIL,0.07,-0.19,—
+BTCUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast8,slow21,sig5)",Y,Y,Y,Y,—,64,29.69,-26.94,10.12,-2.6622,FAIL,261,33.33,-55.38,28.30,-1.9569,FAIL,-0.74,-1.79,—
+BTCUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast12,slow21,sig9)",Y,Y,Y,Y,—,42,28.57,0.82,10.12,0.0809,FAIL,164,33.54,4.93,28.30,0.1743,FAIL,0.09,0.36,—
+BTCUSDT,ppo-ema-signal-cross,4h,"mode_b|(fast12,slow26,sig9,pos)",Y,Y,Y,Y,—,16,18.75,-8.82,10.12,-0.8718,FAIL,59,23.73,-19.60,28.30,-0.6927,FAIL,-0.23,-0.50,—
+BTCUSDT,vhf-threshold-close-dir,1h,"mode_a|(n28,thr0.35,dir3)",Y,Y,Y,Y,—,308,14.94,-66.58,11.76,-5.6613,FAIL,1158,19.00,-98.16,28.14,-3.4885,FAIL,-2.69,-9.42,—
+BTCUSDT,vhf-threshold-close-dir,1h,"mode_a|(n18,thr0.30,dir1)",Y,Y,Y,Y,—,892,15.81,-92.31,11.76,-7.8487,FAIL,3582,17.48,-100.00,28.14,-3.5536,FAIL,-6.18,-23.89,—
+BTCUSDT,vhf-threshold-close-dir,1h,"mode_a|(n28,thr0.40,dir5)",Y,Y,Y,Y,—,157,19.11,-37.14,11.76,-3.1582,FAIL,602,21.26,-86.70,28.14,-3.0812,FAIL,-1.14,-4.85,—
+BTCUSDT,vhf-threshold-close-dir,1h,"mode_b|(n28,thr0.40,dir3)",Y,Y,Y,Y,—,191,15.71,-46.42,11.76,-3.9472,FAIL,728,20.05,-90.41,28.14,-3.2128,FAIL,-1.54,-5.63,—
+BTCUSDT,vhf-threshold-close-dir,4h,"mode_a|(n28,thr0.35,dir3)",Y,Y,Y,Y,—,75,22.67,-24.18,10.12,-2.3895,FAIL,314,27.39,-58.16,28.30,-2.0550,FAIL,-0.66,-2.03,—
+BTCUSDT,vhf-threshold-close-dir,4h,"mode_a|(n18,thr0.30,dir1)",Y,Y,Y,Y,—,255,20.00,-59.90,10.12,-5.9187,FAIL,971,25.85,-95.14,28.30,-3.3617,FAIL,-2.22,-7.16,—
+BTCUSDT,vhf-threshold-close-dir,4h,"mode_a|(n28,thr0.40,dir5)",Y,Y,Y,Y,—,44,18.18,-10.09,10.12,-0.9971,FAIL,178,32.02,-16.32,28.30,-0.5766,FAIL,-0.24,-0.36,—
+BTCUSDT,vhf-threshold-close-dir,4h,"mode_b|(n28,thr0.40,dir3)",Y,Y,Y,Y,—,48,25.00,-12.34,10.12,-1.2195,FAIL,213,29.58,-35.04,28.30,-1.2380,FAIL,-0.31,-0.99,—
+BTCUSDT,forecast-oscillator-zero,1h,mode_a|(len14),Y,Y,Y,Y,—,506,19.96,-78.09,11.76,-6.6397,FAIL,1988,22.59,-99.79,28.14,-3.5463,FAIL,-3.69,-14.08,—
+BTCUSDT,forecast-oscillator-zero,1h,mode_a|(len10),Y,Y,Y,Y,—,611,21.60,-83.82,11.76,-7.1274,FAIL,2383,23.12,-99.91,28.14,-3.5506,FAIL,-4.43,-15.97,—
+BTCUSDT,forecast-oscillator-zero,1h,mode_a|(len21),Y,Y,Y,Y,—,421,21.14,-75.18,11.76,-6.3922,FAIL,1610,22.92,-99.16,28.14,-3.5240,FAIL,-3.38,-11.06,—
+BTCUSDT,forecast-oscillator-zero,1h,"mode_b|(len14,sig5)",Y,Y,Y,Y,—,587,24.36,-80.06,11.76,-6.8075,FAIL,2368,26.06,-99.87,28.14,-3.5490,FAIL,-3.91,-15.07,—
+BTCUSDT,forecast-oscillator-zero,4h,mode_a|(len14),Y,Y,Y,Y,—,110,32.73,-20.33,10.12,-2.0085,FAIL,471,32.70,-77.17,28.30,-2.7267,FAIL,-0.53,-3.43,—
+BTCUSDT,forecast-oscillator-zero,4h,mode_a|(len10),Y,Y,Y,Y,—,151,27.81,-34.80,10.12,-3.4383,FAIL,589,29.88,-78.81,28.30,-2.7847,FAIL,-1.02,-3.59,—
+BTCUSDT,forecast-oscillator-zero,4h,mode_a|(len21),Y,Y,Y,Y,—,94,32.98,-27.87,10.12,-2.7542,FAIL,367,32.70,-59.92,28.30,-2.1173,FAIL,-0.77,-2.02,—
+BTCUSDT,forecast-oscillator-zero,4h,"mode_b|(len14,sig5)",Y,Y,Y,Y,—,147,31.97,-35.58,10.12,-3.5160,FAIL,588,33.84,-79.37,28.30,-2.8044,FAIL,-1.05,-3.64,—
+BTCUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len14,trig3)",Y,Y,Y,Y,—,762,22.31,-87.55,11.76,-7.4441,FAIL,3104,22.13,-99.99,28.14,-3.5533,FAIL,-5.03,-20.36,—
+BTCUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len10,trig3)",Y,Y,Y,Y,—,786,22.26,-86.72,11.76,-7.3735,FAIL,3259,21.97,-99.99,28.14,-3.5535,FAIL,-4.88,-21.23,—
+BTCUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len20,trig5)",Y,Y,Y,Y,—,626,21.25,-85.54,11.76,-7.2729,FAIL,2479,22.31,-99.96,28.14,-3.5521,FAIL,-4.67,-17.36,—
+BTCUSDT,projection-oscillator-trigger-cross,1h,"mode_b|(len14,trig3,ob_os)",Y,Y,Y,Y,—,125,27.20,-26.91,11.76,-2.2878,FAIL,520,31.73,-74.92,28.14,-2.6625,FAIL,-0.77,-3.37,—
+BTCUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len14,trig3)",Y,Y,Y,Y,—,188,28.72,-43.95,10.12,-4.3429,FAIL,761,31.80,-89.45,28.30,-3.1605,FAIL,-1.40,-5.25,—
+BTCUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len10,trig3)",Y,Y,Y,Y,—,208,27.40,-47.36,10.12,-4.6796,FAIL,794,31.36,-86.92,28.30,-3.0713,FAIL,-1.55,-4.72,—
+BTCUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len20,trig5)",Y,Y,Y,Y,—,134,33.58,-27.51,10.12,-2.7189,FAIL,587,31.18,-84.54,28.30,-2.9871,FAIL,-0.76,-4.38,—
+BTCUSDT,projection-oscillator-trigger-cross,4h,"mode_b|(len14,trig3,ob_os)",Y,Y,Y,Y,—,33,36.36,-4.29,10.12,-0.4244,FAIL,132,36.36,-27.72,28.30,-0.9796,FAIL,-0.10,-0.76,—
+ETHUSDT,dpo-zero-cross,1h,mode_a|(len20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,dpo-zero-cross,1h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,dpo-zero-cross,1h,mode_a|(len28),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,dpo-zero-cross,1h,"mode_b|(len20,hold1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,dpo-zero-cross,4h,mode_a|(len20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,dpo-zero-cross,4h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,dpo-zero-cross,4h,mode_a|(len28),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,dpo-zero-cross,4h,"mode_b|(len20,hold1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast12,slow26,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast8,slow21,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast12,slow21,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ppo-ema-signal-cross,1h,"mode_b|(fast12,slow26,sig9,pos)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast12,slow26,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast8,slow21,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast12,slow21,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ppo-ema-signal-cross,4h,"mode_b|(fast12,slow26,sig9,pos)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vhf-threshold-close-dir,1h,"mode_a|(n28,thr0.35,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vhf-threshold-close-dir,1h,"mode_a|(n18,thr0.30,dir1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vhf-threshold-close-dir,1h,"mode_a|(n28,thr0.40,dir5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vhf-threshold-close-dir,1h,"mode_b|(n28,thr0.40,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vhf-threshold-close-dir,4h,"mode_a|(n28,thr0.35,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vhf-threshold-close-dir,4h,"mode_a|(n18,thr0.30,dir1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vhf-threshold-close-dir,4h,"mode_a|(n28,thr0.40,dir5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,vhf-threshold-close-dir,4h,"mode_b|(n28,thr0.40,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,forecast-oscillator-zero,1h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,forecast-oscillator-zero,1h,mode_a|(len10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,forecast-oscillator-zero,1h,mode_a|(len21),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,forecast-oscillator-zero,1h,"mode_b|(len14,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,forecast-oscillator-zero,4h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,forecast-oscillator-zero,4h,mode_a|(len10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,forecast-oscillator-zero,4h,mode_a|(len21),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,forecast-oscillator-zero,4h,"mode_b|(len14,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len14,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len10,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len20,trig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,projection-oscillator-trigger-cross,1h,"mode_b|(len14,trig3,ob_os)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len14,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len10,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len20,trig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,projection-oscillator-trigger-cross,4h,"mode_b|(len14,trig3,ob_os)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+SOLUSDT,dpo-zero-cross,1h,mode_a|(len20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,dpo-zero-cross,1h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,dpo-zero-cross,1h,mode_a|(len28),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,dpo-zero-cross,1h,"mode_b|(len20,hold1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,dpo-zero-cross,4h,mode_a|(len20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,dpo-zero-cross,4h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,dpo-zero-cross,4h,mode_a|(len28),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,dpo-zero-cross,4h,"mode_b|(len20,hold1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast12,slow26,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast8,slow21,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast12,slow21,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ppo-ema-signal-cross,1h,"mode_b|(fast12,slow26,sig9,pos)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast12,slow26,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast8,slow21,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast12,slow21,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ppo-ema-signal-cross,4h,"mode_b|(fast12,slow26,sig9,pos)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vhf-threshold-close-dir,1h,"mode_a|(n28,thr0.35,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vhf-threshold-close-dir,1h,"mode_a|(n18,thr0.30,dir1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vhf-threshold-close-dir,1h,"mode_a|(n28,thr0.40,dir5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vhf-threshold-close-dir,1h,"mode_b|(n28,thr0.40,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vhf-threshold-close-dir,4h,"mode_a|(n28,thr0.35,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vhf-threshold-close-dir,4h,"mode_a|(n18,thr0.30,dir1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vhf-threshold-close-dir,4h,"mode_a|(n28,thr0.40,dir5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,vhf-threshold-close-dir,4h,"mode_b|(n28,thr0.40,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,forecast-oscillator-zero,1h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,forecast-oscillator-zero,1h,mode_a|(len10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,forecast-oscillator-zero,1h,mode_a|(len21),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,forecast-oscillator-zero,1h,"mode_b|(len14,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,forecast-oscillator-zero,4h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,forecast-oscillator-zero,4h,mode_a|(len10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,forecast-oscillator-zero,4h,mode_a|(len21),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,forecast-oscillator-zero,4h,"mode_b|(len14,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len14,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len10,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len20,trig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,projection-oscillator-trigger-cross,1h,"mode_b|(len14,trig3,ob_os)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len14,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len10,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len20,trig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,projection-oscillator-trigger-cross,4h,"mode_b|(len14,trig3,ob_os)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+BNBUSDT,dpo-zero-cross,1h,mode_a|(len20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,dpo-zero-cross,1h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,dpo-zero-cross,1h,mode_a|(len28),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,dpo-zero-cross,1h,"mode_b|(len20,hold1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,dpo-zero-cross,4h,mode_a|(len20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,dpo-zero-cross,4h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,dpo-zero-cross,4h,mode_a|(len28),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,dpo-zero-cross,4h,"mode_b|(len20,hold1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast12,slow26,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast8,slow21,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ppo-ema-signal-cross,1h,"mode_a|(fast12,slow21,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ppo-ema-signal-cross,1h,"mode_b|(fast12,slow26,sig9,pos)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast12,slow26,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast8,slow21,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ppo-ema-signal-cross,4h,"mode_a|(fast12,slow21,sig9)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ppo-ema-signal-cross,4h,"mode_b|(fast12,slow26,sig9,pos)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vhf-threshold-close-dir,1h,"mode_a|(n28,thr0.35,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vhf-threshold-close-dir,1h,"mode_a|(n18,thr0.30,dir1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vhf-threshold-close-dir,1h,"mode_a|(n28,thr0.40,dir5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vhf-threshold-close-dir,1h,"mode_b|(n28,thr0.40,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vhf-threshold-close-dir,4h,"mode_a|(n28,thr0.35,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vhf-threshold-close-dir,4h,"mode_a|(n18,thr0.30,dir1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vhf-threshold-close-dir,4h,"mode_a|(n28,thr0.40,dir5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,vhf-threshold-close-dir,4h,"mode_b|(n28,thr0.40,dir3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,forecast-oscillator-zero,1h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,forecast-oscillator-zero,1h,mode_a|(len10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,forecast-oscillator-zero,1h,mode_a|(len21),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,forecast-oscillator-zero,1h,"mode_b|(len14,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,forecast-oscillator-zero,4h,mode_a|(len14),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,forecast-oscillator-zero,4h,mode_a|(len10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,forecast-oscillator-zero,4h,mode_a|(len21),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,forecast-oscillator-zero,4h,"mode_b|(len14,sig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len14,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len10,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,projection-oscillator-trigger-cross,1h,"mode_a|(len20,trig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,projection-oscillator-trigger-cross,1h,"mode_b|(len14,trig3,ob_os)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len14,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len10,trig3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,projection-oscillator-trigger-cross,4h,"mode_a|(len20,trig5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,projection-oscillator-trigger-cross,4h,"mode_b|(len14,trig3,ob_os)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
