@@ -1,0 +1,129 @@
+symbol,strategy_id,tf,mode_params,gate_6m,gate_full,ret_6m_pct,bh_6m_pct,ratio_6m,n_6m,wr_6m_pct,max_dd_6m_pct,ret_full_pct,bh_full_pct,ratio_full,n_full,wr_full_pct,max_dd_full_pct,ops_ret_6m_pct,ops_ret_full_pct,btc_smoke,eth_smoke,sol_smoke,bnb_smoke,retention_notes,notes
+BTCUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr0.0)",FAIL,FAIL,-48.98,11.09,-4.415,187,25.1,53.25,-89.77,29.08,-3.087,745,26.3,90.88,-1.59,-5.30,Y,Y,Y,Y,—,—
+BTCUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr1.5)",FAIL,FAIL,-61.01,11.09,-5.500,291,28.5,61.34,-97.34,29.08,-3.347,1152,30.1,97.37,-2.31,-8.56,Y,Y,Y,Y,—,—
+BTCUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr2.0)",FAIL,FAIL,-54.59,11.09,-4.921,244,32.0,55.89,-93.90,29.08,-3.229,962,31.2,94.08,-1.93,-6.61,Y,Y,Y,Y,—,—
+BTCUSDT,guppy-countback-line-flip,1h,"mode_b|(cd3,kconf2)",FAIL,FAIL,-30.94,11.09,-2.789,150,23.3,41.63,-87.33,29.08,-3.003,636,24.7,89.70,-0.86,-4.83,Y,Y,Y,Y,—,—
+BTCUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr0.0)",FAIL,FAIL,-11.69,10.66,-1.097,48,27.1,24.05,-9.12,28.30,-0.322,165,35.2,53.34,-0.25,-0.01,Y,Y,Y,Y,—,—
+BTCUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr1.5)",FAIL,FAIL,-15.51,10.66,-1.455,71,35.2,18.70,-62.07,28.30,-2.193,281,37.7,69.49,-0.40,-2.29,Y,Y,Y,Y,—,—
+BTCUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr2.0)",FAIL,FAIL,-17.69,10.66,-1.660,62,32.3,20.47,-54.31,28.30,-1.919,236,36.4,68.67,-0.46,-1.81,Y,Y,Y,Y,—,—
+BTCUSDT,guppy-countback-line-flip,4h,"mode_b|(cd3,kconf2)",FAIL,FAIL,-9.98,10.66,-0.936,37,29.7,24.47,1.95,28.30,0.069,140,37.1,48.69,-0.21,0.27,Y,Y,Y,Y,—,—
+BTCUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema20,reg20,k1.75)",FAIL,FAIL,-17.15,11.09,-1.546,101,25.7,29.05,-71.94,29.08,-2.474,406,24.6,77.96,-0.42,-2.97,Y,Y,Y,Y,—,—
+BTCUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema30,reg20,k1.75)",FAIL,FAIL,-15.55,11.09,-1.401,88,27.3,26.11,-62.01,29.08,-2.132,362,26.2,74.38,-0.37,-2.22,Y,Y,Y,Y,—,—
+BTCUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema20,reg20,k2.25)",FAIL,FAIL,-6.66,11.09,-0.600,79,26.6,19.82,-51.88,29.08,-1.784,313,26.2,64.10,-0.12,-1.67,Y,Y,Y,Y,—,—
+BTCUSDT,kirshenbaum-bands-break,1h,"mode_b|(ema20,reg20,k1.75,pr50)",FAIL,FAIL,-9.14,11.09,-0.823,54,29.6,16.03,-53.72,29.08,-1.847,210,26.7,60.36,-0.22,-1.83,Y,Y,Y,Y,—,—
+BTCUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema20,reg20,k1.75)",FAIL,FAIL,1.29,10.66,0.121,23,21.7,12.68,-33.74,28.30,-1.192,104,26.0,57.45,0.09,-0.85,Y,Y,Y,Y,—,—
+BTCUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema30,reg20,k1.75)",FAIL,FAIL,11.86,10.66,1.113,18,33.3,8.43,-18.58,28.30,-0.657,86,30.2,50.66,0.34,-0.30,Y,Y,Y,Y,—,Near-miss 6m (1.11x B&H)
+BTCUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema20,reg20,k2.25)",FAIL,FAIL,2.63,10.66,0.247,19,21.1,12.30,-20.26,28.30,-0.716,82,29.3,48.01,0.12,-0.41,Y,Y,Y,Y,—,—
+BTCUSDT,kirshenbaum-bands-break,4h,"mode_b|(ema20,reg20,k1.75,pr50)",FAIL,FAIL,11.16,10.66,1.047,9,44.4,7.22,-21.79,28.30,-0.770,52,32.7,48.15,0.29,-0.50,Y,Y,Y,Y,—,THIN-N FLAG (BTC 6m n=9 in thin band [6..10]); Near-miss 6m (1.05x B&H)
+BTCUSDT,imi-midline-fifty,1h,mode_a|(n14),FAIL,FAIL,-60.21,11.09,-5.427,286,18.5,61.44,-96.36,29.08,-3.313,1134,18.3,96.62,-2.20,-7.70,Y,Y,Y,Y,—,—
+BTCUSDT,imi-midline-fifty,1h,mode_a|(n10),FAIL,FAIL,-64.66,11.09,-5.828,346,18.5,65.16,-98.26,29.08,-3.379,1385,18.6,98.35,-2.50,-9.40,Y,Y,Y,Y,—,—
+BTCUSDT,imi-midline-fifty,1h,mode_a|(n21),FAIL,FAIL,-44.61,11.09,-4.021,241,19.5,49.31,-92.84,29.08,-3.192,938,19.0,94.12,-1.40,-6.14,Y,Y,Y,Y,—,—
+BTCUSDT,imi-midline-fifty,1h,"mode_b|(n14,thr55)",FAIL,FAIL,-17.96,11.09,-1.619,104,26.0,28.10,-63.70,29.08,-2.190,408,24.8,70.82,-0.44,-2.36,Y,Y,Y,Y,—,—
+BTCUSDT,imi-midline-fifty,4h,mode_a|(n14),FAIL,FAIL,-14.67,10.66,-1.376,63,23.8,24.88,-35.62,28.30,-1.259,271,26.2,65.54,-0.33,-0.84,Y,Y,Y,Y,—,—
+BTCUSDT,imi-midline-fifty,4h,mode_a|(n10),FAIL,FAIL,-5.56,10.66,-0.521,72,26.4,19.83,-44.97,28.30,-1.589,319,25.4,65.59,-0.08,-1.26,Y,Y,Y,Y,—,—
+BTCUSDT,imi-midline-fifty,4h,mode_a|(n21),FAIL,FAIL,-3.07,10.66,-0.288,51,23.5,24.96,-46.41,28.30,-1.640,218,24.3,67.40,-0.01,-1.33,Y,Y,Y,Y,—,—
+BTCUSDT,imi-midline-fifty,4h,"mode_b|(n14,thr55)",FAIL,FAIL,-0.10,10.66,-0.010,24,16.7,18.31,9.54,28.30,0.337,107,24.3,36.73,0.06,0.43,Y,Y,Y,Y,—,—
+BTCUSDT,williams-ad-sma-cross,1h,mode_a|(m21),FAIL,FAIL,-65.87,11.09,-5.937,305,13.8,67.07,-98.63,29.08,-3.392,1269,15.7,98.75,-2.58,-9.94,Y,Y,Y,Y,—,—
+BTCUSDT,williams-ad-sma-cross,1h,mode_a|(m14),FAIL,FAIL,-75.54,11.09,-6.809,393,15.8,75.84,-99.32,29.08,-3.415,1554,17.9,99.36,-3.38,-11.49,Y,Y,Y,Y,—,—
+BTCUSDT,williams-ad-sma-cross,1h,mode_a|(m34),FAIL,FAIL,-52.22,11.09,-4.707,235,14.9,53.78,-93.90,29.08,-3.229,958,16.1,94.43,-1.76,-6.53,Y,Y,Y,Y,—,—
+BTCUSDT,williams-ad-sma-cross,1h,"mode_b|(m21,rising)",FAIL,FAIL,-65.87,11.09,-5.937,305,13.8,67.07,-98.63,29.08,-3.392,1269,15.7,98.75,-2.58,-9.94,Y,Y,Y,Y,—,—
+BTCUSDT,williams-ad-sma-cross,4h,mode_a|(m21),FAIL,FAIL,-22.39,10.66,-2.101,76,22.4,36.87,-63.46,28.30,-2.242,308,21.8,77.42,-0.57,-2.25,Y,Y,Y,Y,—,—
+BTCUSDT,williams-ad-sma-cross,4h,mode_a|(m14),FAIL,FAIL,-23.82,10.66,-2.235,99,20.2,35.05,-70.50,28.30,-2.491,375,23.5,80.94,-0.62,-2.79,Y,Y,Y,Y,—,—
+BTCUSDT,williams-ad-sma-cross,4h,mode_a|(m34),FAIL,FAIL,-12.96,10.66,-1.216,61,26.2,31.28,-53.23,28.30,-1.881,250,22.8,72.63,-0.28,-1.65,Y,Y,Y,Y,—,—
+BTCUSDT,williams-ad-sma-cross,4h,"mode_b|(m21,rising)",FAIL,FAIL,-22.39,10.66,-2.101,76,22.4,36.87,-63.46,28.30,-2.242,308,21.8,77.42,-0.57,-2.25,Y,Y,Y,Y,—,—
+ETHUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr0.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr1.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,guppy-countback-line-flip,1h,"mode_b|(cd3,kconf2)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema20,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema30,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema20,reg20,k2.25)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,kirshenbaum-bands-break,1h,"mode_b|(ema20,reg20,k1.75,pr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,imi-midline-fifty,1h,mode_a|(n14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,imi-midline-fifty,1h,mode_a|(n10),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,imi-midline-fifty,1h,mode_a|(n21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,imi-midline-fifty,1h,"mode_b|(n14,thr55)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,williams-ad-sma-cross,1h,mode_a|(m21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,williams-ad-sma-cross,1h,mode_a|(m14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,williams-ad-sma-cross,1h,mode_a|(m34),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,williams-ad-sma-cross,1h,"mode_b|(m21,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr0.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr1.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,guppy-countback-line-flip,4h,"mode_b|(cd3,kconf2)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema20,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema30,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema20,reg20,k2.25)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,kirshenbaum-bands-break,4h,"mode_b|(ema20,reg20,k1.75,pr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,imi-midline-fifty,4h,mode_a|(n14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,imi-midline-fifty,4h,mode_a|(n10),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,imi-midline-fifty,4h,mode_a|(n21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,imi-midline-fifty,4h,"mode_b|(n14,thr55)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,williams-ad-sma-cross,4h,mode_a|(m21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,williams-ad-sma-cross,4h,mode_a|(m14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,williams-ad-sma-cross,4h,mode_a|(m34),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,williams-ad-sma-cross,4h,"mode_b|(m21,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+SOLUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr0.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr1.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,guppy-countback-line-flip,1h,"mode_b|(cd3,kconf2)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema20,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema30,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema20,reg20,k2.25)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,kirshenbaum-bands-break,1h,"mode_b|(ema20,reg20,k1.75,pr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,imi-midline-fifty,1h,mode_a|(n14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,imi-midline-fifty,1h,mode_a|(n10),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,imi-midline-fifty,1h,mode_a|(n21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,imi-midline-fifty,1h,"mode_b|(n14,thr55)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,williams-ad-sma-cross,1h,mode_a|(m21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,williams-ad-sma-cross,1h,mode_a|(m14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,williams-ad-sma-cross,1h,mode_a|(m34),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,williams-ad-sma-cross,1h,"mode_b|(m21,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr0.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr1.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,guppy-countback-line-flip,4h,"mode_b|(cd3,kconf2)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema20,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema30,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema20,reg20,k2.25)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,kirshenbaum-bands-break,4h,"mode_b|(ema20,reg20,k1.75,pr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,imi-midline-fifty,4h,mode_a|(n14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,imi-midline-fifty,4h,mode_a|(n10),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,imi-midline-fifty,4h,mode_a|(n21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,imi-midline-fifty,4h,"mode_b|(n14,thr55)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,williams-ad-sma-cross,4h,mode_a|(m21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,williams-ad-sma-cross,4h,mode_a|(m14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,williams-ad-sma-cross,4h,mode_a|(m34),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,williams-ad-sma-cross,4h,"mode_b|(m21,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+BNBUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr0.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr1.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,guppy-countback-line-flip,1h,"mode_a|(cd3,atr2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,guppy-countback-line-flip,1h,"mode_b|(cd3,kconf2)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema20,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema30,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,kirshenbaum-bands-break,1h,"mode_a|(ema20,reg20,k2.25)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,kirshenbaum-bands-break,1h,"mode_b|(ema20,reg20,k1.75,pr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,imi-midline-fifty,1h,mode_a|(n14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,imi-midline-fifty,1h,mode_a|(n10),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,imi-midline-fifty,1h,mode_a|(n21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,imi-midline-fifty,1h,"mode_b|(n14,thr55)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,williams-ad-sma-cross,1h,mode_a|(m21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,williams-ad-sma-cross,1h,mode_a|(m14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,williams-ad-sma-cross,1h,mode_a|(m34),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,williams-ad-sma-cross,1h,"mode_b|(m21,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr0.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr1.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,guppy-countback-line-flip,4h,"mode_a|(cd3,atr2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,guppy-countback-line-flip,4h,"mode_b|(cd3,kconf2)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema20,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema30,reg20,k1.75)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,kirshenbaum-bands-break,4h,"mode_a|(ema20,reg20,k2.25)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,kirshenbaum-bands-break,4h,"mode_b|(ema20,reg20,k1.75,pr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,imi-midline-fifty,4h,mode_a|(n14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,imi-midline-fifty,4h,mode_a|(n10),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,imi-midline-fifty,4h,mode_a|(n21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,imi-midline-fifty,4h,"mode_b|(n14,thr55)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,williams-ad-sma-cross,4h,mode_a|(m21),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,williams-ad-sma-cross,4h,mode_a|(m14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,williams-ad-sma-cross,4h,mode_a|(m34),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,williams-ad-sma-cross,4h,"mode_b|(m21,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)

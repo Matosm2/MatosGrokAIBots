@@ -1,0 +1,129 @@
+symbol,strategy_id,tf,mode_params,gate_6m,gate_full,ret_6m_pct,bh_6m_pct,ratio_6m,n_6m,wr_6m_pct,max_dd_6m_pct,ret_full_pct,bh_full_pct,ratio_full,n_full,wr_full_pct,max_dd_full_pct,ops_ret_6m_pct,ops_ret_full_pct,btc_smoke,eth_smoke,sol_smoke,bnb_smoke,retention_notes,notes
+BTCUSDT,katsanos-fve-zero-cross,1h,mode_a|(S22),FAIL,FAIL,-27.59,27.43,-1.006,188,22.9,38.28,-86.00,37.03,-2.322,730,22.1,88.47,-0.73,-4.55,Y,Y,Y,Y,—,—
+BTCUSDT,katsanos-fve-zero-cross,1h,mode_a|(S14),FAIL,FAIL,-45.02,27.43,-1.641,248,20.2,55.24,-93.00,37.03,-2.511,962,22.3,94.21,-1.40,-6.18,Y,Y,Y,Y,—,—
+BTCUSDT,katsanos-fve-zero-cross,1h,mode_a|(S18),FAIL,FAIL,-38.46,27.43,-1.402,224,19.6,48.83,-90.81,37.03,-2.452,848,20.4,92.35,-1.13,-5.55,Y,Y,Y,Y,—,—
+BTCUSDT,katsanos-fve-zero-cross,1h,mode_a|(S30),FAIL,FAIL,-27.67,27.43,-1.009,150,21.3,40.69,-80.96,37.03,-2.186,587,22.3,85.44,-0.73,-3.83,Y,Y,Y,Y,—,—
+BTCUSDT,katsanos-fve-zero-cross,4h,mode_a|(S22),FAIL,FAIL,12.76,23.34,0.547,46,28.3,20.89,-33.32,36.92,-0.903,187,25.7,58.72,0.40,-0.74,Y,Y,Y,Y,—,—
+BTCUSDT,katsanos-fve-zero-cross,4h,mode_a|(S14),FAIL,FAIL,-3.89,23.34,-0.167,60,26.7,28.85,-18.31,36.92,-0.496,223,28.3,63.18,-0.02,-0.22,Y,Y,Y,Y,—,—
+BTCUSDT,katsanos-fve-zero-cross,4h,mode_a|(S18),FAIL,FAIL,4.40,23.34,0.189,51,27.5,27.65,-40.01,36.92,-1.084,206,27.7,66.73,0.21,-1.00,Y,Y,Y,Y,—,—
+BTCUSDT,katsanos-fve-zero-cross,4h,mode_a|(S30),FAIL,FAIL,24.62,23.34,1.055,40,32.5,17.66,-29.00,36.92,-0.786,185,25.9,59.45,0.64,-0.62,Y,Y,Y,Y,—,Near-miss 6m (1.05x B&H)
+BTCUSDT,ehlers-convolution-zero,1h,"mode_a|(L18,T0.05)",FAIL,FAIL,-80.47,27.43,-2.934,516,22.3,80.84,-99.82,37.03,-2.695,2026,25.2,99.82,-3.98,-14.46,Y,Y,Y,Y,—,—
+BTCUSDT,ehlers-convolution-zero,1h,"mode_a|(L13,T0.05)",FAIL,FAIL,-83.19,27.43,-3.033,601,22.1,84.56,-99.91,37.03,-2.698,2359,25.4,99.92,-4.33,-16.01,Y,Y,Y,Y,—,—
+BTCUSDT,ehlers-convolution-zero,1h,"mode_a|(L26,T0.05)",FAIL,FAIL,-68.76,27.43,-2.507,430,27.0,69.02,-99.45,37.03,-2.685,1737,27.4,99.45,-2.85,-12.09,Y,Y,Y,Y,—,—
+BTCUSDT,ehlers-convolution-zero,1h,"mode_a|(L39,T0.05)",FAIL,FAIL,-61.89,27.43,-2.257,368,27.2,63.83,-99.07,37.03,-2.675,1480,26.9,99.10,-2.36,-11.32,Y,Y,Y,Y,—,—
+BTCUSDT,ehlers-convolution-zero,4h,"mode_a|(L18,T0.05)",FAIL,FAIL,-22.41,23.34,-0.960,126,33.3,25.68,-73.90,36.92,-2.001,508,38.8,74.36,-0.61,-3.18,Y,Y,Y,Y,—,—
+BTCUSDT,ehlers-convolution-zero,4h,"mode_a|(L13,T0.05)",FAIL,FAIL,-8.67,23.34,-0.371,146,39.7,21.62,-79.99,36.92,-2.166,593,37.4,81.06,-0.20,-3.82,Y,Y,Y,Y,—,—
+BTCUSDT,ehlers-convolution-zero,4h,"mode_a|(L26,T0.05)",FAIL,FAIL,-5.48,23.34,-0.235,100,45.0,14.63,-79.11,36.92,-2.143,425,35.5,80.37,-0.11,-3.72,Y,Y,Y,Y,—,—
+BTCUSDT,ehlers-convolution-zero,4h,"mode_a|(L39,T0.05)",FAIL,FAIL,-20.40,23.34,-0.874,84,47.6,23.80,-79.48,36.92,-2.153,361,39.6,80.40,-0.55,-3.77,Y,Y,Y,Y,—,—
+BTCUSDT,hilbert-inst-trendline-cross,1h,mode_a|(close),FAIL,FAIL,-50.95,27.43,-1.858,248,19.4,61.18,-94.14,37.03,-2.542,971,16.6,95.46,-1.69,-6.61,Y,Y,Y,Y,—,—
+BTCUSDT,hilbert-inst-trendline-cross,1h,mode_a|(hl2),FAIL,FAIL,-50.09,27.43,-1.826,240,18.8,60.16,-93.58,37.03,-2.527,936,16.7,94.95,-1.64,-6.40,Y,Y,Y,Y,—,—
+BTCUSDT,hilbert-inst-trendline-cross,1h,mode_b|(close),FAIL,FAIL,-17.82,27.43,-0.650,100,19.0,33.81,-65.81,37.03,-1.777,389,16.5,73.08,-0.44,-2.55,Y,Y,Y,Y,—,—
+BTCUSDT,hilbert-inst-trendline-cross,1h,mode_b|(hl2),FAIL,FAIL,-14.12,27.43,-0.515,80,16.2,29.97,-47.88,37.03,-1.293,342,17.0,60.74,-0.33,-1.51,Y,Y,Y,Y,—,—
+BTCUSDT,hilbert-inst-trendline-cross,4h,mode_a|(close),FAIL,FAIL,-6.40,23.34,-0.274,61,19.7,31.01,-34.90,36.92,-0.945,236,19.9,65.56,-0.07,-0.79,Y,Y,Y,Y,—,—
+BTCUSDT,hilbert-inst-trendline-cross,4h,mode_a|(hl2),FAIL,FAIL,-3.55,23.34,-0.152,56,21.4,29.31,-29.44,36.92,-0.797,223,21.5,63.71,0.00,-0.58,Y,Y,Y,Y,—,—
+BTCUSDT,hilbert-inst-trendline-cross,4h,mode_b|(close),FAIL,FAIL,-6.34,23.34,-0.272,20,20.0,14.79,-23.71,36.92,-0.642,93,19.4,26.13,-0.15,-0.62,Y,Y,Y,Y,—,—
+BTCUSDT,hilbert-inst-trendline-cross,4h,mode_b|(hl2),FAIL,FAIL,-4.75,23.34,-0.204,15,20.0,11.56,-24.63,36.92,-0.667,75,18.7,26.30,-0.11,-0.66,Y,Y,Y,Y,—,—
+BTCUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema22,N10,k2.5)",FAIL,FAIL,-17.10,27.43,-0.624,156,28.8,34.79,-79.85,37.03,-2.156,669,27.8,86.25,-0.40,-3.70,Y,Y,Y,Y,—,—
+BTCUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema14,N10,k2.5)",FAIL,FAIL,-26.94,27.43,-0.982,164,26.2,41.77,-80.92,37.03,-2.185,687,28.2,86.99,-0.71,-3.81,Y,Y,Y,Y,—,—
+BTCUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema22,N8,k2.0)",FAIL,FAIL,-28.87,27.43,-1.053,183,25.1,41.42,-89.21,37.03,-2.409,804,24.8,91.30,-0.80,-5.23,Y,Y,Y,Y,—,—
+BTCUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema30,N15,k3.0)",FAIL,FAIL,-22.92,27.43,-0.836,130,27.7,36.37,-74.67,37.03,-2.016,529,27.6,82.29,-0.58,-3.15,Y,Y,Y,Y,—,—
+BTCUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema22,N10,k2.5)",FAIL,FAIL,-4.43,23.34,-0.190,45,28.9,24.96,-11.08,36.92,-0.300,162,31.5,57.13,-0.04,-0.03,Y,Y,Y,Y,—,—
+BTCUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema14,N10,k2.5)",FAIL,FAIL,-4.42,23.34,-0.189,48,27.1,25.94,-16.80,36.92,-0.455,170,31.8,58.75,-0.03,-0.18,Y,Y,Y,Y,—,—
+BTCUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema22,N8,k2.0)",FAIL,FAIL,-4.24,23.34,-0.182,54,29.6,24.23,-22.60,36.92,-0.612,197,28.9,59.36,-0.03,-0.42,Y,Y,Y,Y,—,—
+BTCUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema30,N15,k3.0)",FAIL,FAIL,5.20,23.34,0.223,35,31.4,25.10,0.22,36.92,0.006,127,30.7,57.46,0.21,0.35,Y,Y,Y,Y,—,—
+ETHUSDT,katsanos-fve-zero-cross,1h,mode_a|(S22),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,katsanos-fve-zero-cross,1h,mode_a|(S14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,katsanos-fve-zero-cross,1h,mode_a|(S18),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,katsanos-fve-zero-cross,1h,mode_a|(S30),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,katsanos-fve-zero-cross,4h,mode_a|(S22),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,katsanos-fve-zero-cross,4h,mode_a|(S14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,katsanos-fve-zero-cross,4h,mode_a|(S18),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,katsanos-fve-zero-cross,4h,mode_a|(S30),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-convolution-zero,1h,"mode_a|(L18,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-convolution-zero,1h,"mode_a|(L13,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-convolution-zero,1h,"mode_a|(L26,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-convolution-zero,1h,"mode_a|(L39,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-convolution-zero,4h,"mode_a|(L18,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-convolution-zero,4h,"mode_a|(L13,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-convolution-zero,4h,"mode_a|(L26,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,ehlers-convolution-zero,4h,"mode_a|(L39,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hilbert-inst-trendline-cross,1h,mode_a|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hilbert-inst-trendline-cross,1h,mode_a|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hilbert-inst-trendline-cross,1h,mode_b|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hilbert-inst-trendline-cross,1h,mode_b|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hilbert-inst-trendline-cross,4h,mode_a|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hilbert-inst-trendline-cross,4h,mode_a|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hilbert-inst-trendline-cross,4h,mode_b|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hilbert-inst-trendline-cross,4h,mode_b|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema22,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema14,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema22,N8,k2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema30,N15,k3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema22,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema14,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema22,N8,k2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema30,N15,k3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+SOLUSDT,katsanos-fve-zero-cross,1h,mode_a|(S22),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,katsanos-fve-zero-cross,1h,mode_a|(S14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,katsanos-fve-zero-cross,1h,mode_a|(S18),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,katsanos-fve-zero-cross,1h,mode_a|(S30),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,katsanos-fve-zero-cross,4h,mode_a|(S22),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,katsanos-fve-zero-cross,4h,mode_a|(S14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,katsanos-fve-zero-cross,4h,mode_a|(S18),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,katsanos-fve-zero-cross,4h,mode_a|(S30),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-convolution-zero,1h,"mode_a|(L18,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-convolution-zero,1h,"mode_a|(L13,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-convolution-zero,1h,"mode_a|(L26,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-convolution-zero,1h,"mode_a|(L39,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-convolution-zero,4h,"mode_a|(L18,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-convolution-zero,4h,"mode_a|(L13,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-convolution-zero,4h,"mode_a|(L26,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,ehlers-convolution-zero,4h,"mode_a|(L39,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hilbert-inst-trendline-cross,1h,mode_a|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hilbert-inst-trendline-cross,1h,mode_a|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hilbert-inst-trendline-cross,1h,mode_b|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hilbert-inst-trendline-cross,1h,mode_b|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hilbert-inst-trendline-cross,4h,mode_a|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hilbert-inst-trendline-cross,4h,mode_a|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hilbert-inst-trendline-cross,4h,mode_b|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hilbert-inst-trendline-cross,4h,mode_b|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema22,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema14,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema22,N8,k2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema30,N15,k3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema22,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema14,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema22,N8,k2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema30,N15,k3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+BNBUSDT,katsanos-fve-zero-cross,1h,mode_a|(S22),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,katsanos-fve-zero-cross,1h,mode_a|(S14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,katsanos-fve-zero-cross,1h,mode_a|(S18),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,katsanos-fve-zero-cross,1h,mode_a|(S30),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,katsanos-fve-zero-cross,4h,mode_a|(S22),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,katsanos-fve-zero-cross,4h,mode_a|(S14),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,katsanos-fve-zero-cross,4h,mode_a|(S18),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,katsanos-fve-zero-cross,4h,mode_a|(S30),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-convolution-zero,1h,"mode_a|(L18,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-convolution-zero,1h,"mode_a|(L13,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-convolution-zero,1h,"mode_a|(L26,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-convolution-zero,1h,"mode_a|(L39,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-convolution-zero,4h,"mode_a|(L18,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-convolution-zero,4h,"mode_a|(L13,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-convolution-zero,4h,"mode_a|(L26,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,ehlers-convolution-zero,4h,"mode_a|(L39,T0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hilbert-inst-trendline-cross,1h,mode_a|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hilbert-inst-trendline-cross,1h,mode_a|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hilbert-inst-trendline-cross,1h,mode_b|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hilbert-inst-trendline-cross,1h,mode_b|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hilbert-inst-trendline-cross,4h,mode_a|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hilbert-inst-trendline-cross,4h,mode_a|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hilbert-inst-trendline-cross,4h,mode_b|(close),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hilbert-inst-trendline-cross,4h,mode_b|(hl2),FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema22,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema14,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema22,N8,k2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,elder-safezone-trail-flip,1h,"mode_a|(ema30,N15,k3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema22,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema14,N10,k2.5)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema22,N8,k2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,elder-safezone-trail-flip,4h,"mode_a|(ema30,N15,k3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
