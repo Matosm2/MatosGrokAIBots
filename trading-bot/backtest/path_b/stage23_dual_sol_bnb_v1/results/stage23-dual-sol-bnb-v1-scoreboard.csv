@@ -1,0 +1,129 @@
+symbol,strategy_id,tf,mode_params,gate_6m,gate_full,ret_6m_pct,bh_6m_pct,ratio_6m,n_6m,wr_6m_pct,max_dd_6m_pct,ret_full_pct,bh_full_pct,ratio_full,n_full,wr_full_pct,max_dd_full_pct,ops_ret_6m_pct,ops_ret_full_pct,btc_smoke,eth_smoke,sol_smoke,bnb_smoke,retention_notes,notes
+BTCUSDT,qqe-trailing-cross,1h,"mode_a|(rsi14,sf5,wt4.236)",FAIL,FAIL,-28.90,11.09,-2.605,125,32.8,37.34,-82.66,29.08,-2.842,525,31.8,85.62,-0.81,-4.09,Y,Y,Y,Y,—,—
+BTCUSDT,qqe-trailing-cross,1h,"mode_a|(rsi21,sf5,wt4.236)",FAIL,FAIL,-19.71,11.09,-1.777,118,34.7,35.04,-76.35,29.08,-2.625,480,31.7,82.37,-0.50,-3.33,Y,Y,Y,Y,—,—
+BTCUSDT,qqe-trailing-cross,1h,"mode_a|(rsi14,sf8,wt5.0)",FAIL,FAIL,-24.94,11.09,-2.248,103,32.0,31.01,-66.41,29.08,-2.284,423,32.9,73.59,-0.67,-2.49,Y,Y,Y,Y,—,—
+BTCUSDT,qqe-trailing-cross,1h,"mode_b|(rsi14,sf5,wt4.236,f50)",FAIL,FAIL,-15.71,11.09,-1.416,52,25.0,19.89,-48.77,29.08,-1.677,231,29.4,56.80,-0.41,-1.59,Y,Y,Y,Y,—,—
+BTCUSDT,qqe-trailing-cross,4h,"mode_a|(rsi14,sf5,wt4.236)",FAIL,FAIL,-5.10,10.66,-0.478,32,34.4,23.62,6.92,28.30,0.245,123,39.0,47.68,-0.06,0.43,Y,Y,Y,Y,—,—
+BTCUSDT,qqe-trailing-cross,4h,"mode_a|(rsi21,sf5,wt4.236)",FAIL,FAIL,-0.87,10.66,-0.082,29,31.0,18.87,-9.08,28.30,-0.321,114,34.2,49.63,0.04,0.02,Y,Y,Y,Y,—,—
+BTCUSDT,qqe-trailing-cross,4h,"mode_a|(rsi14,sf8,wt5.0)",FAIL,FAIL,-8.04,10.66,-0.754,28,28.6,25.76,14.52,28.30,0.513,99,38.4,44.26,-0.14,0.60,Y,Y,Y,Y,—,—
+BTCUSDT,qqe-trailing-cross,4h,"mode_b|(rsi14,sf5,wt4.236,f50)",FAIL,FAIL,-7.72,10.66,-0.724,11,36.4,9.57,-17.18,28.30,-0.607,51,35.3,28.29,-0.20,-0.43,Y,Y,Y,Y,—,—
+BTCUSDT,mama-fama-cross,1h,"mode_a|(fast0.5,slow0.05)",FAIL,FAIL,-18.05,11.09,-1.627,91,33.0,28.23,-64.50,29.08,-2.218,375,29.9,78.31,-0.44,-2.33,Y,Y,Y,Y,—,—
+BTCUSDT,mama-fama-cross,1h,"mode_a|(fast0.7,slow0.05)",FAIL,FAIL,-36.65,11.09,-3.304,128,26.6,44.16,-76.71,29.08,-2.638,515,25.8,84.44,-1.08,-3.35,Y,Y,Y,Y,—,—
+BTCUSDT,mama-fama-cross,1h,"mode_a|(fast0.5,slow0.08)",FAIL,FAIL,-24.06,11.09,-2.169,100,30.0,32.90,-65.39,29.08,-2.248,408,28.9,78.45,-0.63,-2.40,Y,Y,Y,Y,—,—
+BTCUSDT,mama-fama-cross,1h,"mode_b|(fast0.5,slow0.05,rising)",FAIL,FAIL,-18.05,11.09,-1.627,91,33.0,28.23,-64.50,29.08,-2.218,375,29.9,78.31,-0.44,-2.33,Y,Y,Y,Y,—,—
+BTCUSDT,mama-fama-cross,4h,"mode_a|(fast0.5,slow0.05)",FAIL,FAIL,-1.31,10.66,-0.123,23,30.4,14.94,-12.86,28.30,-0.455,99,27.3,46.45,0.03,-0.09,Y,Y,Y,Y,—,—
+BTCUSDT,mama-fama-cross,4h,"mode_a|(fast0.7,slow0.05)",FAIL,FAIL,-2.88,10.66,-0.270,28,35.7,16.13,7.19,28.30,0.254,122,30.3,41.77,-0.02,0.43,Y,Y,Y,Y,—,—
+BTCUSDT,mama-fama-cross,4h,"mode_a|(fast0.5,slow0.08)",FAIL,FAIL,-6.22,10.66,-0.584,25,32.0,18.83,-19.25,28.30,-0.680,104,29.8,50.60,-0.09,-0.29,Y,Y,Y,Y,—,—
+BTCUSDT,mama-fama-cross,4h,"mode_b|(fast0.5,slow0.05,rising)",FAIL,FAIL,-1.31,10.66,-0.123,23,30.4,14.94,-12.86,28.30,-0.455,99,27.3,46.45,0.03,-0.09,Y,Y,Y,Y,—,—
+BTCUSDT,wilder-volatility-system-flip,1h,"mode_a|(n7,fac3.0)",FAIL,FAIL,-2.87,11.09,-0.259,25,32.0,22.48,-41.18,29.08,-1.416,99,29.3,65.44,-0.02,-1.05,Y,Y,Y,Y,—,—
+BTCUSDT,wilder-volatility-system-flip,1h,"mode_a|(n9,fac2.0)",FAIL,FAIL,-17.53,11.09,-1.580,89,36.0,31.63,-64.11,29.08,-2.205,379,31.9,76.02,-0.42,-2.31,Y,Y,Y,Y,—,—
+BTCUSDT,wilder-volatility-system-flip,1h,"mode_a|(n9,fac3.0)",FAIL,FAIL,-9.75,11.09,-0.878,32,28.1,24.68,-37.04,29.08,-1.274,139,31.7,63.96,-0.20,-0.88,Y,Y,Y,Y,—,—
+BTCUSDT,wilder-volatility-system-flip,1h,"mode_b|(n7,fac3.0,atrpr50)",FAIL,FAIL,-11.72,11.09,-1.057,21,33.3,21.50,-38.76,29.08,-1.333,78,32.1,58.52,-0.29,-1.01,Y,Y,Y,Y,—,—
+BTCUSDT,wilder-volatility-system-flip,4h,"mode_a|(n7,fac3.0)",FAIL,FAIL,9.64,10.66,0.904,6,50.0,20.88,-14.80,28.30,-0.523,28,32.1,52.83,0.29,-0.15,Y,Y,Y,Y,—,THIN-N FLAG (BTC 6m n=6 in thin band [6..10]); Near-miss 6m (0.90x B&H)
+BTCUSDT,wilder-volatility-system-flip,4h,"mode_a|(n9,fac2.0)",FAIL,FAIL,-0.95,10.66,-0.089,23,34.8,15.21,-13.70,28.30,-0.484,88,37.5,46.21,0.04,-0.17,Y,Y,Y,Y,—,—
+BTCUSDT,wilder-volatility-system-flip,4h,"mode_a|(n9,fac3.0)",FAIL,FAIL,-1.86,10.66,-0.174,8,37.5,23.79,-22.16,28.30,-0.783,35,31.4,57.05,0.00,-0.36,Y,Y,Y,Y,—,THIN-N FLAG (BTC 6m n=8 in thin band [6..10])
+BTCUSDT,wilder-volatility-system-flip,4h,"mode_b|(n7,fac3.0,atrpr50)",FAIL,FAIL,6.87,10.66,0.645,4,50.0,13.32,21.17,28.30,0.748,17,47.1,31.51,0.20,0.65,Y,Y,Y,Y,—,TINY-N KILL (BTC 6m n=4 <= 5)
+BTCUSDT,chande-kroll-stop-flip,1h,"mode_a|(p10,x1.0,q9)",FAIL,FAIL,-16.50,11.09,-1.487,107,29.0,30.65,-67.88,29.08,-2.334,465,27.3,78.00,-0.38,-2.57,Y,Y,Y,Y,—,—
+BTCUSDT,chande-kroll-stop-flip,1h,"mode_a|(p14,x1.0,q9)",FAIL,FAIL,13.25,11.09,1.194,74,40.5,11.93,-54.84,29.08,-1.886,362,29.0,70.47,0.38,-1.72,Y,Y,Y,Y,—,Near-miss 6m (1.19x B&H)
+BTCUSDT,chande-kroll-stop-flip,1h,"mode_a|(p10,x1.5,q14)",FAIL,FAIL,-16.67,11.09,-1.503,117,29.1,28.82,-71.07,29.08,-2.444,478,24.1,79.19,-0.39,-2.81,Y,Y,Y,Y,—,—
+BTCUSDT,chande-kroll-stop-flip,1h,"mode_b|(p10,x1.0,q9,wpr50)",FAIL,FAIL,-16.77,11.09,-1.512,52,26.9,22.36,-32.69,29.08,-1.124,216,32.4,51.27,-0.43,-0.85,Y,Y,Y,Y,—,—
+BTCUSDT,chande-kroll-stop-flip,4h,"mode_a|(p10,x1.0,q9)",FAIL,FAIL,-5.71,10.66,-0.536,28,32.1,24.99,-13.02,28.30,-0.460,108,31.5,51.55,-0.07,-0.11,Y,Y,Y,Y,—,—
+BTCUSDT,chande-kroll-stop-flip,4h,"mode_a|(p14,x1.0,q9)",FAIL,FAIL,1.38,10.66,0.130,23,39.1,18.70,2.71,28.30,0.096,83,36.1,44.61,0.11,0.37,Y,Y,Y,Y,—,—
+BTCUSDT,chande-kroll-stop-flip,4h,"mode_a|(p10,x1.5,q14)",FAIL,FAIL,-5.48,10.66,-0.514,28,32.1,26.73,-25.92,28.30,-0.916,114,30.7,60.11,-0.06,-0.44,Y,Y,Y,Y,—,—
+BTCUSDT,chande-kroll-stop-flip,4h,"mode_b|(p10,x1.0,q9,wpr50)",FAIL,FAIL,6.38,10.66,0.598,9,33.3,12.96,11.53,28.30,0.408,50,40.0,31.33,0.21,0.42,Y,Y,Y,Y,—,THIN-N FLAG (BTC 6m n=9 in thin band [6..10])
+ETHUSDT,qqe-trailing-cross,1h,"mode_a|(rsi14,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,qqe-trailing-cross,1h,"mode_a|(rsi21,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,qqe-trailing-cross,1h,"mode_a|(rsi14,sf8,wt5.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,qqe-trailing-cross,1h,"mode_b|(rsi14,sf5,wt4.236,f50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,mama-fama-cross,1h,"mode_a|(fast0.5,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,mama-fama-cross,1h,"mode_a|(fast0.7,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,mama-fama-cross,1h,"mode_a|(fast0.5,slow0.08)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,mama-fama-cross,1h,"mode_b|(fast0.5,slow0.05,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,wilder-volatility-system-flip,1h,"mode_a|(n7,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,wilder-volatility-system-flip,1h,"mode_a|(n9,fac2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,wilder-volatility-system-flip,1h,"mode_a|(n9,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,wilder-volatility-system-flip,1h,"mode_b|(n7,fac3.0,atrpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-kroll-stop-flip,1h,"mode_a|(p10,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-kroll-stop-flip,1h,"mode_a|(p14,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-kroll-stop-flip,1h,"mode_a|(p10,x1.5,q14)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-kroll-stop-flip,1h,"mode_b|(p10,x1.0,q9,wpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,qqe-trailing-cross,4h,"mode_a|(rsi14,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,qqe-trailing-cross,4h,"mode_a|(rsi21,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,qqe-trailing-cross,4h,"mode_a|(rsi14,sf8,wt5.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,qqe-trailing-cross,4h,"mode_b|(rsi14,sf5,wt4.236,f50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,mama-fama-cross,4h,"mode_a|(fast0.5,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,mama-fama-cross,4h,"mode_a|(fast0.7,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,mama-fama-cross,4h,"mode_a|(fast0.5,slow0.08)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,mama-fama-cross,4h,"mode_b|(fast0.5,slow0.05,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,wilder-volatility-system-flip,4h,"mode_a|(n7,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,wilder-volatility-system-flip,4h,"mode_a|(n9,fac2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,wilder-volatility-system-flip,4h,"mode_a|(n9,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,wilder-volatility-system-flip,4h,"mode_b|(n7,fac3.0,atrpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-kroll-stop-flip,4h,"mode_a|(p10,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-kroll-stop-flip,4h,"mode_a|(p14,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-kroll-stop-flip,4h,"mode_a|(p10,x1.5,q14)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,chande-kroll-stop-flip,4h,"mode_b|(p10,x1.0,q9,wpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (BTC PASS_6m required)
+SOLUSDT,qqe-trailing-cross,1h,"mode_a|(rsi14,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,qqe-trailing-cross,1h,"mode_a|(rsi21,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,qqe-trailing-cross,1h,"mode_a|(rsi14,sf8,wt5.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,qqe-trailing-cross,1h,"mode_b|(rsi14,sf5,wt4.236,f50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,mama-fama-cross,1h,"mode_a|(fast0.5,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,mama-fama-cross,1h,"mode_a|(fast0.7,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,mama-fama-cross,1h,"mode_a|(fast0.5,slow0.08)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,mama-fama-cross,1h,"mode_b|(fast0.5,slow0.05,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,wilder-volatility-system-flip,1h,"mode_a|(n7,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,wilder-volatility-system-flip,1h,"mode_a|(n9,fac2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,wilder-volatility-system-flip,1h,"mode_a|(n9,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,wilder-volatility-system-flip,1h,"mode_b|(n7,fac3.0,atrpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-kroll-stop-flip,1h,"mode_a|(p10,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-kroll-stop-flip,1h,"mode_a|(p14,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-kroll-stop-flip,1h,"mode_a|(p10,x1.5,q14)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-kroll-stop-flip,1h,"mode_b|(p10,x1.0,q9,wpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,qqe-trailing-cross,4h,"mode_a|(rsi14,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,qqe-trailing-cross,4h,"mode_a|(rsi21,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,qqe-trailing-cross,4h,"mode_a|(rsi14,sf8,wt5.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,qqe-trailing-cross,4h,"mode_b|(rsi14,sf5,wt4.236,f50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,mama-fama-cross,4h,"mode_a|(fast0.5,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,mama-fama-cross,4h,"mode_a|(fast0.7,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,mama-fama-cross,4h,"mode_a|(fast0.5,slow0.08)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,mama-fama-cross,4h,"mode_b|(fast0.5,slow0.05,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,wilder-volatility-system-flip,4h,"mode_a|(n7,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,wilder-volatility-system-flip,4h,"mode_a|(n9,fac2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,wilder-volatility-system-flip,4h,"mode_a|(n9,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,wilder-volatility-system-flip,4h,"mode_b|(n7,fac3.0,atrpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-kroll-stop-flip,4h,"mode_a|(p10,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-kroll-stop-flip,4h,"mode_a|(p14,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-kroll-stop-flip,4h,"mode_a|(p10,x1.5,q14)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,chande-kroll-stop-flip,4h,"mode_b|(p10,x1.0,q9,wpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (ETH PASS_6m required)
+BNBUSDT,qqe-trailing-cross,1h,"mode_a|(rsi14,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,qqe-trailing-cross,1h,"mode_a|(rsi21,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,qqe-trailing-cross,1h,"mode_a|(rsi14,sf8,wt5.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,qqe-trailing-cross,1h,"mode_b|(rsi14,sf5,wt4.236,f50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,mama-fama-cross,1h,"mode_a|(fast0.5,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,mama-fama-cross,1h,"mode_a|(fast0.7,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,mama-fama-cross,1h,"mode_a|(fast0.5,slow0.08)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,mama-fama-cross,1h,"mode_b|(fast0.5,slow0.05,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,wilder-volatility-system-flip,1h,"mode_a|(n7,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,wilder-volatility-system-flip,1h,"mode_a|(n9,fac2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,wilder-volatility-system-flip,1h,"mode_a|(n9,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,wilder-volatility-system-flip,1h,"mode_b|(n7,fac3.0,atrpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-kroll-stop-flip,1h,"mode_a|(p10,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-kroll-stop-flip,1h,"mode_a|(p14,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-kroll-stop-flip,1h,"mode_a|(p10,x1.5,q14)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-kroll-stop-flip,1h,"mode_b|(p10,x1.0,q9,wpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,qqe-trailing-cross,4h,"mode_a|(rsi14,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,qqe-trailing-cross,4h,"mode_a|(rsi21,sf5,wt4.236)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,qqe-trailing-cross,4h,"mode_a|(rsi14,sf8,wt5.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,qqe-trailing-cross,4h,"mode_b|(rsi14,sf5,wt4.236,f50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,mama-fama-cross,4h,"mode_a|(fast0.5,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,mama-fama-cross,4h,"mode_a|(fast0.7,slow0.05)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,mama-fama-cross,4h,"mode_a|(fast0.5,slow0.08)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,mama-fama-cross,4h,"mode_b|(fast0.5,slow0.05,rising)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,wilder-volatility-system-flip,4h,"mode_a|(n7,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,wilder-volatility-system-flip,4h,"mode_a|(n9,fac2.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,wilder-volatility-system-flip,4h,"mode_a|(n9,fac3.0)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,wilder-volatility-system-flip,4h,"mode_b|(n7,fac3.0,atrpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-kroll-stop-flip,4h,"mode_a|(p10,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-kroll-stop-flip,4h,"mode_a|(p14,x1.0,q9)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-kroll-stop-flip,4h,"mode_a|(p10,x1.5,q14)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,chande-kroll-stop-flip,4h,"mode_b|(p10,x1.0,q9,wpr50)",FAIL,FAIL,—,—,—,—,—,—,—,—,—,—,—,—,—,—,Y,Y,Y,Y,—,Pruned by stop-ladder (SOL PASS_6m required)

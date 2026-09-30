@@ -1,0 +1,177 @@
+symbol,strategy_id,tf,mode_params,sol_smoke,bnb_smoke,sol_retention_note,n_6m,wr_6m_pct,mode_a_ret_6m_pct,bh_ret_6m_pct,ratio_bh_6m,pass_6m,n_full,wr_full_pct,mode_a_ret_full_pct,bh_ret_full_pct,ratio_bh_full,pass_full,ops_ret_6m_pct,ops_ret_full_pct,notes
+BTCUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(60,30)",Y,Y,—,32,25.00,-6.3614,10.7573,-0.5914,FAIL,127,29.13,0.0229,25.5310,0.0009,FAIL,-0.0984,0.2454,—
+BTCUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(40,20)",Y,Y,—,45,35.56,0.8439,10.7573,0.0784,FAIL,191,32.98,-35.5382,25.5310,-1.3920,FAIL,0.0869,-0.8439,—
+BTCUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(50,25)",Y,Y,—,33,30.30,5.3330,10.7573,0.4958,FAIL,143,32.17,11.9885,25.5310,0.4696,FAIL,0.2027,0.5221,—
+BTCUSDT,tii-midline-fifty-cross-v1,1h,"mode_b|(60,30,ob80)",Y,Y,—,28,25.00,-12.5897,10.7573,-1.1703,FAIL,112,33.93,-12.1866,25.5310,-0.4773,FAIL,-0.2700,-0.1338,—
+BTCUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(60,30)",Y,Y,—,7,57.14,16.1633,10.0911,1.6017,PASS,30,36.67,38.5112,27.4297,1.4040,PASS,0.4127,1.0368,THIN-N FLAG (BTC 6m n=7 in thin band [6..10])
+BTCUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(40,20)",Y,Y,—,9,55.56,22.4399,10.0911,2.2237,PASS,47,36.17,17.8864,27.4297,0.6521,FAIL,0.5672,0.5950,THIN-N FLAG (BTC 6m n=9 in thin band [6..10])
+BTCUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(50,25)",Y,Y,—,7,57.14,28.8215,10.0911,2.8561,PASS,39,38.46,30.4743,27.4297,1.1110,FAIL,0.6952,0.8701,THIN-N FLAG (BTC 6m n=7 in thin band [6..10])
+BTCUSDT,tii-midline-fifty-cross-v1,4h,"mode_b|(60,30,ob80)",Y,Y,—,7,42.86,2.2610,10.0911,0.2241,FAIL,25,40.00,11.9267,27.4297,0.4348,FAIL,0.0706,0.4641,THIN-N FLAG (BTC 6m n=7 in thin band [6..10])
+BTCUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p2,d10)",Y,Y,—,556,17.45,-82.9085,10.7573,-7.7072,FAIL,2239,18.89,-99.9142,25.5310,-3.9134,FAIL,-4.2700,-15.9866,—
+BTCUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p2,d8)",Y,Y,—,624,16.51,-86.8563,10.7573,-8.0742,FAIL,2452,18.60,-99.9582,25.5310,-3.9152,FAIL,-4.9008,-17.4830,—
+BTCUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p3,d10)",Y,Y,—,372,16.94,-68.6446,10.7573,-6.3812,FAIL,1473,18.74,-98.4784,25.5310,-3.8572,FAIL,-2.7878,-9.6990,—
+BTCUSDT,rainbow-osc-zero-cross-v1,1h,"mode_b|(p2,d10,rb38)",Y,Y,—,445,18.43,-72.5057,10.7573,-6.7402,FAIL,1830,18.47,-99.6514,25.5310,-3.9032,FAIL,-3.1321,-13.0321,—
+BTCUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p2,d10)",Y,Y,—,137,24.82,-36.0583,10.0911,-3.5733,FAIL,543,24.86,-79.1847,27.4297,-2.8868,FAIL,-1.0455,-3.6092,—
+BTCUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p2,d8)",Y,Y,—,150,25.33,-36.3462,10.0911,-3.6018,FAIL,605,24.13,-83.5806,27.4297,-3.0471,FAIL,-1.0543,-4.1674,—
+BTCUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p3,d10)",Y,Y,—,95,17.89,-24.1532,10.0911,-2.3935,FAIL,359,22.01,-62.6162,27.4297,-2.2828,FAIL,-0.6340,-2.2095,—
+BTCUSDT,rainbow-osc-zero-cross-v1,4h,"mode_b|(p2,d10,rb38)",Y,Y,—,117,23.93,-41.6066,10.0911,-4.1231,FAIL,440,23.86,-79.0454,27.4297,-2.8817,FAIL,-1.3162,-3.6916,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(10,14)",Y,Y,—,263,21.29,-51.5430,10.7573,-4.7915,FAIL,1037,21.31,-93.5353,25.5310,-3.6636,FAIL,-1.7479,-6.4113,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(8,14)",Y,Y,—,268,17.54,-53.1677,10.7573,-4.9425,FAIL,1004,21.22,-93.8132,25.5310,-3.6745,FAIL,-1.8353,-6.5342,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(14,14)",Y,Y,—,299,19.06,-59.8386,10.7573,-5.5626,FAIL,1120,19.73,-95.9290,25.5310,-3.7574,FAIL,-2.2077,-7.4713,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(10,10)",Y,Y,—,301,21.26,-52.5232,10.7573,-4.8826,FAIL,1226,21.04,-96.5359,25.5310,-3.7811,FAIL,-1.7961,-7.8424,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_b|(10,14,os40_ob60)",Y,Y,—,38,26.32,-5.5555,10.7573,-0.5164,FAIL,147,34.69,-9.4630,25.5310,-0.3706,FAIL,-0.0965,-0.0190,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(10,14)",Y,Y,—,68,27.94,-19.4951,10.0911,-1.9319,FAIL,243,26.75,-41.0253,27.4297,-1.4957,FAIL,-0.5048,-0.9948,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(8,14)",Y,Y,—,71,25.35,-21.3743,10.0911,-2.1181,FAIL,250,24.80,-45.2075,27.4297,-1.6481,FAIL,-0.5638,-1.1907,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(14,14)",Y,Y,—,71,30.99,-18.1693,10.0911,-1.8005,FAIL,253,26.09,-39.3309,27.4297,-1.4339,FAIL,-0.4536,-0.9038,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(10,10)",Y,Y,—,74,28.38,-22.5190,10.0911,-2.2316,FAIL,290,25.52,-49.0216,27.4297,-1.7872,FAIL,-0.5958,-1.4011,—
+BTCUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_b|(10,14,os40_ob60)",Y,Y,—,8,50.00,7.5548,10.0911,0.7487,FAIL,35,45.71,22.5189,27.4297,0.8210,FAIL,0.2183,0.7192,THIN-N FLAG (BTC 6m n=8 in thin band [6..10])
+BTCUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N35),Y,Y,—,101,11.88,-35.1628,10.7573,-3.2688,FAIL,387,20.93,-68.3361,25.5310,-2.6766,FAIL,-1.0545,-2.7507,—
+BTCUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N25),Y,Y,—,158,18.35,-41.6685,10.7573,-3.8735,FAIL,573,21.82,-82.7837,25.5310,-3.2425,FAIL,-1.3086,-4.1896,—
+BTCUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N20),Y,Y,—,166,14.46,-39.6201,10.7573,-3.6831,FAIL,658,18.54,-83.5213,25.5310,-3.2714,FAIL,-1.2220,-4.2749,—
+BTCUSDT,tcf-plus-sign-flip-v1,1h,mode_b|(N35),Y,Y,—,1,100.00,0.2410,10.7573,0.0224,FAIL,3,33.33,-0.6198,25.5310,-0.0243,FAIL,0.0060,-0.0155,—
+BTCUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N35),Y,Y,—,17,29.41,4.2904,10.0911,0.4252,FAIL,89,28.09,-7.9071,27.4297,-0.2883,FAIL,0.1291,-0.1073,—
+BTCUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N25),Y,Y,—,33,18.18,-0.0766,10.0911,-0.0076,FAIL,128,21.88,-35.0383,27.4297,-1.2774,FAIL,0.0594,-0.8981,—
+BTCUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N20),Y,Y,—,43,27.91,-3.6707,10.0911,-0.3638,FAIL,180,24.44,-51.4862,27.4297,-1.8770,FAIL,-0.0310,-1.6345,—
+BTCUSDT,tcf-plus-sign-flip-v1,4h,mode_b|(N35),Y,Y,—,0,0.00,0.0000,10.0911,0.0000,FAIL,1,0.00,-3.0379,27.4297,-0.1108,FAIL,0.0000,-0.0760,—
+BTCUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,129,28.68,-24.9109,10.7573,-2.3157,FAIL,542,28.41,-80.2498,25.5310,-3.1432,FAIL,-0.6670,-3.7582,—
+BTCUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(5,35)",Y,Y,—,173,24.28,-39.4234,10.7573,-3.6648,FAIL,721,23.72,-88.6336,25.5310,-3.4716,FAIL,-1.1934,-5.0681,—
+BTCUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(8,21)",Y,Y,—,173,28.90,-38.1245,10.7573,-3.5441,FAIL,710,28.87,-86.9271,25.5310,-3.4048,FAIL,-1.1527,-4.7421,—
+BTCUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(12,26)",Y,Y,—,123,30.08,-22.3133,10.7573,-2.0743,FAIL,512,29.69,-76.7654,25.5310,-3.0067,FAIL,-0.5825,-3.3622,—
+BTCUSDT,dema-fast-slow-cross-v1,1h,"mode_b|(close,30)",Y,Y,—,291,19.93,-57.9830,10.7573,-5.3901,FAIL,1279,19.55,-98.1733,25.5310,-3.8453,FAIL,-2.0943,-9.3098,—
+BTCUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,34,23.53,-1.1122,10.0911,-0.1102,FAIL,140,32.86,-22.7501,27.4297,-0.8294,FAIL,0.0452,-0.4083,—
+BTCUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(5,35)",Y,Y,—,43,25.58,-3.2321,10.0911,-0.3203,FAIL,175,27.43,-27.2781,27.4297,-0.9945,FAIL,-0.0156,-0.5623,—
+BTCUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(8,21)",Y,Y,—,42,26.19,-2.0912,10.0911,-0.2072,FAIL,167,31.14,-10.5423,27.4297,-0.3843,FAIL,0.0188,-0.0368,—
+BTCUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(12,26)",Y,Y,—,31,22.58,0.1784,10.0911,0.0177,FAIL,132,31.82,-18.1002,27.4297,-0.6599,FAIL,0.0784,-0.2655,—
+BTCUSDT,dema-fast-slow-cross-v1,4h,"mode_b|(close,30)",Y,Y,—,85,20.00,-19.5388,10.0911,-1.9362,FAIL,331,21.75,-58.0223,27.4297,-2.1153,FAIL,-0.4807,-1.9134,—
+ETHUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(60,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(40,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(50,25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tii-midline-fifty-cross-v1,1h,"mode_b|(60,30,ob80)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(60,30)",Y,Y,—,8,37.50,18.6022,15.5026,1.1999,FAIL,31,35.48,40.0088,4.0028,9.9952,PASS,0.5281,1.5783,Near-miss 6m (1.20x B&H)
+ETHUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(40,20)",Y,Y,—,11,45.45,39.3019,15.5026,2.5352,PASS,48,37.50,13.3490,4.0028,3.3349,PASS,0.9426,0.8786,—
+ETHUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(50,25)",Y,Y,—,7,57.14,51.7615,15.5026,3.3389,PASS,36,44.44,31.8439,4.0028,7.9554,PASS,1.1680,1.2769,—
+ETHUSDT,tii-midline-fifty-cross-v1,4h,"mode_b|(60,30,ob80)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p2,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p2,d8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p3,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rainbow-osc-zero-cross-v1,1h,"mode_b|(p2,d10,rb38)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p2,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p2,d8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p3,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,rainbow-osc-zero-cross-v1,4h,"mode_b|(p2,d10,rb38)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(10,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(8,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(14,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(10,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_b|(10,14,os40_ob60)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(10,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(8,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(14,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(10,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_b|(10,14,os40_ob60)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tcf-plus-sign-flip-v1,1h,mode_b|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,tcf-plus-sign-flip-v1,4h,mode_b|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(5,35)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(8,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,1h,"mode_b|(close,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(5,35)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(8,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,dema-fast-slow-cross-v1,4h,"mode_b|(close,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(60,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(40,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(50,25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tii-midline-fifty-cross-v1,1h,"mode_b|(60,30,ob80)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(60,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(40,20)",Y,Y,RETENTION OK: 12 trades (ETH=11),12,50.00,22.3439,15.9877,1.3976,PASS,46,45.65,22.6158,-23.1339,-0.9776,PASS,0.6281,0.9414,SOL hard filter
+SOLUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(50,25)",Y,Y,RETENTION OK: 8 trades (ETH=7),8,62.50,33.5528,15.9877,2.0987,PASS,35,42.86,71.3998,-23.1339,-3.0864,PASS,0.8790,1.7890,SOL hard filter
+SOLUSDT,tii-midline-fifty-cross-v1,4h,"mode_b|(60,30,ob80)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p2,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p2,d8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p3,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rainbow-osc-zero-cross-v1,1h,"mode_b|(p2,d10,rb38)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p2,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p2,d8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p3,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,rainbow-osc-zero-cross-v1,4h,"mode_b|(p2,d10,rb38)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(10,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(8,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(14,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(10,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_b|(10,14,os40_ob60)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(10,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(8,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(14,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(10,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_b|(10,14,os40_ob60)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tcf-plus-sign-flip-v1,1h,mode_b|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,tcf-plus-sign-flip-v1,4h,mode_b|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(5,35)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(8,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,1h,"mode_b|(close,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(5,35)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(8,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,dema-fast-slow-cross-v1,4h,"mode_b|(close,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(60,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(40,20)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tii-midline-fifty-cross-v1,1h,"mode_a|(50,25)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tii-midline-fifty-cross-v1,1h,"mode_b|(60,30,ob80)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(60,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(40,20)",Y,Y,—,11,36.36,-14.5686,15.7540,-0.9248,FAIL,43,37.21,-18.5110,35.4292,-0.5225,FAIL,-0.3426,-0.3183,BNB hard filter
+BNBUSDT,tii-midline-fifty-cross-v1,4h,"mode_a|(50,25)",Y,Y,—,10,50.00,-10.9469,15.7540,-0.6949,FAIL,35,51.43,12.2527,35.4292,0.3458,FAIL,-0.2266,0.4699,BNB hard filter
+BNBUSDT,tii-midline-fifty-cross-v1,4h,"mode_b|(60,30,ob80)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p2,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p2,d8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rainbow-osc-zero-cross-v1,1h,"mode_a|(p3,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rainbow-osc-zero-cross-v1,1h,"mode_b|(p2,d10,rb38)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p2,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p2,d8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rainbow-osc-zero-cross-v1,4h,"mode_a|(p3,d10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,rainbow-osc-zero-cross-v1,4h,"mode_b|(p2,d10,rb38)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(10,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(8,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(14,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_a|(10,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,1h,"mode_b|(10,14,os40_ob60)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(10,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(8,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(14,14)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_a|(10,10)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dorsey-relvol-midline-fifty-v1,4h,"mode_b|(10,14,os40_ob60)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tcf-plus-sign-flip-v1,1h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tcf-plus-sign-flip-v1,1h,mode_b|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N25),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tcf-plus-sign-flip-v1,4h,mode_a|(N20),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,tcf-plus-sign-flip-v1,4h,mode_b|(N35),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(5,35)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(8,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,1h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,1h,"mode_b|(close,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(5,35)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(8,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,4h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,dema-fast-slow-cross-v1,4h,"mode_b|(close,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
