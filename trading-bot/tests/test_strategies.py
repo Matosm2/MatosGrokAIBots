@@ -7,8 +7,11 @@ from app.strategy_registry import STRATEGY_REGISTRY, get_active_strategies
 
 
 def test_locked_paper_seats_exist():
+    assert "btc-dd2h" in STRATEGY_REGISTRY
     assert "bostian-iii-sma-zero" in STRATEGY_REGISTRY
     assert "accdist-sma-cross-v1" in STRATEGY_REGISTRY
+    assert STRATEGY_REGISTRY["bostian-iii-sma-zero"].status == "Parked"
+    assert STRATEGY_REGISTRY["accdist-sma-cross-v1"].status == "Parked"
 
 
 def test_bostian_seat_spec():
@@ -35,9 +38,21 @@ def test_accdist_seat_spec():
     assert "ADL" in strat.exit_rule or "Accumulation/Distribution" in strat.exit_rule
 
 
+def test_btc_dd2h_seat_spec():
+    strat = STRATEGY_REGISTRY["btc-dd2h"]
+    assert strat.symbol == "BTCUSDT"
+    assert strat.status == "Paper"
+    assert strat.direction == "Long / short / flat"
+    assert strat.book_equity_usdt == 1_000.0
+    assert strat.position_equity_pct == 100.0
+    assert strat.leverage == 1.0
+    assert strat.fee_pct == 0.055
+
+
 def test_get_active_strategies_without_trades():
     strats = get_active_strategies()
     ids = [s.strategy_id for s in strats]
+    assert "btc-dd2h" in ids
     assert "bostian-iii-sma-zero" in ids
     assert "accdist-sma-cross-v1" in ids
 

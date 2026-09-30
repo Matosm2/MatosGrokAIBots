@@ -9,6 +9,7 @@ from typing import Any
 
 from app.config import Settings
 from app.models import RiskDecision, Side, TradingViewAlert
+from app.target_book import StrategyBook
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ class PortfolioState:
     day_start_equity_usdt: float | None = None
     day: date = field(default_factory=lambda: datetime.now(timezone.utc).date())
     prices: dict[str, float] = field(default_factory=dict)  # last known mid
+    strategy_books: dict[str, StrategyBook] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.cash_usdt is None:
@@ -61,6 +63,7 @@ class PortfolioState:
         self.daily_realized_pnl_usdt = 0.0
         self.day = datetime.now(timezone.utc).date()
         self.day_start_equity_usdt = eq
+        self.strategy_books.clear()
         # Keep seeded price hints if present; harmless for paper.
 
     def mark_equity(self) -> float:
@@ -84,6 +87,7 @@ class PortfolioState:
             "day_start_equity_usdt": self.day_start_equity_usdt,
             "day": self.day.isoformat(),
             "prices": dict(self.prices),
+            "strategy_books": {k: book.to_dict() for k, book in self.strategy_books.items()},
         }
 
     @classmethod
@@ -104,7 +108,31 @@ class PortfolioState:
             day_start_equity_usdt=float(dse) if dse is not None else None,
             day=day,
             prices={k: float(v) for k, v in (data.get("prices") or {}).items()},
+            strategy_books={
+                k: StrategyBook.from_dict(v)
+                for k, v in (data.get("strategy_books") or {}).items()
+                if isinstance(v, dict)
+            },
         )
+
+
+def check_strategy_allowlist(
+    alert: TradingViewAlert,
+    settings: Settings,
+) -> RiskDecision | None:
+    """Named strategies are fail-closed. Empty ALLOWED_STRATEGIES rejects all of them.
+
+    Alerts with no strategy_id stay on the legacy spot path.
+    """
+    sid = (alert.strategy_id or "").strip()
+    if not sid:
+        return None
+    if sid not in settings.allowed_strategy_set:
+        return RiskDecision(
+            allowed=False,
+            reason=f"Strategy {sid} not in ALLOWED_STRATEGIES",
+        )
+    return None
 
 
 def resolve_price(alert: TradingViewAlert, state: PortfolioState) -> float | None:
@@ -147,6 +175,10 @@ def check_risk(
     """Apply balanced risk rules; return allow/deny with sized quantity."""
     state.reset_day_if_needed()
     state.mark_equity()
+
+    blocked = check_strategy_allowlist(alert, settings)
+    if blocked is not None:
+        return blocked
 
     symbol = alert.symbol
     if symbol not in settings.allowed_symbol_set:

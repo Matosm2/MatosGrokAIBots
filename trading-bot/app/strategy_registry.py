@@ -5,6 +5,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterable, Optional
 
+from app.target_book import (
+    EQUITY_FRACTION,
+    FEE_PCT,
+    LEVERAGE,
+    START_EQUITY_USDT,
+    STRATEGY_ID as BTC_DD2H_ID,
+    SYMBOL as BTC_DD2H_SYMBOL,
+)
+
 if TYPE_CHECKING:
     from app.models import TradeRecord
 
@@ -26,10 +35,38 @@ class StrategyInfo:
     mode: str = "Mode A (closed bar)"
     direction: str = "Long-only"
     status: str = "Paper Active"
+    book_equity_usdt: Optional[float] = None
+    position_equity_pct: Optional[float] = None
+    leverage: Optional[float] = None
+    fee_pct: Optional[float] = None
 
 
-# Locked paper seats (source of truth: PAPER_PARAMS)
+# Locked paper seats. btc-dd2h is the only target-style book.
+# bostian / accdist stay visible but parked (not on the allowlist).
 STRATEGY_REGISTRY: dict[str, StrategyInfo] = {
+    BTC_DD2H_ID: StrategyInfo(
+        strategy_id=BTC_DD2H_ID,
+        name="BTC DD2h",
+        symbol=BTC_DD2H_SYMBOL,
+        timeframe="2h",
+        description=(
+            "Separate paper book. Target position long, short, or flat "
+            "(not spot long-only). Stays off until ALLOWED_STRATEGIES includes "
+            "btc-dd2h. No live path."
+        ),
+        build="target in {long, short, flat}; size = 100% of book equity × 1x",
+        entry_rule="Set target long or short at 100% of this book's equity, 1x leverage.",
+        exit_rule="Set target flat, or flip to the opposite target. Fee 0.055% on traded notional.",
+        entry_signal='target "long" | "short"',
+        exit_signal='target "flat"',
+        mode="Target (paper only)",
+        direction="Long / short / flat",
+        status="Paper",
+        book_equity_usdt=START_EQUITY_USDT,
+        position_equity_pct=EQUITY_FRACTION * 100.0,
+        leverage=LEVERAGE,
+        fee_pct=FEE_PCT,
+    ),
     "bostian-iii-sma-zero": StrategyInfo(
         strategy_id="bostian-iii-sma-zero",
         name="Bostian III SMA(21) Zero-Line",
@@ -49,7 +86,7 @@ STRATEGY_REGISTRY: dict[str, StrategyInfo] = {
         exit_signal="ta.crossunder(iiiS, 0)",
         mode="Mode A (closed bar)",
         direction="Long-only",
-        status="Paper Active",
+        status="Parked",
     ),
     "accdist-sma-cross-v1": StrategyInfo(
         strategy_id="accdist-sma-cross-v1",
@@ -70,7 +107,7 @@ STRATEGY_REGISTRY: dict[str, StrategyInfo] = {
         exit_signal="ta.crossunder(adl, sig)",
         mode="Mode A (closed bar)",
         direction="Long-only",
-        status="Paper Active",
+        status="Parked",
     ),
 }
 
