@@ -22,6 +22,7 @@ def executor() -> TradeExecutor:
         max_open_positions=4,
         max_daily_loss_pct=5.0,
         allowed_symbols="BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT",
+        allowed_strategies="test-strat",
         paper_equity_usdt=10_000.0,
         data_dir="",
     )

@@ -14,11 +14,22 @@ from app.logging_config import log_event
 from app.models import (
     OrderStatus,
     Side,
+    TargetPosition,
     TradeRecord,
     TradingViewAlert,
     WebhookResponse,
 )
-from app.risk import PortfolioState, apply_fill, check_risk
+from app.risk import PortfolioState, apply_fill, check_risk, check_strategy_allowlist, resolve_price
+from app.target_book import (
+    PAPER_ONLY_REASON,
+    STRATEGY_ID as BTC_DD2H_ID,
+    SYMBOL as BTC_DD2H_SYMBOL,
+    SYMBOL_REASON,
+    TARGET_REQUIRED_REASON,
+    TargetFill,
+    apply_target,
+    new_btc_dd2h_book,
+)
 
 if TYPE_CHECKING:
     from app.persistence import JsonStore
@@ -48,6 +59,47 @@ class TradeExecutor:
             if t.id == trade_id:
                 return t
         return None
+
+    def _record_side(self, alert: TradingViewAlert) -> Side:
+        if alert.side is not None:
+            return alert.side
+        if alert.target == TargetPosition.LONG:
+            return Side.BUY
+        return Side.SELL
+
+    def _record_reject(
+        self,
+        alert: TradingViewAlert,
+        alert_id: str,
+        reason: str,
+    ) -> WebhookResponse:
+        trade = TradeRecord(
+            alert_id=alert_id,
+            symbol=alert.symbol,
+            side=self._record_side(alert),
+            qty=0.0,
+            price=alert.price,
+            status=OrderStatus.REJECTED,
+            mode=self.settings.trading_mode,
+            strategy_id=alert.strategy_id,
+            reason=reason,
+        )
+        self.idempotency.commit(alert_id, trade.id)
+        self.recent.appendleft(trade)
+        self._persist_portfolio()
+        log_event(
+            logger,
+            "risk_rejected",
+            alert_id=alert_id,
+            symbol=alert.symbol,
+            reason=reason,
+        )
+        return WebhookResponse(
+            ok=False,
+            status=OrderStatus.REJECTED,
+            trade=trade,
+            message=reason,
+        )
 
     def _persist_portfolio(self) -> None:
         if not self.store or not self.store.enabled:
@@ -124,41 +176,33 @@ class TradeExecutor:
                     message=f"Duplicate alert_id={alert_id}; returning prior trade",
                 )
 
+            blocked = check_strategy_allowlist(alert, self.settings)
+            if blocked is not None:
+                return self._record_reject(alert, alert_id, blocked.reason)
+
+            if (alert.strategy_id or "").strip() == BTC_DD2H_ID:
+                try:
+                    return await self._handle_btc_dd2h(alert, alert_id)
+                except Exception:
+                    self.idempotency.abort(alert_id)
+                    raise
+
+            if alert.side is None:
+                return self._record_reject(
+                    alert,
+                    alert_id,
+                    "target long/short/flat is only valid for btc-dd2h",
+                )
+
             # Live: sync balances before sizing (do not use PAPER_EQUITY_USDT)
             if not self.settings.is_paper:
                 await self._sync_live_equity()
 
             decision = check_risk(alert, self.settings, self.state)
             if not decision.allowed:
-                trade = TradeRecord(
-                    alert_id=alert_id,
-                    symbol=alert.symbol,
-                    side=alert.side,
-                    qty=0.0,
-                    price=alert.price,
-                    status=OrderStatus.REJECTED,
-                    mode=self.settings.trading_mode,
-                    strategy_id=alert.strategy_id,
-                    reason=decision.reason,
-                )
                 # Risk rejects are definitive for this alert_id — commit so retries
                 # don't re-spam; failed live orders use abort instead.
-                self.idempotency.commit(alert_id, trade.id)
-                self.recent.appendleft(trade)
-                self._persist_portfolio()
-                log_event(
-                    logger,
-                    "risk_rejected",
-                    alert_id=alert_id,
-                    symbol=alert.symbol,
-                    reason=decision.reason,
-                )
-                return WebhookResponse(
-                    ok=False,
-                    status=OrderStatus.REJECTED,
-                    trade=trade,
-                    message=decision.reason,
-                )
+                return self._record_reject(alert, alert_id, decision.reason)
 
             qty = decision.sized_qty or 0.0
             price = alert.price or self.state.prices.get(alert.symbol)
@@ -175,6 +219,94 @@ class TradeExecutor:
             except Exception:
                 self.idempotency.abort(alert_id)
                 raise
+
+    async def _handle_btc_dd2h(
+        self,
+        alert: TradingViewAlert,
+        alert_id: str,
+    ) -> WebhookResponse:
+        """Paper book only. Never calls Binance, even if TRADING_MODE=live."""
+        if not self.settings.is_paper:
+            return self._record_reject(alert, alert_id, PAPER_ONLY_REASON)
+        if alert.target is None:
+            return self._record_reject(alert, alert_id, TARGET_REQUIRED_REASON)
+        if alert.symbol != BTC_DD2H_SYMBOL:
+            return self._record_reject(alert, alert_id, SYMBOL_REASON)
+        if alert.symbol not in self.settings.allowed_symbol_set:
+            return self._record_reject(
+                alert,
+                alert_id,
+                f"Symbol {alert.symbol} not in ALLOWED_SYMBOLS",
+            )
+
+        price = resolve_price(alert, self.state)
+        if price is None or price <= 0:
+            return self._record_reject(
+                alert,
+                alert_id,
+                "Missing price: include price in alert or wait for market data",
+            )
+
+        book = self.state.strategy_books.get(BTC_DD2H_ID)
+        if book is None:
+            book = new_btc_dd2h_book()
+        marked = book.cash_usdt + book.qty * price
+        if alert.target != TargetPosition.FLAT and marked <= 0:
+            return self._record_reject(
+                alert,
+                alert_id,
+                "btc-dd2h book equity is not positive",
+            )
+
+        fill: TargetFill = apply_target(book, alert.target.value, price)
+        if fill.already:
+            return self._record_reject(
+                alert,
+                alert_id,
+                f"btc-dd2h already at target {fill.target}",
+            )
+
+        self.state.strategy_books[BTC_DD2H_ID] = book
+        self.state.prices[alert.symbol] = price
+        reason = (
+            f"target={fill.target}; fee={fill.fee_usdt:.4f} USDT; "
+            f"book equity={book.equity_usdt:.4f}; paper-only"
+        )
+        trade = TradeRecord(
+            alert_id=alert_id,
+            symbol=alert.symbol,
+            side=fill.side,
+            qty=round(fill.qty, 8),
+            price=price,
+            notional_usdt=round(fill.notional_usdt, 4),
+            status=OrderStatus.PAPER,
+            mode="paper",
+            strategy_id=BTC_DD2H_ID,
+            reason=reason,
+        )
+        self.idempotency.commit(alert_id, trade.id)
+        self.recent.appendleft(trade)
+        self._persist_portfolio()
+        log_event(
+            logger,
+            "paper_target_order",
+            alert_id=alert_id,
+            symbol=alert.symbol,
+            side=fill.side.value,
+            target=fill.target,
+            qty=trade.qty,
+            price=price,
+            fee=fill.fee_usdt,
+            strategy_id=BTC_DD2H_ID,
+            book_equity=book.equity_usdt,
+            book_qty=book.qty,
+        )
+        return WebhookResponse(
+            ok=True,
+            status=OrderStatus.PAPER,
+            trade=trade,
+            message="Paper target recorded",
+        )
 
     async def _paper_execute(
         self,

@@ -9,7 +9,8 @@ FastAPI service that receives **TradingView alert webhooks**, validates signals,
 ## Features
 
 - TradingView JSON webhook endpoint with shared-secret auth
-- Signal validation: symbol (strips `BINANCE:` etc.), side (`buy`/`sell`), optional `qty` / `qty_pct` / `close_all`, `strategy_id`
+- Signal validation: symbol (strips `BINANCE:` etc.), side (`buy`/`sell`) or target (`long`/`short`/`flat` for `btc-dd2h`), optional `qty` / `qty_pct` / `close_all`, `strategy_id`
+- `ALLOWED_STRATEGIES`: empty rejects every named strategy. `btc-dd2h` is a separate paper book (1,000 USDT, 100% equity, 1x, 0.055% fee) and has no live path
 - Risk gates: per-trade % (buys only), max position %, max open positions, daily loss circuit breaker (buys halted; sells still allowed), allow-list
 - Paper executor (default) with meaningful cash/equity/realized PnL; live Spot MARKET orders via REST (`httpx`) with LOT_SIZE / minNotional rounding and live balance sync
 - Idempotent `alert_id` handling with claim/commit/abort (failed live orders are **not** marked duplicate)
@@ -63,7 +64,8 @@ docker compose up --build
 | Field | Required | Description |
 |-------|----------|-------------|
 | `symbol` | yes | Pair, e.g. `BTCUSDT` (also `BTC/USDT`, `BINANCE:BTCUSDT`) |
-| `side` | yes | `buy` or `sell` |
+| `side` | yes* | `buy` or `sell` for spot. `long`, `short`, or `flat` is accepted as a target for `btc-dd2h` |
+| `target` | for `btc-dd2h` | `long`, `short`, or `flat` (target position, not a spot order) |
 | `qty` | no* | Absolute base-asset quantity (buys trimmed to `RISK_PER_TRADE_PCT`) |
 | `qty_pct` | no* | % of equity to allocate. **Sells are not capped by `RISK_PER_TRADE_PCT`** (e.g. `12` to exit a max-sized long) |
 | `close_all` | no | `true` on sell → close entire open long |
@@ -72,7 +74,32 @@ docker compose up --build
 | `alert_id` | recommended | Idempotency key; use `{{time}}` (not `{{timenow}}`); auto-generated if missing |
 | `secret` | if no header | Must match `WEBHOOK_SECRET` |
 
-\*If both `qty` and `qty_pct` are omitted, size defaults to `RISK_PER_TRADE_PCT` of equity. Do not send both.
+\*Spot alerts need `side` buy/sell. `btc-dd2h` needs `target` (or `side`) of `long` / `short` / `flat` and does not use `qty`. If both `qty` and `qty_pct` are omitted on a spot alert, size defaults to `RISK_PER_TRADE_PCT` of equity. Do not send both.
+
+### btc-dd2h paper book
+
+`btc-dd2h` is target-style and paper-only. It does not use the spot long-only book.
+
+| Rule | Value |
+|------|--------|
+| Book | Separate, starts at **1,000 USDT** |
+| Size | **100%** of that book's equity, **1x** |
+| Fee | **0.055%** of traded notional |
+| Live | Rejected. No Binance order path |
+| Admit | `ALLOWED_STRATEGIES` must include `btc-dd2h`. Empty rejects every named strategy |
+
+```json
+{
+  "symbol": "BTCUSDT",
+  "strategy_id": "btc-dd2h",
+  "target": "long",
+  "price": {{close}},
+  "alert_id": "btc-dd2h-BTCUSDT-{{time}}-long",
+  "secret": "YOUR_WEBHOOK_SECRET"
+}
+```
+
+`target` may also be `short` or `flat`. `"side": "long"` is accepted as the same target. Spot `buy`/`sell` for this strategy id is rejected.
 
 ### Sample Pine alert message template
 
@@ -162,6 +189,7 @@ Do **not** keep relying on an ephemeral Cloudflare tunnel for production paper a
 | `DATA_DIR` | recommended | Persist portfolio/idempotency — use `/data` with a volume (**attach in Railway UI**; `railway.toml` does not create it) |
 | `PAPER_REQUIRE_STRONG_SECRET` | optional | `1`/`true` → refuse default `WEBHOOK_SECRET` even in paper (also auto when `DATA_DIR` is absolute, e.g. `/data`) |
 | `ALLOWED_SYMBOLS` | optional | Default BTC/ETH/SOL/BNB USDT |
+| `ALLOWED_STRATEGIES` | optional | Comma-separated strategy ids. **Empty rejects every named strategy.** Leave empty until a seat is explicitly enabled. `btc-dd2h` is paper-only |
 | `RISK_PER_TRADE_PCT` / `MAX_POSITION_PCT` / `MAX_OPEN_POSITIONS` / `MAX_DAILY_LOSS_PCT` | optional | See risk table below |
 | `BINANCE_API_KEY` / `BINANCE_API_SECRET` | live only | Leave empty in paper |
 | `PORT` | platform | Railway injects this; Dockerfile/`Procfile` honour it |
@@ -228,7 +256,8 @@ Never commit real keys. Do not invent placeholder live keys in git.
 | `MAX_POSITION_PCT` | `12` | Cap per-symbol notional as % of equity |
 | `MAX_OPEN_POSITIONS` | `4` | Max concurrent long symbols |
 | `MAX_DAILY_LOSS_PCT` | `5` | Halt **new buys** after daily realized loss; sells/closes still allowed |
-| `ALLOWED_SYMBOLS` | `BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT` | Allow-list |
+| `ALLOWED_SYMBOLS` | `BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT` | Symbol allow-list |
+| `ALLOWED_STRATEGIES` | *(empty)* | Named-strategy allow-list. Empty rejects all named strategies |
 | `TRADING_MODE` | `paper` | `paper` or `live` |
 | `DEFAULT_QUOTE` | `USDT` | Quote asset |
 | `DATA_DIR` | `data` | Portfolio + idempotency persistence (empty = memory only) |

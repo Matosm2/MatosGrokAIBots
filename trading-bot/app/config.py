@@ -47,6 +47,9 @@ class Settings(BaseSettings):
 
     allowed_symbols: str = "BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT"
 
+    # Named strategies admitted by the webhook. Empty rejects every named strategy.
+    allowed_strategies: str = ""
+
     # Paper equity baseline (USDT)
     paper_equity_usdt: float = 10_000.0
 
@@ -102,6 +105,10 @@ class Settings(BaseSettings):
     @property
     def allowed_symbol_set(self) -> set[str]:
         return {s.strip().upper() for s in self.allowed_symbols.split(",") if s.strip()}
+
+    @property
+    def allowed_strategy_set(self) -> set[str]:
+        return {s.strip() for s in self.allowed_strategies.split(",") if s.strip()}
 
     @property
     def is_paper(self) -> bool:

@@ -15,6 +15,17 @@ class Side(str, Enum):
     SELL = "sell"
 
 
+class TargetPosition(str, Enum):
+    """Desired position for a target-style alert (not a spot order side)."""
+
+    LONG = "long"
+    SHORT = "short"
+    FLAT = "flat"
+
+
+_TARGET_WORDS = frozenset({"long", "short", "flat"})
+
+
 class OrderStatus(str, Enum):
     ACCEPTED = "accepted"
     REJECTED = "rejected"
@@ -52,7 +63,11 @@ class TradingViewAlert(BaseModel):
     """Incoming TradingView webhook JSON schema."""
 
     symbol: str = Field(..., description="Trading pair, e.g. BTCUSDT")
-    side: Side
+    side: Optional[Side] = None
+    target: Optional[TargetPosition] = Field(
+        default=None,
+        description="Target position for btc-dd2h: long, short, or flat",
+    )
     qty: Optional[float] = Field(default=None, gt=0, description="Absolute quantity")
     qty_pct: Optional[float] = Field(
         default=None, gt=0, le=100, description="% of equity to risk/allocate"
@@ -76,6 +91,20 @@ class TradingViewAlert(BaseModel):
     def normalize_symbol_field(cls, v: str) -> str:
         return normalize_symbol(v)
 
+    @model_validator(mode="before")
+    @classmethod
+    def lift_target_from_side(cls, data: Any) -> Any:
+        """Accept side=long|short|flat as a target-style alert."""
+        if not isinstance(data, dict):
+            return data
+        raw = data.get("side")
+        if isinstance(raw, str) and raw.strip().lower() in _TARGET_WORDS:
+            data = dict(data)
+            if not data.get("target"):
+                data["target"] = raw.strip().lower()
+            data["side"] = None
+        return data
+
     @field_validator("side", mode="before")
     @classmethod
     def normalize_side(cls, v: object) -> object:
@@ -83,8 +112,17 @@ class TradingViewAlert(BaseModel):
             return v.strip().lower()
         return v
 
+    @field_validator("target", mode="before")
+    @classmethod
+    def normalize_target(cls, v: object) -> object:
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
+
     @model_validator(mode="after")
     def require_qty_or_pct(self) -> TradingViewAlert:
+        if self.side is None and self.target is None:
+            raise ValueError("Provide side buy/sell or target long/short/flat")
         if self.qty is not None and self.qty_pct is not None:
             raise ValueError("Provide either qty or qty_pct, not both")
         if self.close_all and self.side != Side.SELL:

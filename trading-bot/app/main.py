@@ -78,6 +78,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         "startup",
         trading_mode=settings.trading_mode,
         allowed_symbols=",".join(sorted(settings.allowed_symbol_set)),
+        allowed_strategies=",".join(sorted(settings.allowed_strategy_set)) or "(none)",
         data_dir=data_dir or "(memory)",
         insecure_webhook=settings.insecure_webhook_secret,
     )

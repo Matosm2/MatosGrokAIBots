@@ -38,6 +38,30 @@ def test_reject_invalid_side():
         TradingViewAlert(symbol="BTCUSDT", side="hold")
 
 
+def test_parse_target_from_side_word():
+    alert = TradingViewAlert(
+        symbol="BTCUSDT",
+        side="long",
+        strategy_id="btc-dd2h",
+        price=60_000,
+    )
+    assert alert.target is not None
+    assert alert.target.value == "long"
+    assert alert.side is None
+
+
+def test_parse_target_field():
+    alert = TradingViewAlert(
+        symbol="BTCUSDT",
+        target="flat",
+        strategy_id="btc-dd2h",
+        price=60_000,
+    )
+    assert alert.target is not None
+    assert alert.target.value == "flat"
+    assert alert.side is None
+
+
 def test_reject_negative_qty():
     with pytest.raises(ValidationError):
         TradingViewAlert(symbol="BTCUSDT", side="buy", qty=-1)

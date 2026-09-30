@@ -19,6 +19,7 @@ from app.deps import get_executor, get_portfolio, secrets_equal
 from app.executor import TradeExecutor
 from app.risk import PortfolioState
 from app.strategy_registry import StrategyInfo, get_active_strategies
+from app.target_book import StrategyBook
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +148,7 @@ def _layout(title: str, body: str, authed: bool = False) -> str:
       font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
     }}
     .badge.paper {{ background: #1e3a5f; color: #8ec8ff; }}
+    .badge.parked {{ background: #3a3420; color: #e6c36a; }}
     .badge.live {{ background: #3a1e1e; color: #ff8e8e; }}
     .pos {{ color: var(--ok); }}
     .neg {{ color: var(--bad); }}
@@ -242,7 +244,10 @@ def _fmt_money(v: float) -> str:
     return f"{v:,.2f}"
 
 
-def _render_strategies(strategies: list[StrategyInfo]) -> str:
+def _render_strategies(
+    strategies: list[StrategyInfo],
+    books: Optional[dict[str, StrategyBook]] = None,
+) -> str:
     cards = []
     for s in strategies:
         entry_sig_html = (
@@ -265,6 +270,33 @@ def _render_strategies(strategies: list[StrategyInfo]) -> str:
             if s.name and s.name != s.strategy_id
             else ""
         )
+        status_class = "parked" if "park" in s.status.lower() else s.status.split()[0].lower()
+        if status_class not in {"paper", "parked", "live"}:
+            status_class = "paper"
+        book_bits = ""
+        if s.book_equity_usdt is not None:
+            pct = float(s.position_equity_pct or 0)
+            lev = float(s.leverage or 0)
+            fee_pct = float(s.fee_pct or 0)
+            book_bits = (
+                f"Book: <strong style=\"color:var(--text)\">{s.book_equity_usdt:,.0f} USDT</strong> &bull; "
+                f"<strong style=\"color:var(--text)\">{pct:.0f}%</strong> equity &bull; "
+                f"<strong style=\"color:var(--text)\">{lev:.0f}x</strong> &bull; "
+                f"fee <strong style=\"color:var(--text)\">{fee_pct:.3f}%</strong>"
+            )
+        live_book = (books or {}).get(s.strategy_id)
+        if live_book is not None:
+            side = "flat" if abs(live_book.qty) <= 1e-12 else ("long" if live_book.qty > 0 else "short")
+            book_bits += (
+                f"<br/>Position: <strong style=\"color:var(--text)\">{escape(side)}</strong> "
+                f"qty={live_book.qty:.6g} &bull; equity "
+                f"<strong style=\"color:var(--text)\">{live_book.equity_usdt:,.2f}</strong>"
+            )
+        book_row = (
+            f'<tr><td class="rule-label">Book</td><td class="muted">{book_bits}</td></tr>'
+            if book_bits
+            else ""
+        )
         cards.append(
             f"""<div class="strategy-card">
       <div class="strategy-header">
@@ -273,7 +305,7 @@ def _render_strategies(strategies: list[StrategyInfo]) -> str:
           {subtitle_html}
         </div>
         <div class="strategy-badges">
-          <span class="badge paper">{escape(s.status)}</span>
+          <span class="badge {status_class}">{escape(s.status)}</span>
           <span class="badge tag">{escape(s.symbol)}</span>
           <span class="badge tag">{escape(s.timeframe)}</span>
           <span class="badge tag">{escape(s.direction)}</span>
@@ -297,6 +329,7 @@ def _render_strategies(strategies: list[StrategyInfo]) -> str:
             </td>
           </tr>
           {build_row}
+          {book_row}
           <tr>
             <td class="rule-label">Config</td>
             <td class="muted">
@@ -405,7 +438,7 @@ def _dashboard_page(
     )
 
     strategies = get_active_strategies(executor.recent)
-    strategies_html = _render_strategies(strategies)
+    strategies_html = _render_strategies(strategies, state.strategy_books)
 
     body = f"""
     <div class="cards">
