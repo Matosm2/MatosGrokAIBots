@@ -1,0 +1,129 @@
+symbol,strategy_id,tf,mode_params,sol_smoke,bnb_smoke,sol_retention_note,n_6m,wr_6m_pct,mode_a_ret_6m_pct,bh_ret_6m_pct,ratio_bh_6m,pass_6m,n_full,wr_full_pct,mode_a_ret_full_pct,bh_ret_full_pct,ratio_bh_full,pass_full,ops_ret_6m_pct,ops_ret_full_pct,notes
+BTCUSDT,ao-median-zero-cross-v1,1h,"mode_a|(5,34)",Y,Y,—,96,30.21,-13.3740,9.4882,-1.4095,FAIL,376,28.19,-58.4343,27.0883,-2.1572,FAIL,-0.2947,-1.9314,—
+BTCUSDT,ao-median-zero-cross-v1,1h,"mode_a|(5,21)",Y,Y,—,137,27.74,-25.7639,9.4882,-2.7154,FAIL,541,26.25,-75.6763,27.0883,-2.7937,FAIL,-0.6795,-3.2357,—
+BTCUSDT,ao-median-zero-cross-v1,1h,"mode_a|(8,34)",Y,Y,—,83,28.92,-13.4363,9.4882,-1.4161,FAIL,317,29.34,-59.1645,27.0883,-2.1841,FAIL,-0.2982,-1.9831,—
+BTCUSDT,ao-median-zero-cross-v1,1h,"mode_b|(5,34)",Y,Y,—,57,29.82,-12.0589,9.4882,-1.2709,FAIL,223,30.04,-33.5178,27.0883,-1.2374,FAIL,-0.3040,-0.8972,—
+BTCUSDT,ao-median-zero-cross-v1,4h,"mode_a|(5,34)",Y,Y,—,26,38.46,-13.5620,10.0911,-1.3440,FAIL,104,27.88,-36.8382,27.4297,-1.3430,FAIL,-0.2994,-0.9241,—
+BTCUSDT,ao-median-zero-cross-v1,4h,"mode_a|(5,21)",Y,Y,—,29,31.03,0.5068,10.0911,0.0502,FAIL,128,31.25,2.1887,27.4297,0.0798,FAIL,0.0935,0.3045,—
+BTCUSDT,ao-median-zero-cross-v1,4h,"mode_a|(8,34)",Y,Y,—,22,31.82,-11.2860,10.0911,-1.1184,FAIL,88,29.55,-24.1879,27.4297,-0.8818,FAIL,-0.2375,-0.4343,—
+BTCUSDT,ao-median-zero-cross-v1,4h,"mode_b|(5,34)",Y,Y,—,16,18.75,-10.8724,10.0911,-1.0774,FAIL,68,29.41,-17.9602,27.4297,-0.6548,FAIL,-0.2601,-0.3686,—
+BTCUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N14,thr2.5)",Y,Y,—,26,30.77,1.9101,9.4882,0.2013,FAIL,119,35.29,-23.9222,27.0883,-0.8831,FAIL,0.0830,-0.6155,—
+BTCUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N14,thr2.0)",Y,Y,—,50,22.00,-7.1175,9.4882,-0.7501,FAIL,223,27.35,-53.7095,27.0883,-1.9828,FAIL,-0.1389,-1.8109,—
+BTCUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N21,thr2.5)",Y,Y,—,37,27.03,-7.9830,9.4882,-0.8414,FAIL,165,33.33,-34.4948,27.0883,-1.2734,FAIL,-0.1689,-0.9591,—
+BTCUSDT,pgo-threshold-zeroexit-v1,1h,"mode_b|(N14,thr2.5)",Y,Y,—,111,22.52,-24.9604,9.4882,-2.6307,FAIL,446,25.78,-74.3749,27.0883,-2.7456,FAIL,-0.6630,-3.1936,—
+BTCUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N14,thr2.5)",Y,Y,—,6,33.33,8.8202,10.0911,0.8741,FAIL,31,38.71,1.2686,27.4297,0.0463,FAIL,0.2476,0.1261,—
+BTCUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N14,thr2.0)",Y,Y,—,13,23.08,5.9395,10.0911,0.5886,FAIL,58,34.48,-20.6699,27.4297,-0.7536,FAIL,0.1842,-0.4631,—
+BTCUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N21,thr2.5)",Y,Y,—,9,33.33,16.1473,10.0911,1.6001,PASS,43,34.88,-6.5806,27.4297,-0.2399,FAIL,0.4265,-0.0265,—
+BTCUSDT,pgo-threshold-zeroexit-v1,4h,"mode_b|(N14,thr2.5)",Y,Y,—,27,18.52,-2.0166,10.0911,-0.1998,FAIL,108,26.85,-16.5526,27.4297,-0.6035,FAIL,-0.0014,-0.3185,—
+BTCUSDT,roc-zero-cross-v1,1h,mode_a|(N12),Y,Y,—,330,16.67,-65.9816,9.4882,-6.9541,FAIL,1246,19.50,-97.1471,27.0883,-3.5863,FAIL,-2.5880,-8.2636,—
+BTCUSDT,roc-zero-cross-v1,1h,mode_a|(N9),Y,Y,—,367,18.26,-66.9509,9.4882,-7.0562,FAIL,1452,18.46,-98.5514,27.0883,-3.6381,FAIL,-2.6559,-9.8077,—
+BTCUSDT,roc-zero-cross-v1,1h,mode_a|(N14),Y,Y,—,286,18.18,-60.7264,9.4882,-6.4002,FAIL,1134,18.25,-96.4054,27.0883,-3.5589,FAIL,-2.2318,-7.7329,—
+BTCUSDT,roc-zero-cross-v1,1h,"mode_b|(N12,ext8)",Y,Y,—,0,0.00,0.0000,9.4882,0.0000,FAIL,3,33.33,1.2200,27.0883,0.0450,FAIL,0.0000,0.0328,—
+BTCUSDT,roc-zero-cross-v1,4h,mode_a|(N12),Y,Y,—,68,22.06,-12.2732,10.0911,-1.2162,FAIL,304,21.71,-56.2643,27.4297,-2.0512,FAIL,-0.2661,-1.8379,—
+BTCUSDT,roc-zero-cross-v1,4h,mode_a|(N9),Y,Y,—,86,24.42,-21.0360,10.0911,-2.0846,FAIL,350,24.00,-65.1097,27.4297,-2.3737,FAIL,-0.5557,-2.3960,—
+BTCUSDT,roc-zero-cross-v1,4h,mode_a|(N14),Y,Y,—,62,24.19,-14.4117,10.0911,-1.4282,FAIL,270,26.30,-35.4296,27.4297,-1.2917,FAIL,-0.3186,-0.8323,—
+BTCUSDT,roc-zero-cross-v1,4h,"mode_b|(N12,ext8)",Y,Y,—,1,0.00,-9.3295,10.0911,-0.9245,FAIL,13,46.15,-11.6733,27.4297,-0.4256,FAIL,-0.2335,-0.2811,—
+BTCUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,112,30.36,-24.5587,9.4882,-2.5883,FAIL,437,28.38,-66.1980,27.0883,-2.4438,FAIL,-0.6395,-2.4290,—
+BTCUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(9,21)",Y,Y,—,144,25.00,-29.4370,9.4882,-3.1025,FAIL,566,27.21,-77.8538,27.0883,-2.8741,FAIL,-0.8029,-3.4636,—
+BTCUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(12,26)",Y,Y,—,106,33.02,-14.9158,9.4882,-1.5720,FAIL,445,28.99,-64.1870,27.0883,-2.3695,FAIL,-0.3457,-2.2983,—
+BTCUSDT,wma-fast-slow-cross-v1,1h,"mode_b|(10,30)",Y,Y,—,111,30.63,-24.2830,9.4882,-2.5593,FAIL,431,28.77,-64.8151,27.0883,-2.3927,FAIL,-0.6305,-2.3314,—
+BTCUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,26,30.77,-7.0951,10.0911,-0.7031,FAIL,106,30.19,-9.5044,27.4297,-0.3465,FAIL,-0.1121,0.0565,—
+BTCUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(9,21)",Y,Y,—,32,31.25,-0.8948,10.0911,-0.0887,FAIL,135,32.59,3.7194,27.4297,0.1356,FAIL,0.0536,0.3307,—
+BTCUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(12,26)",Y,Y,—,27,25.93,-9.0657,10.0911,-0.8984,FAIL,105,33.33,0.0635,27.4297,0.0023,FAIL,-0.1664,0.3040,—
+BTCUSDT,wma-fast-slow-cross-v1,4h,"mode_b|(10,30)",Y,Y,—,26,30.77,-7.0951,10.0911,-0.7031,FAIL,106,30.19,-11.3448,27.4297,-0.4136,FAIL,-0.1121,0.0049,—
+ETHUSDT,ao-median-zero-cross-v1,1h,"mode_a|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,ao-median-zero-cross-v1,1h,"mode_a|(5,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,ao-median-zero-cross-v1,1h,"mode_a|(8,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,ao-median-zero-cross-v1,1h,"mode_b|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,ao-median-zero-cross-v1,4h,"mode_a|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,ao-median-zero-cross-v1,4h,"mode_a|(5,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,ao-median-zero-cross-v1,4h,"mode_a|(8,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,ao-median-zero-cross-v1,4h,"mode_b|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N14,thr2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N21,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,pgo-threshold-zeroexit-v1,1h,"mode_b|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N14,thr2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N21,thr2.5)",Y,Y,—,10,20.00,-1.9401,15.5026,-0.1251,FAIL,48,27.08,-9.3031,4.0028,-2.3241,FAIL,-0.0097,0.0642,—
+ETHUSDT,pgo-threshold-zeroexit-v1,4h,"mode_b|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,roc-zero-cross-v1,1h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,roc-zero-cross-v1,1h,mode_a|(N9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,roc-zero-cross-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,roc-zero-cross-v1,1h,"mode_b|(N12,ext8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,roc-zero-cross-v1,4h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,roc-zero-cross-v1,4h,mode_a|(N9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,roc-zero-cross-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,roc-zero-cross-v1,4h,"mode_b|(N12,ext8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(9,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wma-fast-slow-cross-v1,1h,"mode_b|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(9,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+ETHUSDT,wma-fast-slow-cross-v1,4h,"mode_b|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,ao-median-zero-cross-v1,1h,"mode_a|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,ao-median-zero-cross-v1,1h,"mode_a|(5,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,ao-median-zero-cross-v1,1h,"mode_a|(8,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,ao-median-zero-cross-v1,1h,"mode_b|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,ao-median-zero-cross-v1,4h,"mode_a|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,ao-median-zero-cross-v1,4h,"mode_a|(5,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,ao-median-zero-cross-v1,4h,"mode_a|(8,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,ao-median-zero-cross-v1,4h,"mode_b|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N14,thr2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N21,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,pgo-threshold-zeroexit-v1,1h,"mode_b|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N14,thr2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N21,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,pgo-threshold-zeroexit-v1,4h,"mode_b|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,roc-zero-cross-v1,1h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,roc-zero-cross-v1,1h,mode_a|(N9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,roc-zero-cross-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,roc-zero-cross-v1,1h,"mode_b|(N12,ext8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,roc-zero-cross-v1,4h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,roc-zero-cross-v1,4h,mode_a|(N9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,roc-zero-cross-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,roc-zero-cross-v1,4h,"mode_b|(N12,ext8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(9,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wma-fast-slow-cross-v1,1h,"mode_b|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(9,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+SOLUSDT,wma-fast-slow-cross-v1,4h,"mode_b|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,ao-median-zero-cross-v1,1h,"mode_a|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,ao-median-zero-cross-v1,1h,"mode_a|(5,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,ao-median-zero-cross-v1,1h,"mode_a|(8,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,ao-median-zero-cross-v1,1h,"mode_b|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,ao-median-zero-cross-v1,4h,"mode_a|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,ao-median-zero-cross-v1,4h,"mode_a|(5,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,ao-median-zero-cross-v1,4h,"mode_a|(8,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,ao-median-zero-cross-v1,4h,"mode_b|(5,34)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N14,thr2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,pgo-threshold-zeroexit-v1,1h,"mode_a|(N21,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,pgo-threshold-zeroexit-v1,1h,"mode_b|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N14,thr2.0)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,pgo-threshold-zeroexit-v1,4h,"mode_a|(N21,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,pgo-threshold-zeroexit-v1,4h,"mode_b|(N14,thr2.5)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,roc-zero-cross-v1,1h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,roc-zero-cross-v1,1h,mode_a|(N9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,roc-zero-cross-v1,1h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,roc-zero-cross-v1,1h,"mode_b|(N12,ext8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,roc-zero-cross-v1,4h,mode_a|(N12),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,roc-zero-cross-v1,4h,mode_a|(N9),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,roc-zero-cross-v1,4h,mode_a|(N14),Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,roc-zero-cross-v1,4h,"mode_b|(N12,ext8)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(9,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wma-fast-slow-cross-v1,1h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wma-fast-slow-cross-v1,1h,"mode_b|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(9,21)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wma-fast-slow-cross-v1,4h,"mode_a|(12,26)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
+BNBUSDT,wma-fast-slow-cross-v1,4h,"mode_b|(10,30)",Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by ladder
