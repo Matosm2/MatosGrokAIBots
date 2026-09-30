@@ -62,3 +62,14 @@ Separate research harness under [`jewel_replay/`](jewel_replay/) — CSV Slow/Hi
 (V-zone + V-wide), synthetic fixture for CI. Not part of the ema-rsi Binance kline runner.
 See [`../strategies/README-jewel-strength-hold-v1.md`](../strategies/README-jewel-strength-hold-v1.md).
 
+## Related: research sketches (TV-free)
+
+Offline sketches under [`sketches/`](sketches/) — `daily-adx-trend-hold-v1`,
+`macd-hist-regime-v1`, `htf-ema-pullback-wide-v1`. Not paper/live.
+
+```bash
+python -m backtest.sketches
+```
+
+See [`sketches/README.md`](sketches/README.md).
+
