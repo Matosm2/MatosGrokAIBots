@@ -1,0 +1,161 @@
+Symbol,Strategy ID,TF,Params,BTC Smoke,ETH Smoke,SOL Smoke,BNB Smoke,Retention,n (6m),WR (6m),Ret (6m),B&H (6m),Ratio (6m),PASS_6m,n (full),WR (full),Ret (full),B&H (full),Ratio (full),PASS_full,Ops Ret (6m),Ops Ret (full),Notes
+BTCUSDT,pee-ttf-zero-cross,1h,mode_a|(L15),Y,Y,Y,Y,—,86,34.88,-18.9161,10.1317,-1.8670,FAIL,361,31.58,-55.9481,26.4719,-2.1135,FAIL,-0.4547,-1.8011,—
+BTCUSDT,pee-ttf-zero-cross,1h,mode_a|(L10),Y,Y,Y,Y,—,137,31.39,-15.6760,10.1317,-1.5472,FAIL,550,30.00,-70.1867,26.4719,-2.6514,FAIL,-0.3517,-2.7248,—
+BTCUSDT,pee-ttf-zero-cross,1h,mode_a|(L20),Y,Y,Y,Y,—,71,32.39,-16.7018,10.1317,-1.6485,FAIL,287,28.22,-57.2896,26.4719,-2.1642,FAIL,-0.3922,-1.8827,—
+BTCUSDT,pee-ttf-zero-cross,1h,mode_b|(L15),Y,Y,Y,Y,—,40,37.50,-6.8023,10.1317,-0.6714,FAIL,148,34.46,-6.5820,26.4719,-0.2486,FAIL,-0.1207,0.0533,—
+BTCUSDT,pee-ttf-zero-cross,4h,mode_a|(L15),Y,Y,Y,Y,—,26,30.77,-16.0271,8.7446,-1.8328,FAIL,98,31.63,-47.6612,27.4297,-1.7376,FAIL,-0.3564,-1.3597,—
+BTCUSDT,pee-ttf-zero-cross,4h,mode_a|(L10),Y,Y,Y,Y,—,34,32.35,-7.2607,8.7446,-0.8303,FAIL,132,37.12,-2.8552,27.4297,-0.1041,FAIL,-0.1019,0.2131,—
+BTCUSDT,pee-ttf-zero-cross,4h,mode_a|(L20),Y,Y,Y,Y,—,17,29.41,4.7308,8.7446,0.5410,FAIL,74,31.08,-32.0633,27.4297,-1.1689,FAIL,0.1839,-0.7514,—
+BTCUSDT,pee-ttf-zero-cross,4h,mode_b|(L15),Y,Y,Y,Y,—,6,66.67,35.5172,8.7446,4.0616,PASS,38,36.84,-12.5764,27.4297,-0.4585,FAIL,0.8275,-0.1048,THIN-N FLAG (BTC 6m n=6 in thin band [6..10])
+BTCUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p10,s5)",Y,Y,Y,Y,—,189,24.87,-38.0293,10.1317,-3.7535,FAIL,711,24.33,-83.6823,26.4719,-3.1612,FAIL,-1.1254,-4.1852,—
+BTCUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p8,s3)",Y,Y,Y,Y,—,247,22.67,-50.4157,10.1317,-4.9760,FAIL,964,23.96,-92.3905,26.4719,-3.4901,FAIL,-1.6672,-6.0117,—
+BTCUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p14,s8)",Y,Y,Y,Y,—,113,26.55,-24.1149,10.1317,-2.3801,FAIL,461,27.98,-69.1389,26.4719,-2.6118,FAIL,-0.6276,-2.6492,—
+BTCUSDT,hannula-pfe-zero-cross,1h,"mode_b|(p10,s5)",Y,Y,Y,Y,—,1,0.00,-0.8259,10.1317,-0.0815,FAIL,4,50.00,-0.0591,26.4719,-0.0022,FAIL,-0.0207,-0.0011,TINY-N KILL (BTC 6m n=1 <= 5 despite -0.08x B&H)
+BTCUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p10,s5)",Y,Y,Y,Y,—,36,27.78,-2.5820,8.7446,-0.2953,FAIL,156,31.41,7.0753,27.4297,0.2579,FAIL,0.0056,0.4085,—
+BTCUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p8,s3)",Y,Y,Y,Y,—,58,31.03,-7.1474,8.7446,-0.8173,FAIL,226,29.20,-43.2567,27.4297,-1.5770,FAIL,-0.1249,-1.1603,—
+BTCUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p14,s8)",Y,Y,Y,Y,—,27,25.93,-14.7369,8.7446,-1.6853,FAIL,109,36.70,-4.2378,27.4297,-0.1545,FAIL,-0.3290,0.1928,—
+BTCUSDT,hannula-pfe-zero-cross,4h,"mode_b|(p10,s5)",Y,Y,Y,Y,—,0,0.00,0.0000,8.7446,0.0000,FAIL,0,0.00,0.0000,27.4297,0.0000,FAIL,0.0000,0.0000,TINY-N KILL (BTC 6m n=0 <= 5 despite 0.00x B&H)
+BTCUSDT,absolute-strength-hist-zero,1h,"mode_a|(len9,sm2)",Y,Y,Y,Y,—,273,21.61,-55.5233,10.1317,-5.4801,FAIL,1054,22.11,-94.8422,26.4719,-3.5828,FAIL,-1.9342,-6.9052,—
+BTCUSDT,absolute-strength-hist-zero,1h,"mode_a|(len7,sm1)",Y,Y,Y,Y,—,414,17.63,-72.1935,10.1317,-7.1255,FAIL,1652,18.52,-99.2819,26.4719,-3.7505,FAIL,-3.0978,-11.3955,—
+BTCUSDT,absolute-strength-hist-zero,1h,"mode_a|(len14,sm3)",Y,Y,Y,Y,—,173,23.12,-39.1798,10.1317,-3.8670,FAIL,658,25.23,-83.3695,26.4719,-3.1494,FAIL,-1.1666,-4.1440,—
+BTCUSDT,absolute-strength-hist-zero,1h,"mode_b|(len9,sm2)",Y,Y,Y,Y,—,273,21.61,-55.5233,10.1317,-5.4801,FAIL,1054,22.11,-94.8422,26.4719,-3.5828,FAIL,-1.9342,-6.9052,—
+BTCUSDT,absolute-strength-hist-zero,4h,"mode_a|(len9,sm2)",Y,Y,Y,Y,—,63,31.75,-15.5053,8.7446,-1.7731,FAIL,251,27.49,-50.4771,27.4297,-1.8402,FAIL,-0.3907,-1.5038,—
+BTCUSDT,absolute-strength-hist-zero,4h,"mode_a|(len7,sm1)",Y,Y,Y,Y,—,99,23.23,-23.5915,8.7446,-2.6978,FAIL,400,22.25,-69.1107,27.4297,-2.5196,FAIL,-0.6082,-2.6641,—
+BTCUSDT,absolute-strength-hist-zero,4h,"mode_a|(len14,sm3)",Y,Y,Y,Y,—,33,24.24,-2.5452,8.7446,-0.2911,FAIL,149,30.87,-9.2136,27.4297,-0.3359,FAIL,0.0090,0.0084,—
+BTCUSDT,absolute-strength-hist-zero,4h,"mode_b|(len9,sm2)",Y,Y,Y,Y,—,63,31.75,-15.5053,8.7446,-1.7731,FAIL,251,27.49,-50.4771,27.4297,-1.8402,FAIL,-0.3907,-1.5038,—
+BTCUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p20,b1.4)",Y,Y,Y,Y,—,50,24.00,-12.9799,10.1317,-1.2811,FAIL,189,27.51,-47.4459,26.4719,-1.7923,FAIL,-0.2916,-1.3401,—
+BTCUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p14,b1.2)",Y,Y,Y,Y,—,62,32.26,-14.3528,10.1317,-1.4166,FAIL,246,32.52,-51.5560,26.4719,-1.9476,FAIL,-0.3266,-1.5314,—
+BTCUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p30,b1.8)",Y,Y,Y,Y,—,34,26.47,-7.3383,10.1317,-0.7243,FAIL,128,28.91,-27.5201,26.4719,-1.0396,FAIL,-0.1170,-0.5370,—
+BTCUSDT,leibfarth-apz-break-flip,1h,"mode_b|(p20,b1.4)",Y,Y,Y,Y,—,50,64.00,-8.7718,10.1317,-0.8658,FAIL,188,67.55,-29.3327,26.4719,-1.1081,FAIL,-0.1837,-0.6609,—
+BTCUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p20,b1.4)",Y,Y,Y,Y,—,10,40.00,11.7604,8.7446,1.3449,PASS,44,34.09,-12.3188,27.4297,-0.4491,FAIL,0.3385,-0.0862,THIN-N FLAG (BTC 6m n=10 in thin band [6..10])
+BTCUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p14,b1.2)",Y,Y,Y,Y,—,18,33.33,-6.6879,8.7446,-0.7648,FAIL,62,40.32,-19.4305,27.4297,-0.7084,FAIL,-0.1109,-0.2966,—
+BTCUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p30,b1.8)",Y,Y,Y,Y,—,6,66.67,23.3390,8.7446,2.6690,PASS,29,34.48,10.2107,27.4297,0.3722,FAIL,0.5815,0.4817,THIN-N FLAG (BTC 6m n=6 in thin band [6..10])
+BTCUSDT,leibfarth-apz-break-flip,4h,"mode_b|(p20,b1.4)",Y,Y,Y,Y,—,11,54.55,-14.3601,8.7446,-1.6422,FAIL,45,62.22,-11.4820,27.4297,-0.4186,FAIL,-0.3255,-0.1069,—
+BTCUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb8,a8)",Y,Y,Y,Y,—,485,18.56,-77.3046,10.1317,-7.6300,FAIL,1953,19.46,-99.7380,26.4719,-3.7677,FAIL,-3.5897,-13.6032,—
+BTCUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb5,a1)",Y,Y,Y,Y,—,652,17.48,-87.1311,10.1317,-8.5998,FAIL,2531,19.56,-99.9618,26.4719,-3.7762,FAIL,-4.9517,-17.6717,—
+BTCUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb14,a25)",Y,Y,Y,Y,—,358,16.76,-66.6572,10.1317,-6.5791,FAIL,1381,18.32,-98.1835,26.4719,-3.7090,FAIL,-2.6391,-9.2960,—
+BTCUSDT,nadaraya-rq-estimate-cross,1h,"mode_b|(lb8,a8)",Y,Y,Y,Y,—,275,20.00,-57.0768,10.1317,-5.6335,FAIL,1065,21.41,-95.3733,26.4719,-3.6028,FAIL,-2.0641,-7.2653,—
+BTCUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb8,a8)",Y,Y,Y,Y,—,113,24.78,-26.6383,8.7446,-3.0462,FAIL,458,26.20,-70.0967,27.4297,-2.5555,FAIL,-0.7108,-2.7447,—
+BTCUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb5,a1)",Y,Y,Y,Y,—,160,23.12,-42.1457,8.7446,-4.8196,FAIL,624,24.68,-83.7962,27.4297,-3.0549,FAIL,-1.2927,-4.1964,—
+BTCUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb14,a25)",Y,Y,Y,Y,—,91,18.68,-19.0545,8.7446,-2.1790,FAIL,342,20.76,-64.9273,27.4297,-2.3670,FAIL,-0.4683,-2.3613,—
+BTCUSDT,nadaraya-rq-estimate-cross,4h,"mode_b|(lb8,a8)",Y,Y,Y,Y,—,67,26.87,-4.0065,8.7446,-0.4582,FAIL,246,28.46,-31.3203,27.4297,-1.1418,FAIL,-0.0509,-0.7750,—
+ETHUSDT,pee-ttf-zero-cross,1h,mode_a|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-ttf-zero-cross,1h,mode_a|(L10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-ttf-zero-cross,1h,mode_a|(L20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-ttf-zero-cross,1h,mode_b|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-ttf-zero-cross,4h,mode_a|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-ttf-zero-cross,4h,mode_a|(L10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-ttf-zero-cross,4h,mode_a|(L20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,pee-ttf-zero-cross,4h,mode_b|(L15),Y,Y,Y,Y,OK (ETH n=7 vs BTC n=6),7,42.86,39.1249,14.2953,2.7369,PASS,37,37.84,-13.7167,4.0028,-3.4268,FAIL,0.9216,0.1481,ETH hard filter
+ETHUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p8,s3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p14,s8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hannula-pfe-zero-cross,1h,"mode_b|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p8,s3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p14,s8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,hannula-pfe-zero-cross,4h,"mode_b|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,absolute-strength-hist-zero,1h,"mode_a|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,absolute-strength-hist-zero,1h,"mode_a|(len7,sm1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,absolute-strength-hist-zero,1h,"mode_a|(len14,sm3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,absolute-strength-hist-zero,1h,"mode_b|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,absolute-strength-hist-zero,4h,"mode_a|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,absolute-strength-hist-zero,4h,"mode_a|(len7,sm1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,absolute-strength-hist-zero,4h,"mode_a|(len14,sm3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,absolute-strength-hist-zero,4h,"mode_b|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p14,b1.2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p30,b1.8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,leibfarth-apz-break-flip,1h,"mode_b|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p20,b1.4)",Y,Y,Y,Y,OK (ETH n=11 vs BTC n=10),11,27.27,11.4585,14.2953,0.8016,FAIL,45,35.56,4.4880,4.0028,1.1212,FAIL,0.3770,0.8521,ETH hard filter
+ETHUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p14,b1.2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p30,b1.8)",Y,Y,Y,Y,OK (ETH n=5 vs BTC n=6),5,60.00,28.2244,14.2953,1.9744,PASS,29,37.93,33.2943,4.0028,8.3177,PASS,0.7156,1.4897,ETH hard filter
+ETHUSDT,leibfarth-apz-break-flip,4h,"mode_b|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb5,a1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb14,a25)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,nadaraya-rq-estimate-cross,1h,"mode_b|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb5,a1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb14,a25)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+ETHUSDT,nadaraya-rq-estimate-cross,4h,"mode_b|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (BTC PASS_6m required)
+SOLUSDT,pee-ttf-zero-cross,1h,mode_a|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-ttf-zero-cross,1h,mode_a|(L10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-ttf-zero-cross,1h,mode_a|(L20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-ttf-zero-cross,1h,mode_b|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-ttf-zero-cross,4h,mode_a|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-ttf-zero-cross,4h,mode_a|(L10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-ttf-zero-cross,4h,mode_a|(L20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,pee-ttf-zero-cross,4h,mode_b|(L15),Y,Y,Y,Y,OK (SOL n=8 vs ETH n=7),8,75.00,32.8689,14.5627,2.2571,PASS,34,50.00,61.9599,-23.1339,3.6783,PASS,0.7849,1.6395,SOL hard filter
+SOLUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p8,s3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p14,s8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hannula-pfe-zero-cross,1h,"mode_b|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p8,s3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p14,s8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,hannula-pfe-zero-cross,4h,"mode_b|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,absolute-strength-hist-zero,1h,"mode_a|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,absolute-strength-hist-zero,1h,"mode_a|(len7,sm1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,absolute-strength-hist-zero,1h,"mode_a|(len14,sm3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,absolute-strength-hist-zero,1h,"mode_b|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,absolute-strength-hist-zero,4h,"mode_a|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,absolute-strength-hist-zero,4h,"mode_a|(len7,sm1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,absolute-strength-hist-zero,4h,"mode_a|(len14,sm3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,absolute-strength-hist-zero,4h,"mode_b|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p14,b1.2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p30,b1.8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,leibfarth-apz-break-flip,1h,"mode_b|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p14,b1.2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p30,b1.8)",Y,Y,Y,Y,OK (SOL n=7 vs ETH n=5),7,42.86,10.6239,14.5627,0.7295,FAIL,30,43.33,-11.7724,-23.1339,0.4911,FAIL,0.3741,0.1389,SOL hard filter
+SOLUSDT,leibfarth-apz-break-flip,4h,"mode_b|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb5,a1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb14,a25)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,nadaraya-rq-estimate-cross,1h,"mode_b|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb5,a1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb14,a25)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+SOLUSDT,nadaraya-rq-estimate-cross,4h,"mode_b|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (ETH PASS_6m required)
+BNBUSDT,pee-ttf-zero-cross,1h,mode_a|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-ttf-zero-cross,1h,mode_a|(L10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-ttf-zero-cross,1h,mode_a|(L20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-ttf-zero-cross,1h,mode_b|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-ttf-zero-cross,4h,mode_a|(L15),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-ttf-zero-cross,4h,mode_a|(L10),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-ttf-zero-cross,4h,mode_a|(L20),Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,pee-ttf-zero-cross,4h,mode_b|(L15),Y,Y,Y,Y,OK (BNB n=8 vs SOL n=8),8,50.00,1.4316,15.3615,0.0932,FAIL,37,45.95,-18.0530,35.4292,-0.5096,FAIL,0.1151,-0.2190,BNB hard filter
+BNBUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p8,s3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hannula-pfe-zero-cross,1h,"mode_a|(p14,s8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hannula-pfe-zero-cross,1h,"mode_b|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p8,s3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hannula-pfe-zero-cross,4h,"mode_a|(p14,s8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,hannula-pfe-zero-cross,4h,"mode_b|(p10,s5)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,absolute-strength-hist-zero,1h,"mode_a|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,absolute-strength-hist-zero,1h,"mode_a|(len7,sm1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,absolute-strength-hist-zero,1h,"mode_a|(len14,sm3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,absolute-strength-hist-zero,1h,"mode_b|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,absolute-strength-hist-zero,4h,"mode_a|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,absolute-strength-hist-zero,4h,"mode_a|(len7,sm1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,absolute-strength-hist-zero,4h,"mode_a|(len14,sm3)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,absolute-strength-hist-zero,4h,"mode_b|(len9,sm2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p14,b1.2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,leibfarth-apz-break-flip,1h,"mode_a|(p30,b1.8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,leibfarth-apz-break-flip,1h,"mode_b|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p14,b1.2)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,leibfarth-apz-break-flip,4h,"mode_a|(p30,b1.8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,leibfarth-apz-break-flip,4h,"mode_b|(p20,b1.4)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb5,a1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,nadaraya-rq-estimate-cross,1h,"mode_a|(lb14,a25)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,nadaraya-rq-estimate-cross,1h,"mode_b|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb5,a1)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,nadaraya-rq-estimate-cross,4h,"mode_a|(lb14,a25)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
+BNBUSDT,nadaraya-rq-estimate-cross,4h,"mode_b|(lb8,a8)",Y,Y,Y,Y,—,,,,,,FAIL,,,,,,FAIL,,,Pruned by stop-ladder (SOL PASS_6m required)
